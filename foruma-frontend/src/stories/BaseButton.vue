@@ -8,6 +8,10 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "BaseButton",
   props: {
+    fullWidth: {
+      type: Boolean,
+      default: false,
+    },
     label: {
       type: String,
       required: true,
@@ -32,11 +36,17 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      return [
+      const c = [
         "base-button",
         `base-button--${this.size}`,
         `base-button--${this.primary ? "primary" : "secondary"}`,
-      ].join(" ");
+      ];
+
+      if (this.fullWidth) {
+        c.push("base-button--full-width");
+      }
+
+      return c.join(" ");
     },
   },
 });
@@ -51,18 +61,21 @@ export default defineComponent({
 }
 
 .base-button--small {
-  font-size: 12px;
   padding: 10px 16px;
+
+  font-size: 12px;
 }
 
 .base-button--medium {
-  font-size: 14px;
   padding: 11px 20px;
+
+  font-size: 14px;
 }
 
 .base-button--large {
-  font-size: 16px;
   padding: 12px 24px;
+
+  font-size: 16px;
 }
 
 .base-button--primary {
@@ -74,5 +87,9 @@ export default defineComponent({
   background-color: white;
   color: #333;
   box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 1px inset;
+}
+
+.base-button--full-width {
+  width: 100%;
 }
 </style>

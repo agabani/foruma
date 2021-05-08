@@ -36,3 +36,6 @@ Medium.args = { ...Default.args, size: "medium" };
 
 export const Large = Template.bind({});
 Large.args = { ...Default.args, size: "large" };
+
+export const FullWidth = Template.bind({});
+FullWidth.args = { ...Default.args, fullWidth: true };
