@@ -10,7 +10,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./forma-frontend
+    working-directory: ./foruma-frontend
 
 jobs:
   build:
@@ -32,7 +32,7 @@ jobs:
     - name: 'UI Tests - Chrome'
       uses: cypress-io/github-action@v2
       with:
-        working-directory: ./forma-frontend
+        working-directory: ./foruma-frontend
         start: npm run serve
         wait-on: http://localhost:8080/
         config_file: cypress.json

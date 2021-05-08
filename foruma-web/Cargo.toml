@@ -1,5 +1,5 @@
 [package]
-name = "forma-web"
+name = "foruma-web"
 version = "0.1.0"
 authors = ["agabani <agabani@users.noreply.github.com>"]
 edition = "2018"

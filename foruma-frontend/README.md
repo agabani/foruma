@@ -1,4 +1,4 @@
-# forma-frontend
+# foruma-frontend
 
 ## Project setup
 ```shell
