@@ -8,10 +8,6 @@ on:
     branches:
       - main
 
-defaults:
-  run:
-    working-directory: ./foruma-frontend
-
 jobs:
   build:
     name: Build
@@ -20,6 +16,9 @@ jobs:
       matrix:
         node-version: [10.x, 12.x, 14.x, 15.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    defaults:
+      run:
+        working-directory: ./foruma-frontend
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -27,6 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
+    - run: npm run lint
     - run: npm run build --if-present
     - run: npm run test:unit
     - name: 'UI Tests - Chrome'
