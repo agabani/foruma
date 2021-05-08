@@ -17,8 +17,8 @@ export default defineComponent({
       default: false,
     },
     size: {
-      default: "medium",
       type: String,
+      default: "medium",
       validator: function (value: string): boolean {
         return ["small", "medium", "large"].indexOf(value) !== -1;
       },
@@ -50,7 +50,7 @@ export default defineComponent({
   font-weight: 700;
 }
 
-.base-button--medium {
+.base-button--small {
   font-size: 12px;
   padding: 10px 16px;
 }
