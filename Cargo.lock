@@ -476,7 +476,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "forma-web"
+name = "foruma-web"
 version = "0.1.0"
 dependencies = [
  "actix-rt",

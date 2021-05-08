@@ -1,4 +1,4 @@
-use forma_web::run;
+use foruma_web::run;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
