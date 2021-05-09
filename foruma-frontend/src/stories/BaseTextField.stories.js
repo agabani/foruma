@@ -25,8 +25,8 @@ Default.args = {};
 export const Placeholder = Template.bind({});
 Placeholder.args = { ...Default.args, placeholder: "Placeholder" };
 
-export const InitialValue = Template.bind({});
-InitialValue.args = { ...Default.args, initialValue: "Initial Value" };
+export const Value = Template.bind({});
+Value.args = { ...Default.args, value: "Value" };
 
 export const Small = Template.bind({});
 Small.args = { ...Default.args, size: "small" };

@@ -2,21 +2,22 @@
   <input
     :class="classes"
     type="text"
-    :placeholder="placeholder"
-    v-model="value"
+    :placeholder="dataPlaceholder"
+    v-model="dataValue"
   />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 
+export interface Change {
+  newValue: string;
+  oldValue: string;
+}
+
 export default defineComponent({
   name: "BaseTextField",
   props: {
-    initialValue: {
-      type: String,
-      default: "",
-    },
     fullWidth: {
       type: Boolean,
       default: false,
@@ -32,18 +33,25 @@ export default defineComponent({
         return ["small", "medium", "large"].indexOf(value) !== -1;
       },
     },
+    value: {
+      type: String,
+      default: "",
+    },
   },
   emits: ["change"],
   data() {
     return {
-      value: this.initialValue,
+      dataFullWidth: this.fullWidth,
+      dataPlaceholder: this.placeholder,
+      dataSize: this.size,
+      dataValue: this.value,
     };
   },
   computed: {
     classes(): string {
-      const c = ["base-text-field", `base-text-field--${this.size}`];
+      const c = ["base-text-field", `base-text-field--${this.dataSize}`];
 
-      if (this.fullWidth) {
+      if (this.dataFullWidth) {
         c.push("base-text-field--full-width");
       }
 
@@ -51,8 +59,12 @@ export default defineComponent({
     },
   },
   watch: {
-    value(newValue, oldValue) {
-      this.$emit("change", { newValue, oldValue });
+    dataValue(newValue, oldValue) {
+      const change: Change = {
+        newValue,
+        oldValue,
+      };
+      this.$emit("change", change);
     },
   },
 });

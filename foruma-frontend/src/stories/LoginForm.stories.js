@@ -19,5 +19,5 @@ const Template = (args) => ({
 export const Default = Template.bind({});
 Default.args = {};
 
-export const InitialUsername = Template.bind({});
-InitialUsername.args = { ...Default.args, initialUsername: "Initial Username" };
+export const Username = Template.bind({});
+Username.args = { ...Default.args, username: "Username" };
