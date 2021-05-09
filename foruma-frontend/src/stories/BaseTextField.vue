@@ -9,12 +9,17 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+
 export default defineComponent({
   name: "BaseTextField",
   props: {
     initialValue: {
       type: String,
       default: "",
+    },
+    fullWidth: {
+      type: Boolean,
+      default: false,
     },
     placeholder: {
       type: String,
@@ -36,7 +41,13 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      return ["base-text-field", `base-text-field--${this.size}`].join(" ");
+      const c = ["base-text-field", `base-text-field--${this.size}`];
+
+      if (this.fullWidth) {
+        c.push("base-text-field--full-width");
+      }
+
+      return c.join(" ");
     },
   },
   watch: {
@@ -59,18 +70,26 @@ export default defineComponent({
 }
 
 .base-text-field--small {
-  font-size: 12px;
   padding: 10px 16px;
+
+  font-size: 12px;
 }
 
 .base-text-field--medium {
-  font-size: 14px;
   padding: 11px 20px;
+
+  font-size: 14px;
 }
 
 .base-text-field--large {
-  font-size: 16px;
   padding: 12px 24px;
+
+  font-size: 16px;
+}
+
+.base-text-field--full-width {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .base-text-field {

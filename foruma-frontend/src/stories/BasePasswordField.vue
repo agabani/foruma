@@ -9,12 +9,17 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+
 export default defineComponent({
   name: "BasePasswordField",
   props: {
     initialValue: {
       type: String,
       default: "",
+    },
+    fullWidth: {
+      type: Boolean,
+      default: false,
     },
     placeholder: {
       type: String,
@@ -36,9 +41,13 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
-      return ["base-password-field", `base-password-field--${this.size}`].join(
-        " "
-      );
+      const c = ["base-password-field", `base-password-field--${this.size}`];
+
+      if (this.fullWidth) {
+        c.push("base-password-field--full-width");
+      }
+
+      return c.join(" ");
     },
   },
   watch: {
@@ -61,18 +70,26 @@ export default defineComponent({
 }
 
 .base-password-field--small {
-  font-size: 12px;
   padding: 10px 16px;
+
+  font-size: 12px;
 }
 
 .base-password-field--medium {
-  font-size: 14px;
   padding: 11px 20px;
+
+  font-size: 14px;
 }
 
 .base-password-field--large {
-  font-size: 16px;
   padding: 12px 24px;
+
+  font-size: 16px;
+}
+
+.base-password-field--full-width {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .base-password-field {
