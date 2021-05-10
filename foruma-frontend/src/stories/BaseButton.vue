@@ -1,5 +1,5 @@
 <template>
-  <button :class="classes" @click="onClick">{{ label }}</button>
+  <button :class="classes" :type="type" @click="onClick">{{ label }}</button>
 </template>
 
 <script lang="ts">
@@ -25,6 +25,13 @@ export default defineComponent({
       default: "medium",
       validator: function (value: string): boolean {
         return ["small", "medium", "large"].indexOf(value) !== -1;
+      },
+    },
+    type: {
+      type: String,
+      default: "submit",
+      validator: function (value: string): boolean {
+        return ["button", "reset", "submit"].indexOf(value) !== -1;
       },
     },
   },
