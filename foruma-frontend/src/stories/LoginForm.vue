@@ -12,8 +12,8 @@
         <div class="login-form--field">
           <BaseTextField
             :fullWidth="true"
+            :value="username"
             @change="updateUsername"
-            :initialValue="username"
           />
         </div>
         <div class="login-form--label">Password</div>
@@ -21,7 +21,7 @@
           <BasePasswordField :fullWidth="true" @change="updatePassword" />
         </div>
         <div class="login-form--button">
-          <BaseButton label="Login" :primary="true" :fullWidth="true" />
+          <BaseButton label="Login" :fullWidth="true" :primary="true" />
         </div>
       </form>
     </div>
@@ -32,7 +32,14 @@
 import { defineComponent } from "vue";
 import BaseButton from "./BaseButton.vue";
 import BasePasswordField from "./BasePasswordField.vue";
+import type { Change as BasePasswordFieldChange } from "./BasePasswordField.vue";
 import BaseTextField from "./BaseTextField.vue";
+import type { Change as BaseTextFieldChange } from "./BaseTextField.vue";
+
+export interface Submit {
+  username: string;
+  password: string;
+}
 
 export default defineComponent({
   name: "LoginForm",
@@ -42,7 +49,7 @@ export default defineComponent({
     BaseTextField,
   },
   props: {
-    initialUsername: {
+    username: {
       type: String,
       default: "",
     },
@@ -50,23 +57,26 @@ export default defineComponent({
   emits: ["submit"],
   data() {
     return {
-      username: this.initialUsername,
-      password: "",
+      dataUsername: this.username,
+      dataPassword: "",
     };
   },
   methods: {
-    onSubmit(event): void {
+    onSubmit(event: { preventDefault: () => void }): void {
       event.preventDefault();
-      this.$emit("submit", {
-        username: this.username,
-        password: this.password,
-      });
+
+      const submit: Submit = {
+        username: this.dataUsername,
+        password: this.dataPassword,
+      };
+
+      this.$emit("submit", submit);
     },
-    updateUsername(value: { newValue: string; oldValue: string }): void {
-      this.username = value.newValue;
+    updateUsername(value: BaseTextFieldChange): void {
+      this.dataUsername = value.newValue;
     },
-    updatePassword(value: { newValue: string; oldValue: string }): void {
-      this.password = value.newValue;
+    updatePassword(value: BasePasswordFieldChange): void {
+      this.dataPassword = value.newValue;
     },
   },
 });
