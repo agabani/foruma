@@ -50,8 +50,6 @@ export const signup = async (
   { commit }: { commit: Commit },
   payload: SignupPayload
 ): Promise<void> => {
-  console.log(payload);
-
   const signupResponse = await api.post("/api/authentication/signup", {
     username: payload.username,
     password: payload.password,
@@ -67,6 +65,22 @@ export const signup = async (
 
   if (whoamiResponse.status === 200) {
     commit("authenticate", whoamiResponse.data.username);
+  } else {
+    throw new Error("unexpected response");
+  }
+};
+
+export const initialize = async ({
+  commit,
+}: {
+  commit: Commit;
+}): Promise<void> => {
+  const whoamiResponse = await api.get("/api/authentication/whoami");
+
+  if (whoamiResponse.status === 200) {
+    commit("authenticate", whoamiResponse.data.username);
+  } else if (whoamiResponse.status === 401) {
+    commit("unauthenticate");
   } else {
     throw new Error("unexpected response");
   }

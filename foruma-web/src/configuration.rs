@@ -1,11 +1,15 @@
 use config::Config;
 use serde::{Deserialize, Deserializer};
+use sqlx::migrate::MigrateDatabase;
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions, PgSslMode};
+use sqlx::Pool;
 use std::net::TcpListener;
 
-#[derive(serde::Deserialize)]
+#[derive(Clone, serde::Deserialize)]
 pub struct Configuration {
     pub http_server: HttpServer,
     pub cors: Option<Cors>,
+    pub postgres: Postgres,
 }
 
 impl Configuration {
@@ -22,7 +26,7 @@ impl Configuration {
     }
 }
 
-#[derive(serde::Deserialize)]
+#[derive(Clone, serde::Deserialize)]
 pub struct HttpServer {
     pub host: String,
     pub port: u16,
@@ -34,7 +38,7 @@ impl HttpServer {
     }
 }
 
-#[derive(serde::Deserialize)]
+#[derive(Clone, serde::Deserialize)]
 pub struct Cors {
     #[serde(deserialize_with = "comma_separated_values_deserializer")]
     pub origins: Vec<String>,
@@ -46,4 +50,61 @@ where
 {
     let string = String::deserialize(deserializer)?;
     Ok(string.split(',').map(|item| item.to_owned()).collect())
+}
+
+#[derive(Clone, serde::Deserialize)]
+pub struct Postgres {
+    pub database_name: String,
+    pub host: String,
+    pub password: String,
+    pub port: u16,
+    pub require_ssl: bool,
+    pub username: String,
+    pub migrations_path: Option<String>,
+}
+
+impl Postgres {
+    pub fn server_pool(&self) -> Pool<sqlx::Postgres> {
+        PgPoolOptions::new().connect_lazy_with(self.server_connect_options())
+    }
+
+    pub fn database_pool(&self) -> Pool<sqlx::Postgres> {
+        PgPoolOptions::new().connect_lazy_with(self.database_connect_options())
+    }
+
+    fn server_connect_options(&self) -> PgConnectOptions {
+        PgConnectOptions::new()
+            .host(&self.host)
+            .port(self.port)
+            .username(&self.username)
+            .password(&self.password)
+            .ssl_mode(match self.require_ssl {
+                true => PgSslMode::Require,
+                false => PgSslMode::Prefer,
+            })
+    }
+
+    fn database_connect_options(&self) -> PgConnectOptions {
+        self.server_connect_options().database(&self.database_name)
+    }
+
+    pub async fn migrate(&self) {
+        if let Some(migrations_path) = &self.migrations_path {
+            let migrator = sqlx::migrate::Migrator::new(std::path::Path::new(&migrations_path))
+                .await
+                .expect("TODO");
+
+            let database_pool = self.database_pool();
+
+            let uri = format!(
+                "postgres://{}:{}@{}:{}/{}",
+                self.username, self.password, self.host, self.port, self.database_name
+            );
+            if !sqlx::Postgres::database_exists(&uri).await.expect("TODO") {
+                sqlx::Postgres::create_database(&uri).await.expect("TODO");
+            }
+
+            migrator.run(&database_pool).await.expect("TODO");
+        }
+    }
 }

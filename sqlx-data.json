@@ -1,0 +1,111 @@
+{
+  "db": "PostgreSQL",
+  "05847d5b7b5238a9f8770245d1ce04ec0dff2790ef2fd711bc0fe05041916d13": {
+    "query": "\nSELECT\n    A.public_id AS public_id,\n    A.username AS username\nFROM account AS A\nINNER JOIN account_session AS \"AS\" ON A.id = \"AS\".account_id\nWHERE \"AS\".public_id = $1\n  AND \"AS\".deleted IS NULL;\n",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "public_id",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 1,
+          "name": "username",
+          "type_info": "Varchar"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  },
+  "132d925ab7e126679d3dcb19b22bf856cce539b9bebd7c8a9dd662a8fd39683d": {
+    "query": "\nINSERT INTO account_password(public_id, created, account_id, password_hash)\nVALUES ($1,\n        $2,\n        (SELECT id FROM account WHERE account.public_id = $3),\n        $4)\n",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Timestamptz",
+          "Text",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "697d5718990490bcb08b0b8a016021ddf4c5a361381d0690ef8ac3cfc17e111d": {
+    "query": "\nUPDATE account_session\nSET deleted = $2\nWHERE public_id = $1\n  AND deleted IS NULL;\n",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Timestamptz"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "824941f85bca45e0bfb37c6afc882d54e03cc727d75ce3ebddc34163c9fae6ad": {
+    "query": "\nINSERT INTO account (public_id, created, username)\nVALUES ($1, $2, $3);\n",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Timestamptz",
+          "Varchar"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "8760ee3bfdd2a96f2f37b9198e69b733464f2ccb66a24298a1f33061e1e1fdf8": {
+    "query": "\nINSERT INTO account_session (public_id, created, account_id)\nVALUES ($1, $2, $3);\n",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Timestamptz",
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "a4ca6232604f3cd629954a6685cd0831388f6c7a57f3b5882dc9e1a70db3e4c0": {
+    "query": "\nSELECT\n    A.id AS id,\n    AP.password_hash AS password_hash\nFROM account AS A\nINNER JOIN account_password AS AP ON A.id = AP.account_id\nWHERE A.username = $1\n  AND AP.deleted IS NULL\n",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "password_hash",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  }
+}
