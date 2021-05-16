@@ -1,11 +1,10 @@
-use foruma_web::run;
+use foruma_web::{run, telemetry};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let (server, _) = run(&[
-        ("http_server.host", "0.0.0.0"),
-        ("http_server.port", "8080"),
-    ]);
+    telemetry::init(telemetry::configure("info"));
+
+    let (server, _) = run(&[]);
 
     server.await
 }

@@ -1,26 +1,26 @@
 <template>
-  <div class="login-form">
-    <div class="login-form--splash">
-      <h1 class="login-form--greeting">WEL</h1>
-      <h1 class="login-form--greeting">COME</h1>
-      <h1 class="login-form--greeting">_</h1>
+  <div class="base-login-form">
+    <div class="base-login-form--splash">
+      <h1 class="base-login-form--greeting">WEL</h1>
+      <h1 class="base-login-form--greeting">COME</h1>
+      <h1 class="base-login-form--greeting">_</h1>
     </div>
-    <div class="login-form--panel">
-      <h1 class="login-form--header">Login to your Account</h1>
+    <div class="base-login-form--panel">
+      <h1 class="base-login-form--header">Login to your Account</h1>
       <form @submit="onSubmit">
-        <div class="login-form--label">Username</div>
-        <div class="login-form--field">
+        <div class="base-login-form--label">Username</div>
+        <div class="base-login-form--field">
           <BaseTextField
             :fullWidth="true"
             :value="username"
             @change="updateUsername"
           />
         </div>
-        <div class="login-form--label">Password</div>
-        <div class="login-form--field">
+        <div class="base-login-form--label">Password</div>
+        <div class="base-login-form--field">
           <BasePasswordField :fullWidth="true" @change="updatePassword" />
         </div>
-        <div class="login-form--button">
+        <div class="base-login-form--button">
           <BaseButton label="Login" :fullWidth="true" :primary="true" />
         </div>
       </form>
@@ -36,13 +36,8 @@ import type { Change as BasePasswordFieldChange } from "./BasePasswordField.vue"
 import BaseTextField from "./BaseTextField.vue";
 import type { Change as BaseTextFieldChange } from "./BaseTextField.vue";
 
-export interface Submit {
-  username: string;
-  password: string;
-}
-
 export default defineComponent({
-  name: "LoginForm",
+  name: "BaseLoginForm",
   components: {
     BaseButton,
     BasePasswordField,
@@ -54,23 +49,20 @@ export default defineComponent({
       default: "",
     },
   },
-  emits: ["submit"],
   data() {
     return {
       dataUsername: this.username,
       dataPassword: "",
     };
   },
+  emits: ["submit"],
   methods: {
     onSubmit(event: { preventDefault: () => void }): void {
       event.preventDefault();
-
-      const submit: Submit = {
+      this.$emit("submit", {
         username: this.dataUsername,
         password: this.dataPassword,
-      };
-
-      this.$emit("submit", submit);
+      });
     },
     updateUsername(value: BaseTextFieldChange): void {
       this.dataUsername = value.newValue;
@@ -83,17 +75,15 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.login-form {
+.base-login-form {
   display: flex;
   justify-content: flex-end;
   align-items: center;
 
   max-width: 960px;
-
-  font-family: Helvetica, Verdana, Arial;
 }
 
-.login-form--splash {
+.base-login-form--splash {
   flex: auto;
   align-self: stretch;
 
@@ -105,14 +95,14 @@ export default defineComponent({
   box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 1px inset;
 }
 
-.login-form--greeting {
+.base-login-form--greeting {
   display: block;
 
   color: white;
   font-size: 4em;
 }
 
-.login-form--panel {
+.base-login-form--panel {
   padding: 4em 2em;
   max-width: 280px;
 
@@ -121,22 +111,22 @@ export default defineComponent({
   box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 1px inset;
 }
 
-.login-form--header {
+.base-login-form--header {
   margin-bottom: 2em;
 }
 
-.login-form--label {
+.base-login-form--label {
   margin: 0.5em 0;
 
   font-size: 14px;
   font-weight: 700;
 }
 
-.login-form--field {
+.base-login-form--field {
   margin: 0.5em 0;
 }
 
-.login-form--button {
+.base-login-form--button {
   margin: 4em 2em 0;
 }
 </style>

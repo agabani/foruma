@@ -7,6 +7,9 @@ export default {
     size: {
       control: { type: "select", options: ["small", "medium", "large"] },
     },
+    type: {
+      control: { type: "select", options: ["button", "reset", "submit"] },
+    },
     onClick: {},
   },
 };
@@ -39,3 +42,12 @@ Large.args = { ...Default.args, size: "large" };
 
 export const FullWidth = Template.bind({});
 FullWidth.args = { ...Default.args, fullWidth: true };
+
+export const Button = Template.bind({});
+Button.args = { ...Default.args, type: "button" };
+
+export const Reset = Template.bind({});
+Reset.args = { ...Default.args, type: "reset" };
+
+export const Submit = Template.bind({});
+Submit.args = { ...Default.args, type: "submit" };

@@ -1,7 +1,7 @@
-import LoginForm from "./LoginForm.vue";
+import LoginForm from "./BaseLoginForm.vue";
 
 export default {
-  title: "Components/LoginForm",
+  title: "Components/BaseLoginForm",
   component: LoginForm,
   argTypes: {
     onSubmit: {},
