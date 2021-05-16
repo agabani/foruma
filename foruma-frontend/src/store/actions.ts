@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Commit } from "vuex";
-import { AuthenticatePayload } from "./types";
+import type { AuthenticatePayload, SignupPayload } from "./types";
 
 const api = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
@@ -44,4 +44,30 @@ export const unauthenticate = async ({
   }
 
   commit("unauthenticate");
+};
+
+export const signup = async (
+  { commit }: { commit: Commit },
+  payload: SignupPayload
+): Promise<void> => {
+  console.log(payload);
+
+  const signupResponse = await api.post("/api/authentication/signup", {
+    username: payload.username,
+    password: payload.password,
+  });
+
+  if (signupResponse.status === 200) {
+    commit("authenticate", signupResponse.data.username);
+  } else {
+    throw new Error("unexpected response");
+  }
+
+  const whoamiResponse = await api.get("/api/authentication/whoami");
+
+  if (whoamiResponse.status === 200) {
+    commit("authenticate", whoamiResponse.data.username);
+  } else {
+    throw new Error("unexpected response");
+  }
 };

@@ -4,6 +4,7 @@
     :username="username"
     @login="navigateToLogin"
     @logout="unauthenticate"
+    @signup="navigateToSignup"
   />
 </template>
 /
@@ -20,6 +21,9 @@ export default defineComponent({
   methods: {
     navigateToLogin() {
       router.push("/login");
+    },
+    navigateToSignup() {
+      router.push("/signup");
     },
   },
   setup() {

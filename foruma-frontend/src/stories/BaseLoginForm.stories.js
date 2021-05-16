@@ -1,19 +1,19 @@
-import LoginForm from "./BaseLoginForm.vue";
+import BaseLoginForm from "./BaseLoginForm.vue";
 
 export default {
   title: "Components/BaseLoginForm",
-  component: LoginForm,
+  component: BaseLoginForm,
   argTypes: {
     onSubmit: {},
   },
 };
 
 const Template = (args) => ({
-  components: { LoginForm },
+  components: { BaseLoginForm },
   setup() {
     return { args };
   },
-  template: '<LoginForm v-bind="args" />',
+  template: '<BaseLoginForm v-bind="args" />',
 });
 
 export const Default = Template.bind({});
