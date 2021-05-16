@@ -14,6 +14,11 @@ pub fn config(cfg: &mut web::ServiceConfig) {
             .route("", web::method(Method::POST).to(logout_post)),
     )
     .service(
+        web::scope("/signup")
+            .route("", web::method(Method::OPTIONS).to(signup_option))
+            .route("", web::method(Method::POST).to(signup_post)),
+    )
+    .service(
         web::scope("/whoami")
             .route("", web::method(Method::OPTIONS).to(whoami_option))
             .route("", web::method(Method::GET).to(whoami_get)),
@@ -163,6 +168,52 @@ fn logout_post(
         .insert_access_control_headers(configuration.get_ref(), &http_request)
         .del_cookie(&cookie)
         .finish();
+}
+
+#[tracing::instrument(skip(configuration))]
+fn signup_option(
+    http_request: HttpRequest,
+    configuration: web::Data<Configuration>,
+) -> HttpResponse {
+    tracing::info!("http request");
+
+    HttpResponse::Ok()
+        .insert_access_control_headers(configuration.get_ref(), &http_request)
+        .insert_preflight_access_control_headers(&[Method::POST])
+        .finish()
+}
+
+#[derive(serde::Deserialize)]
+struct SignupPostRequest {
+    username: String,
+    // password: String,
+}
+
+#[tracing::instrument(skip(configuration, key, request))]
+fn signup_post(
+    http_request: HttpRequest,
+    configuration: web::Data<Configuration>,
+    key: web::Data<Key>,
+    request: web::Json<SignupPostRequest>,
+) -> HttpResponse {
+    tracing::info!("http request");
+
+    let cookie = CookieBuilder::new("authentication", request.username.clone())
+        .http_only(true)
+        .same_site(SameSite::None)
+        .secure(true)
+        .path("/")
+        .finish();
+
+    let mut jar = CookieJar::new();
+    jar.private_mut(&key).add(cookie);
+
+    let plain = jar.get("authentication").cloned().unwrap();
+
+    HttpResponse::Ok()
+        .cookie(plain)
+        .insert_access_control_headers(configuration.get_ref(), &http_request)
+        .finish()
 }
 
 #[tracing::instrument(skip(configuration))]

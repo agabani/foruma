@@ -1,5 +1,5 @@
 describe("authentication", () => {
-  it("logs in and out", () => {
+  it("logs in then logs out", () => {
     cy.visit("/");
 
     cy.get(".base-header").contains("Log in").click();
@@ -20,5 +20,30 @@ describe("authentication", () => {
     cy.get(".base-header").contains("Log out").click();
 
     cy.get(".base-header").contains("Log in");
+  });
+
+  it("signs up then logs out", () => {
+    cy.visit("/");
+
+    cy.get(".base-header").contains("Sign up").click();
+
+    cy.url().should("include", "/signup");
+
+    cy.get('.base-signup-form input[type="text"]')
+      .type("test-new-username")
+      .should("have.value", "test-new-username");
+
+    cy.get('.base-signup-form input[type="password"]').each((element) => {
+      cy.wrap(element)
+        .type("test-new-password")
+        .should("have.value", "test-new-password");
+    });
+
+    cy.get('.base-signup-form button[type="submit"]').click();
+
+    cy.get(".base-header").contains("test-new-username");
+    cy.get(".base-header").contains("Log out").click();
+
+    cy.get(".base-header").contains("Sign up");
   });
 });

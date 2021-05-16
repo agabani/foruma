@@ -22,7 +22,13 @@
         label="Log in"
         @click="$emit('login')"
       />
-      <base-button v-if="!authenticated" size="small" label="Sign up" primary />
+      <base-button
+        v-if="!authenticated"
+        size="small"
+        label="Sign up"
+        primary
+        @click="$emit('signup')"
+      />
     </div>
   </header>
 </template>
@@ -46,7 +52,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ["createAccount", "login", "logout"],
+  emits: ["login", "logout", "signup"],
 });
 </script>
 

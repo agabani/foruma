@@ -4,9 +4,9 @@ export default {
   title: "Components/BaseHeader",
   component: BaseHeader,
   argTypes: {
-    onCreateAccount: {},
     onLogin: {},
     onLogout: {},
+    onSignup: {},
   },
 };
 
