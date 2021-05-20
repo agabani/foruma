@@ -7,15 +7,20 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web ="4.0.0-beta.6"
-cookie = { version = "0.15.0", features=["secure", "percent-encode"] }
+actix-web = "4.0.0-beta.6"
+async-trait = "0.1.50"
+cookie = { version = "0.15.0", features = ["secure", "percent-encode"] }
 config = "0.11.0"
-serde = "1.0.125"
+rust-argon2 = "0.8.3"
+serde = "1.0.126"
+sqlx = { version = "0.5.2", features = ["macros", "migrate", "offline", "postgres", "runtime-tokio-rustls", "time"] }
+time = "0.2.26"
 tracing = "0.1.26"
 tracing-futures = "0.2.5"
 tracing-subscriber = "0.2.18"
+uuid = { version = "0.8.2", features = ["v4"] }
 
 [dev-dependencies]
 actix-rt = "2.2.0"
 reqwest = { version = "0.11.3", features = ["json"] }
-tokio = "1.5.0"
+tokio = "1.6.0"

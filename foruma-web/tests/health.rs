@@ -2,7 +2,7 @@ mod test_server;
 
 #[actix_rt::test]
 async fn health_check_liveness_works() {
-    let test_server = test_server::TestServer::spawn(&[]);
+    let test_server = test_server::TestServer::spawn(&[]).await;
     let client = reqwest::Client::new();
 
     let response = client
@@ -16,7 +16,7 @@ async fn health_check_liveness_works() {
 
 #[actix_rt::test]
 async fn health_check_readiness_works() {
-    let test_server = test_server::TestServer::spawn(&[]);
+    let test_server = test_server::TestServer::spawn(&[]).await;
     let client = reqwest::Client::new();
 
     let response = client

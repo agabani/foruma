@@ -32,13 +32,17 @@ jobs:
           toolchain: stable
       - name: Build
         uses: actions-rs/cargo@v1
+        env:
+          SQLX_OFFLINE: true
         with:
           command: build
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: foruma-web
-          path: ./target/debug/foruma-web
+          path: |
+            ./target/debug/foruma-web
+            ./migrations
 
   cargo-clippy:
     name: Cargo Clippy
@@ -60,11 +64,13 @@ jobs:
       - name: Toolchain
         uses: actions-rs/toolchain@v1
         with:
-          profile: minimal
+          components: clippy
           override: true
           toolchain: stable
       - name: Clippy
         uses: actions-rs/clippy-check@v1
+        env:
+          SQLX_OFFLINE: true
         with:
           args: -- -D warnings
           name: Clippy Results
@@ -75,6 +81,19 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - cargo-build
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -91,20 +110,34 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           override: true
-          toolchain: stable
-      - name: Tarpaulin
-        uses: actions-rs/tarpaulin@v0.1.0
+          toolchain: nightly
+      - name: Clean
+        uses: actions-rs/cargo@v1
         with:
-          args: '--ignore-tests'
+          command: clean
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features --no-fail-fast
+        env:
+          CARGO_INCREMENTAL: '0'
+          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+          RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+          SQLX_OFFLINE: true
+      - name: Coverage
+        id: coverage
+        uses: actions-rs/grcov@v0.1
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v1.5.0
         with:
+          files: ${{ steps.coverage.outputs.report }}
           token: ${{secrets.CODECOV_TOKEN}}
       - name: Archive code coverage results
         uses: actions/upload-artifact@v1
         with:
           name: code-coverage-report
-          path: cobertura.xml
+          path: ${{ steps.coverage.outputs.report }}
 
   cargo-format:
     name: Cargo Format
@@ -135,11 +168,76 @@ jobs:
           args: --all -- --check
           command: fmt
 
+  cargo-sqlx:
+    name: Cargo SQLx
+    runs-on: ubuntu-latest
+    needs:
+      - cargo-build
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cargo Cache
+        id: cargo-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          override: true
+          toolchain: stable
+      - name: SQLx CLI Install
+        uses: actions-rs/cargo@v1
+        with:
+          args: sqlx-cli --no-default-features --features postgres
+          command: install
+      - name: SQLx Database Setup
+        uses: actions-rs/cargo@v1
+        with:
+          args: database setup
+          command: sqlx
+      - name: SQLx Prepare Check
+        uses: actions-rs/cargo@v1
+        with:
+          args: prepare --merged --check
+          command: sqlx
+
   cargo-test:
     name: Cargo Test
     runs-on: ubuntu-latest
     needs:
       - cargo-build
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -160,6 +258,8 @@ jobs:
           toolchain: stable
       - name: Test
         uses: actions-rs/cargo@v1
+        env:
+          SQLX_OFFLINE: true
         with:
           command: test
 
@@ -254,6 +354,19 @@ jobs:
     needs:
       - node-test
       - cargo-test
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -272,12 +385,19 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: foruma-web
-          path: ./target/debug/
+          path: .
       - name: Run Artifact
         env:
           APP_CORS__ORIGINS: http://localhost:8080
           APP_HTTP_SERVER__HOST: 127.0.0.1
           APP_HTTP_SERVER__PORT: 18080
+          APP_POSTGRES__DATABASE_NAME: foruma
+          APP_POSTGRES__HOST: postgres
+          APP_POSTGRES__PASSWORD: password
+          APP_POSTGRES__PORT: 5432
+          APP_POSTGRES__REQUIRE_SSL: false
+          APP_POSTGRES__USERNAME: postgres
+          APP_POSTGRES__MIGRATIONS_PATH: ./migrations
         run: |
           chmod +x ./target/debug/foruma-web
           ./target/debug/foruma-web &
@@ -312,6 +432,19 @@ jobs:
     needs:
       - node-test
       - cargo-test
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -330,12 +463,19 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: foruma-web
-          path: ./target/debug/
+          path: .
       - name: Run Artifact
         env:
           APP_CORS__ORIGINS: http://localhost:8080
           APP_HTTP_SERVER__HOST: 127.0.0.1
           APP_HTTP_SERVER__PORT: 18080
+          APP_POSTGRES__DATABASE_NAME: foruma
+          APP_POSTGRES__HOST: postgres
+          APP_POSTGRES__PASSWORD: password
+          APP_POSTGRES__PORT: 5432
+          APP_POSTGRES__REQUIRE_SSL: false
+          APP_POSTGRES__USERNAME: postgres
+          APP_POSTGRES__MIGRATIONS_PATH: ./migrations
         run: |
           chmod +x ./target/debug/foruma-web
           ./target/debug/foruma-web &
