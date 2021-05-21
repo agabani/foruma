@@ -54,10 +54,16 @@
       "nullable": []
     }
   },
-  "824941f85bca45e0bfb37c6afc882d54e03cc727d75ce3ebddc34163c9fae6ad": {
-    "query": "\nINSERT INTO account (public_id, created, username)\nVALUES ($1, $2, $3);\n",
+  "6a6951324cf16454f1d0f62c575a55f3724d5671110ba27b5eb902f0d6b1ee7f": {
+    "query": "\nINSERT INTO account (public_id, created, username)\nVALUES ($1, $2, $3)\nON CONFLICT DO NOTHING\nRETURNING id;\n",
     "describe": {
-      "columns": [],
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int8"
+        }
+      ],
       "parameters": {
         "Left": [
           "Varchar",
@@ -65,7 +71,9 @@
           "Varchar"
         ]
       },
-      "nullable": []
+      "nullable": [
+        false
+      ]
     }
   },
   "8760ee3bfdd2a96f2f37b9198e69b733464f2ccb66a24298a1f33061e1e1fdf8": {
