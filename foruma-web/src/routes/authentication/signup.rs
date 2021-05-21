@@ -38,6 +38,13 @@ pub async fn post(
     let password = Password::new(&request.password);
 
     let account = context.create_account(&username).await;
+    if account.is_none() {
+        return Ok(HttpResponse::Unauthorized()
+            .insert_access_control_headers(&configuration, &http_request)
+            .finish());
+    }
+
+    let account = account.unwrap();
     context.create_password(&account, &password).await;
 
     let session_id = context.log_in(&username, &password).await;

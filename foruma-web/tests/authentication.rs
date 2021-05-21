@@ -240,12 +240,10 @@ async fn should_make_unauthenticated_requests() {
     let test_server = test_server::TestServer::spawn(&[]).await;
     let client = reqwest::Client::new();
 
-    // Arrange - login - POST
+    // login
     let mut map = HashMap::new();
     map.insert("username", "admin");
     map.insert("password", "password");
-
-    // Act - login - POST
     let response = client
         .post(&format!("{}/api/authentication/login", test_server.address))
         .header("Origin", "http://localhost:8080")
@@ -253,27 +251,10 @@ async fn should_make_unauthenticated_requests() {
         .send()
         .await
         .expect("Failed to send request.");
-
-    // Assert - login - POST
     assert_eq!(response.status().as_u16(), 401);
     assert_access_control_allow_headers(&response);
 
-    // Act - whoami - GET
-    let response = client
-        .get(&format!(
-            "{}/api/authentication/whoami",
-            test_server.address
-        ))
-        .header("Origin", "http://localhost:8080")
-        .send()
-        .await
-        .expect("Failed to send request.");
-
-    // Assert - whoami - GET
-    assert_eq!(response.status().as_u16(), 401);
-    assert_access_control_allow_headers(&response);
-
-    // Act - logout - POST
+    // logout
     let response = client
         .post(&format!(
             "{}/api/authentication/logout",
@@ -283,8 +264,61 @@ async fn should_make_unauthenticated_requests() {
         .send()
         .await
         .expect("Failed to send request.");
-
-    // Assert - logout - POST
     assert_eq!(response.status().as_u16(), 401);
     assert_access_control_allow_headers(&response);
+
+    // whoami
+    let response = client
+        .get(&format!(
+            "{}/api/authentication/whoami",
+            test_server.address
+        ))
+        .header("Origin", "http://localhost:8080")
+        .send()
+        .await
+        .expect("Failed to send request.");
+    assert_eq!(response.status().as_u16(), 401);
+    assert_access_control_allow_headers(&response);
+}
+
+#[actix_rt::test]
+async fn should_not_be_able_to_sign_up_using_existing_account() {
+    let test_server = test_server::TestServer::spawn(&[]).await;
+    let client = reqwest::ClientBuilder::new().build().unwrap();
+
+    // sign up
+    let mut map = HashMap::new();
+    map.insert("username", "test-username");
+    map.insert("password", "test-password");
+    let response = client
+        .post(&format!(
+            "{}/api/authentication/signup",
+            test_server.address
+        ))
+        .header("Origin", "http://localhost:8080")
+        .json(&map)
+        .send()
+        .await
+        .expect("Failed to send request.");
+    assert_eq!(response.status().as_u16(), 200);
+    assert_access_control_allow_headers(&response);
+    assert!(response.headers().get("Set-Cookie").is_some());
+
+    // sign up - fails
+    let mut map = HashMap::new();
+    map.insert("username", "test-username");
+    map.insert("password", "test-password");
+    let response = client
+        .post(&format!(
+            "{}/api/authentication/signup",
+            test_server.address
+        ))
+        .header("Origin", "http://localhost:8080")
+        .json(&map)
+        .send()
+        .await
+        .expect("Failed to send request.");
+    assert_eq!(response.status().as_u16(), 401);
+    assert_access_control_allow_headers(&response);
+    assert!(response.headers().get("Set-Cookie").is_none());
 }

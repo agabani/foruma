@@ -19,7 +19,7 @@ pub struct Username(String);
 // Functions
 #[async_trait::async_trait]
 pub trait CreateAccount {
-    async fn create_account(&self, username: &Username) -> Account;
+    async fn create_account(&self, username: &Username) -> Option<Account>;
 }
 
 #[async_trait::async_trait]
