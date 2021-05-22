@@ -1,5 +1,5 @@
 <template>
-  <DeleteYourAccountPanel @click="deleteOwnAccount" />
+  <DeleteYourAccountPanel @click="terminateOwnAccount" />
 </template>
 
 <script lang="ts">
@@ -16,7 +16,7 @@ export default defineComponent({
     const store = useStore();
 
     return {
-      deleteOwnAccount: () => store.dispatch("deleteOwnAccount"),
+      terminateOwnAccount: () => store.dispatch("terminateOwnAccount"),
     };
   },
 });

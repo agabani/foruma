@@ -86,7 +86,7 @@ export const initialize = async ({
   }
 };
 
-export const deleteOwnAccount = async ({
+export const terminateOwnAccount = async ({
   commit,
 }: {
   commit: Commit;
