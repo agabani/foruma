@@ -22,3 +22,22 @@ jobs:
           dockerfile_name: Dockerfile
           docker_options: ""
           process_type: web
+      - name: Build, and Release to GitHub Pages.
+        run: |
+          GITHUB_TOKEN=$TOKEN
+          PAGES_BRANCH="gh-pages"
+          GITHUB_HOSTNAME="github.com"
+          git config --global url."https://".insteadOf git://
+          git config --global url."$GITHUB_SERVER_URL/".insteadOf "git@${GITHUB_HOSTNAME}":
+          remote_repo="https://${GITHUB_TOKEN}@${GITHUB_HOSTNAME}/${REPOSITORY}.git"
+          remote_branch=$PAGES_BRANCH
+          cd foruma-frontend
+          npm ci
+          npm run build
+          cd dist
+          git init
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions-bot@users.noreply.${GITHUB_HOSTNAME}"
+          git add .
+          git commit -m "Deploy ${REPOSITORY} to ${REPOSITORY}:$remote_branch"
+          git push --force "${remote_repo}" master:${remote_branch}
