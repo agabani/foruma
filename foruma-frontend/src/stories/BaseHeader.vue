@@ -9,6 +9,7 @@
         size="small"
         :label="username"
         primary
+        @click="$emit('accountSettings')"
       />
       <base-button
         v-if="authenticated"
@@ -52,7 +53,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ["login", "logout", "signup"],
+  emits: ["accountSettings", "login", "logout", "signup"],
 });
 </script>
 

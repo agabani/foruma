@@ -85,3 +85,11 @@ export const initialize = async ({
     throw new Error("unexpected response");
   }
 };
+
+export const deleteOwnAccount = async ({
+  commit,
+}: {
+  commit: Commit;
+}): Promise<void> => {
+  console.log("starting to delete own account...");
+};
