@@ -397,7 +397,8 @@ jobs:
           APP_POSTGRES__PORT: 5432
           APP_POSTGRES__REQUIRE_SSL: false
           APP_POSTGRES__USERNAME: postgres
-          APP_POSTGRES__MIGRATIONS_PATH: ./migrations
+          APP_POSTGRES__MIGRATION__CREATE_DATABASE: true
+          APP_POSTGRES__MIGRATION__PATH: ./migrations
         run: |
           chmod +x ./target/debug/foruma-web
           ./target/debug/foruma-web &
@@ -475,7 +476,8 @@ jobs:
           APP_POSTGRES__PORT: 5432
           APP_POSTGRES__REQUIRE_SSL: false
           APP_POSTGRES__USERNAME: postgres
-          APP_POSTGRES__MIGRATIONS_PATH: ./migrations
+          APP_POSTGRES__MIGRATION__CREATE_DATABASE: true
+          APP_POSTGRES__MIGRATION__PATH: ./migrations
         run: |
           chmod +x ./target/debug/foruma-web
           ./target/debug/foruma-web &

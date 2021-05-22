@@ -60,7 +60,13 @@ pub struct Postgres {
     pub port: u16,
     pub require_ssl: bool,
     pub username: String,
-    pub migrations_path: Option<String>,
+    pub migration: Option<PostgresMigration>,
+}
+
+#[derive(Clone, serde::Deserialize)]
+pub struct PostgresMigration {
+    pub create_database: bool,
+    pub path: String,
 }
 
 impl Postgres {
@@ -89,8 +95,8 @@ impl Postgres {
     }
 
     pub async fn migrate(&self) {
-        if let Some(migrations_path) = &self.migrations_path {
-            let migrator = sqlx::migrate::Migrator::new(std::path::Path::new(&migrations_path))
+        if let Some(migration) = &self.migration {
+            let migrator = sqlx::migrate::Migrator::new(std::path::Path::new(&migration.path))
                 .await
                 .expect("TODO");
 
@@ -100,7 +106,10 @@ impl Postgres {
                 "postgres://{}:{}@{}:{}/{}",
                 self.username, self.password, self.host, self.port, self.database_name
             );
-            if !sqlx::Postgres::database_exists(&uri).await.expect("TODO") {
+
+            if migration.create_database
+                && !sqlx::Postgres::database_exists(&uri).await.expect("TODO")
+            {
                 sqlx::Postgres::create_database(&uri).await.expect("TODO");
             }
 

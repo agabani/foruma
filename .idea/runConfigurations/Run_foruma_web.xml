@@ -17,7 +17,8 @@
       <env name="app_postgres__port" value="5432" />
       <env name="app_postgres__require_ssl" value="false" />
       <env name="app_postgres__username" value="postgres" />
-      <env name="app_postgres__migrations_path" value="./migrations" />
+      <env name="app_postgres__migration__create_database" value="true" />
+      <env name="app_postgres__migration__path" value="./migrations" />
     </envs>
     <option name="isRedirectInput" value="false" />
     <option name="redirectInputPath" value="" />
