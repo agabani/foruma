@@ -1,6 +1,6 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::routes::{authentication, health};
+use crate::routes::{account, authentication, health};
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
 
@@ -27,6 +27,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
             .service(web::scope("/health").configure(health::config))
             .service(
                 web::scope("/api")
+                    .service(web::scope("/account").configure(account::config))
                     .service(web::scope("/authentication").configure(authentication::config)),
             )
             .app_data(data_configuration.clone())

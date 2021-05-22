@@ -91,5 +91,11 @@ export const deleteOwnAccount = async ({
 }: {
   commit: Commit;
 }): Promise<void> => {
-  console.log("starting to delete own account...");
+  const terminateResponse = await api.post("/api/account/terminate");
+
+  if (terminateResponse.status === 200) {
+    commit("unauthenticate", terminateResponse.data.username);
+  } else {
+    throw new Error("unexpected response");
+  }
 };

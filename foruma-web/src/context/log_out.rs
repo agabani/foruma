@@ -1,8 +1,10 @@
 use crate::context::Context;
 use crate::domain::{LogOut, SessionId};
+use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl LogOut for Context {
+    #[tracing::instrument(skip(self))]
     async fn log_out(&self, session_id: &SessionId) {
         let deleted = time::OffsetDateTime::now_utc();
 
@@ -18,6 +20,7 @@ WHERE public_id = $1
         )
         .execute(&self.postgres)
         .await
+        .trace_err()
         .expect("TODO");
     }
 }
