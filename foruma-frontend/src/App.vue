@@ -20,6 +20,13 @@ export default defineComponent({
     Header,
   },
   created: function () {
+    if (sessionStorage.spaFallbackRedirect) {
+      const redirect = sessionStorage.spaFallbackRedirect;
+      delete sessionStorage.spaFallbackRedirect;
+      delete sessionStorage.spaFallbackSegment;
+      this.$router.push(redirect);
+    }
+
     const store = useStore();
 
     store.dispatch("initialize");
