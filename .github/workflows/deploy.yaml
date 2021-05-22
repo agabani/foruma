@@ -35,7 +35,8 @@ jobs:
         env:
           VUE_APP_API_BASE_URL: https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com
         run: |
-          GITHUB_TOKEN=$TOKEN
+          VUE_WEB_API_BASE_URL=$(basename $GITHUB_REPOSITORY)
+          GITHUB_TOKEN=${{ secrets.TOKEN }}
           PAGES_BRANCH="gh-pages"
           GITHUB_HOSTNAME="github.com"
           REPOSITORY=${GITHUB_REPOSITORY}
