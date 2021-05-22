@@ -1,7 +1,9 @@
 # 1: Build
 FROM rust:1.52.1 as builder
 RUN groupadd --gid 1000 appuser && \
-    useradd --uid 1000 --gid 1000 --shell /bin/sh appuser
+    useradd --uid 1000 --gid 1000 --shell /bin/sh appuser && \
+    mkdir -p /home/appuser/app && \
+    chown 1000:1000 /home/appuser/app
 USER 1000:1000
 
 # 1a: Prepare for static linking
