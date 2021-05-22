@@ -22,11 +22,19 @@ jobs:
           dockerfile_name: Dockerfile
           docker_options: ""
           process_type: web
+
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    needs:
+      - api
+    steps:
       - name: Build, and Release to GitHub Pages.
         run: |
           GITHUB_TOKEN=$TOKEN
           PAGES_BRANCH="gh-pages"
           GITHUB_HOSTNAME="github.com"
+          REPOSITORY=${GITHUB_REPOSITORY}
           git config --global url."https://".insteadOf git://
           git config --global url."$GITHUB_SERVER_URL/".insteadOf "git@${GITHUB_HOSTNAME}":
           remote_repo="https://${GITHUB_TOKEN}@${GITHUB_HOSTNAME}/${REPOSITORY}.git"
