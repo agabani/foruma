@@ -29,7 +29,11 @@ jobs:
     needs:
       - api
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Build, and Release to GitHub Pages.
+        env:
+          VUE_APP_API_BASE_URL: https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com
         run: |
           GITHUB_TOKEN=$TOKEN
           PAGES_BRANCH="gh-pages"
