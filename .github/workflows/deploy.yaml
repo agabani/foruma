@@ -35,7 +35,6 @@ jobs:
         env:
           VUE_APP_API_BASE_URL: https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com
         run: |
-          VUE_APP_WEB_BASE_URL="/$(basename $GITHUB_REPOSITORY)/"
           GITHUB_TOKEN=${{ secrets.TOKEN }}
           PAGES_BRANCH="gh-pages"
           GITHUB_HOSTNAME="github.com"
@@ -46,7 +45,7 @@ jobs:
           remote_branch=$PAGES_BRANCH
           cd foruma-frontend
           npm ci
-          npm run build
+          VUE_APP_WEB_BASE_URL="/$(basename $GITHUB_REPOSITORY)/" npm run build
           cd dist
           git init
           git config user.name "GitHub Actions"
