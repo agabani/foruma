@@ -1,9 +1,11 @@
 use crate::context::Context;
 use crate::domain::{Account, AccountId, GetAccount, SessionId, Username};
+use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl GetAccount for Context {
-    async fn get_account(&self, session_id: &SessionId) -> Account {
+    #[tracing::instrument(skip(self))]
+    async fn get_account(&self, session_id: &SessionId) -> Option<Account> {
         let account = sqlx::query!(
             r#"
 SELECT
@@ -16,13 +18,14 @@ WHERE "AS".public_id = $1
 "#,
             session_id.value()
         )
-        .fetch_one(&self.postgres)
+        .fetch_optional(&self.postgres)
         .await
-        .expect("TODO");
+        .trace_err()
+        .expect("TODO")?;
 
-        Account::new(
+        Some(Account::new(
             &AccountId::new(&account.public_id),
             &Username::new(&account.username),
-        )
+        ))
     }
 }

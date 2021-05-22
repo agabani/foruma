@@ -1,8 +1,10 @@
 use crate::context::Context;
 use crate::domain::{LogIn, Password, SessionId, Username};
+use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl LogIn for Context {
+    #[tracing::instrument(skip(self, password))]
     async fn log_in(&self, username: &Username, password: &Password) -> Option<SessionId> {
         let account = sqlx::query!(
             r#"
@@ -18,9 +20,11 @@ WHERE A.username = $1
         )
         .fetch_optional(&self.postgres)
         .await
+        .trace_err()
         .expect("TODO")?;
 
         let matches = argon2::verify_encoded(&account.password_hash, password.value().as_bytes())
+            .trace_err()
             .expect("TODO");
 
         if !matches {
@@ -41,6 +45,7 @@ VALUES ($1, $2, $3);
         )
         .execute(&self.postgres)
         .await
+        .trace_err()
         .expect("TODO");
 
         Some(session_id)

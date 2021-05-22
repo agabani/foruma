@@ -85,3 +85,17 @@ export const initialize = async ({
     throw new Error("unexpected response");
   }
 };
+
+export const terminateOwnAccount = async ({
+  commit,
+}: {
+  commit: Commit;
+}): Promise<void> => {
+  const terminateResponse = await api.post("/api/account/terminate");
+
+  if (terminateResponse.status === 200) {
+    commit("unauthenticate", terminateResponse.data.username);
+  } else {
+    throw new Error("unexpected response");
+  }
+};

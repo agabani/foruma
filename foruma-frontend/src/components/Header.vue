@@ -2,6 +2,7 @@
   <BaseHeader
     :authenticated="authenticated"
     :username="username"
+    @accountSettings="navigateToAccountSettings"
     @login="navigateToLogin"
     @logout="unauthenticate"
     @signup="navigateToSignup"
@@ -19,6 +20,9 @@ export default defineComponent({
     BaseHeader,
   },
   methods: {
+    navigateToAccountSettings() {
+      router.push("/account-settings");
+    },
     navigateToLogin() {
       router.push("/login");
     },

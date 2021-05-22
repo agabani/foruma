@@ -1,19 +1,21 @@
 // Types
+#[derive(Debug)]
 pub struct Account {
     account_id: AccountId,
     username: Username,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AccountId(String);
 
 pub struct Password(String);
 
 pub struct PasswordId(String);
 
+#[derive(Debug)]
 pub struct SessionId(String);
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Username(String);
 
 // Functions
@@ -29,7 +31,7 @@ pub trait CreatePassword {
 
 #[async_trait::async_trait]
 pub trait GetAccount {
-    async fn get_account(&self, session_id: &SessionId) -> Account;
+    async fn get_account(&self, session_id: &SessionId) -> Option<Account>;
 }
 
 #[async_trait::async_trait]
@@ -40,6 +42,11 @@ pub trait LogIn {
 #[async_trait::async_trait]
 pub trait LogOut {
     async fn log_out(&self, session_id: &SessionId);
+}
+
+#[async_trait::async_trait]
+pub trait TerminateAccount {
+    async fn terminate_account(&self, account: &Account);
 }
 
 // Implementations
