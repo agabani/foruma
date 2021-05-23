@@ -1,6 +1,10 @@
 import axios from "axios";
 import { Commit } from "vuex";
-import type { AuthenticatePayload, SignupPayload } from "./types";
+import type {
+  AuthenticatePayload,
+  ChangePasswordPayload,
+  SignupPayload,
+} from "./types";
 
 const api = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
@@ -96,6 +100,27 @@ export const terminateOwnAccount = async ({
   if (terminateResponse.status === 200) {
     commit("unauthenticate", terminateResponse.data.username);
   } else {
+    throw new Error("unexpected response");
+  }
+};
+
+export const changeOwnPassword = async (
+  { commit }: { commit: Commit },
+  payload: ChangePasswordPayload
+): Promise<void> => {
+  const changePasswordResponse = await api.post(
+    "/api/authentication/change-password",
+    {
+      oldPassword: payload.oldPassword,
+      newPassword: payload.newPassword,
+    }
+  );
+
+  if (changePasswordResponse.status === 401) {
+    return;
+  } else if (changePasswordResponse.status === 400) {
+    return;
+  } else if (changePasswordResponse.status !== 200) {
     throw new Error("unexpected response");
   }
 };
