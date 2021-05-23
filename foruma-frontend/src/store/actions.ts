@@ -105,7 +105,7 @@ export const terminateOwnAccount = async ({
 };
 
 export const changeOwnPassword = async (
-  { commit }: { commit: Commit },
+  _: { commit: Commit },
   payload: ChangePasswordPayload
 ): Promise<void> => {
   const changePasswordResponse = await api.post(
