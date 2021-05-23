@@ -2,7 +2,7 @@ use crate::configuration::Configuration;
 use crate::context::Context;
 use crate::cookie::{SessionCookie, SessionCookieHttpRequest, SessionCookieHttpResponseBuilder};
 use crate::cors::Cors;
-use crate::domain::{GetAccount, LogIn, Password, Username};
+use crate::domain::{ChangePassword, GetAccount, Password};
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
 
 #[derive(serde::Deserialize)]
@@ -31,7 +31,7 @@ pub async fn post(
     key: web::Data<cookie::Key>,
     request: web::Json<Request>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let old_password = Username::new(&request.old_password);
+    let old_password = Password::new(&request.old_password);
     let new_password = Password::new(&request.new_password);
 
     let cookie = http_request.decrypt_session_cookie(&key);
@@ -51,6 +51,13 @@ pub async fn post(
             .delete_session_cookie(&mut cookie)
             .finish());
     }
+
+    let account = account.unwrap();
+
+    context
+        .change_password(&account, &old_password, &new_password)
+        .await
+        .expect("TODO");
 
     Ok(HttpResponse::Ok()
         .encrypt_session_cookie(&key, cookie)
