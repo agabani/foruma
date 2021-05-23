@@ -18,7 +18,6 @@ pub async fn health_readiness(postgres_pool: web::Data<Pool<Postgres>>) -> HttpR
     )
 }
 
-#[tracing::instrument(skip(pool))]
 async fn postgres(pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
     let _: (i64,) = sqlx::query_as("SELECT $1")
         .bind(150_i64)

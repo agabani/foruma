@@ -11,7 +11,6 @@ struct Response {
     username: String,
 }
 
-#[tracing::instrument(skip(configuration))]
 pub async fn option(
     http_request: HttpRequest,
     configuration: web::Data<Configuration>,
@@ -22,7 +21,6 @@ pub async fn option(
         .finish())
 }
 
-#[tracing::instrument(skip(configuration, context, key))]
 pub async fn get(
     http_request: HttpRequest,
     context: web::Data<Context>,
