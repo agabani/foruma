@@ -59,6 +59,8 @@ describe("authentication", () => {
 
     cy.get('.change-password-panel button[type="submit"]').click();
 
+    cy.wait(1000); // TODO: look for success confirmation...
+
     // log out
     cy.get(".base-header").contains("Log out").click();
 
