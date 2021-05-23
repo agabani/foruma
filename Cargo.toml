@@ -1,4 +1,5 @@
 [workspace]
 members = [
-    "foruma-web"
+    "foruma-web",
+    "tracing-actix-web"
 ]
