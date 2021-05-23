@@ -3,6 +3,7 @@ use crate::context::Context;
 use crate::routes::{account, authentication, health};
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
+use tracing_actix_web::TracingLogger;
 
 pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let configuration = Configuration::load(overrides).expect("Failed to load configuration");
@@ -24,6 +25,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
 
     let server = HttpServer::new(move || {
         App::new()
+            .wrap(TracingLogger::default())
             .service(web::scope("/health").configure(health::config))
             .service(
                 web::scope("/api")

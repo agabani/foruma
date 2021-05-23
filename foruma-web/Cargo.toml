@@ -16,6 +16,8 @@ serde = "1.0.126"
 sqlx = { version = "0.5.2", features = ["macros", "migrate", "offline", "postgres", "runtime-tokio-rustls", "time"] }
 time = "0.2.26"
 tracing = "0.1.26"
+tracing-actix-web = { path = "../tracing-actix-web" }
+tracing-bunyan-formatter = "0.2.4"
 tracing-futures = "0.2.5"
 tracing-subscriber = "0.2.18"
 uuid = { version = "0.8.2", features = ["v4"] }

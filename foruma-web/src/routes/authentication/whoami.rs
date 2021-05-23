@@ -16,8 +16,6 @@ pub async fn option(
     http_request: HttpRequest,
     configuration: web::Data<Configuration>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    tracing::info!("http request");
-
     Ok(HttpResponse::Ok()
         .insert_access_control_headers(&configuration, &http_request)
         .insert_preflight_access_control_headers(&[Method::GET])
@@ -31,8 +29,6 @@ pub async fn get(
     configuration: web::Data<Configuration>,
     key: web::Data<cookie::Key>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    tracing::info!("http request");
-
     let cookie = http_request.decrypt_session_cookie(&key);
     if cookie.is_none() {
         return Ok(HttpResponse::Unauthorized()

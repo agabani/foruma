@@ -1,7 +1,7 @@
 use tracing::{subscriber, Subscriber};
-use tracing_subscriber::fmt::time::ChronoUtc;
+use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::{fmt, EnvFilter, Registry};
+use tracing_subscriber::{EnvFilter, Registry};
 
 pub fn init(subscriber: impl Subscriber + Send + Sync) {
     subscriber::set_global_default(subscriber).expect("setting tracing default failed.");
@@ -12,14 +12,12 @@ pub fn configure(level: &str) -> impl Subscriber + Send + Sync {
         .or_else(|_| EnvFilter::try_new(level))
         .unwrap();
 
-    let fmt_layer = fmt::layer()
-        .with_target(true)
-        .with_thread_ids(true)
-        .with_thread_names(true)
-        .with_timer(ChronoUtc::rfc3339());
-    //.json();
+    let fmt_layer = BunyanFormattingLayer::new("foruma.api".to_string(), std::io::stdout);
 
-    Registry::default().with(filter_layer).with(fmt_layer)
+    Registry::default()
+        .with(filter_layer)
+        .with(JsonStorageLayer)
+        .with(fmt_layer)
 }
 
 pub trait TraceErrorExt<T, E: std::fmt::Display> {

@@ -5,28 +5,22 @@ use crate::cors::Cors;
 use crate::domain::LogOut;
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
 
-#[tracing::instrument(skip(configuration))]
 pub async fn option(
     http_request: HttpRequest,
     configuration: web::Data<Configuration>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    tracing::info!("http request");
-
     Ok(HttpResponse::Ok()
         .insert_access_control_headers(&configuration, &http_request)
         .insert_preflight_access_control_headers(&[Method::POST])
         .finish())
 }
 
-#[tracing::instrument(skip(configuration, context, key))]
 pub async fn post(
     http_request: HttpRequest,
     configuration: web::Data<Configuration>,
     context: web::Data<Context>,
     key: web::Data<cookie::Key>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    tracing::info!("http request");
-
     let cookie = http_request.decrypt_session_cookie(&key);
     if cookie.is_none() {
         return Ok(HttpResponse::Unauthorized()
