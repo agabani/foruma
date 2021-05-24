@@ -1,0 +1,134 @@
+<template>
+  <div class="pure-login-form">
+    <BaseSplashPanel>
+      <template v-slot:splash>
+        <div class="pure-login-form--splash">
+          <h1>WEL</h1>
+          <h1>COME</h1>
+          <h1>_</h1>
+        </div>
+      </template>
+      <template v-slot>
+        <div>
+          <form @submit="onSubmit">
+            <h1 class="pure-login-form--header">Login to your Account</h1>
+            <BaseAlert
+              type="warning"
+              :title="alertTitle"
+              :message="alertMessage"
+              :eventDate="alertEventDate"
+            ></BaseAlert>
+            <div class="pure-login-form--label">Username</div>
+            <BaseTextField
+              :fullWidth="true"
+              :value="dataUsername"
+              @change="updateUsername"
+            />
+            <div class="pure-login-form--label">Password</div>
+            <BasePasswordField :fullWidth="true" @change="updatePassword" />
+            <div class="pure-login-form--button">
+              <BaseButton label="Login" :fullWidth="true" :primary="true" />
+            </div>
+          </form>
+        </div>
+      </template>
+    </BaseSplashPanel>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import BaseAlert from "./BaseAlert.vue";
+import BaseButton from "./BaseButton.vue";
+import BasePasswordField from "./BasePasswordField.vue";
+import BaseSplashPanel from "./BaseSplashPanel.vue";
+import BaseTextField from "./BaseTextField.vue";
+import { Change as BasePasswordFieldChange } from "./BasePasswordField.vue";
+import { Change as BaseTextFieldChange } from "./BaseTextField.vue";
+
+export interface Sumbit {
+  username: string;
+  password: string;
+}
+
+export default defineComponent({
+  name: "PureLoginForm",
+  components: {
+    BaseAlert,
+    BaseButton,
+    BasePasswordField,
+    BaseSplashPanel,
+    BaseTextField,
+  },
+  props: {
+    username: {
+      type: String,
+      default: "",
+    },
+    alertEventDate: {
+      type: Date,
+    },
+    alertMessage: {
+      type: String,
+      default: "",
+    },
+    alertTitle: {
+      type: String,
+      default: "",
+    },
+  },
+  data() {
+    return {
+      dataUsername: this.username,
+      dataPassword: "",
+    };
+  },
+  emits: ["submit"],
+  methods: {
+    onSubmit(event: { preventDefault: () => void }): void {
+      event.preventDefault();
+      const submit: Sumbit = {
+        username: this.dataUsername,
+        password: this.dataPassword,
+      };
+
+      this.$emit("submit", submit);
+    },
+    updateUsername(value: BaseTextFieldChange): void {
+      this.dataUsername = value.newValue;
+    },
+    updatePassword(value: BasePasswordFieldChange): void {
+      this.dataPassword = value.newValue;
+    },
+  },
+});
+</script>
+
+<style lang="css" scoped>
+.pure-login-form {
+}
+
+.pure-login-form--splash h1 {
+  display: block;
+
+  color: white;
+  font-size: 4em;
+}
+
+.pure-login-form--header {
+  display: block;
+
+  margin-bottom: 2em;
+}
+
+.pure-login-form--label {
+  margin: 0em 1em;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.pure-login-form--button {
+  margin-top: 4em;
+}
+</style>

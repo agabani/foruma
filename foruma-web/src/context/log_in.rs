@@ -1,18 +1,22 @@
 use crate::context::Context;
-use crate::domain::{LogIn, Password, SessionId, Username};
+use crate::domain::{LogIn, LogInError, Password, SessionId, Username};
 use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl LogIn for Context {
     #[tracing::instrument(skip(self, password))]
-    async fn log_in(&self, username: &Username, password: &Password) -> Option<SessionId> {
+    async fn log_in(
+        &self,
+        username: &Username,
+        password: &Password,
+    ) -> Result<SessionId, LogInError> {
         let account = sqlx::query!(
             r#"
 SELECT
     A.id AS id,
-    AP.password_hash AS password_hash
+    AP.password_hash AS "password_hash?"
 FROM account AS A
-INNER JOIN account_password AS AP ON A.id = AP.account_id
+LEFT JOIN account_password AS AP ON A.id = AP.account_id
 WHERE A.username = $1
   AND AP.deleted IS NULL
 "#,
@@ -21,14 +25,24 @@ WHERE A.username = $1
         .fetch_optional(&self.postgres)
         .await
         .trace_err()
-        .expect("TODO")?;
+        .expect("TODO: handle database error")
+        .ok_or(LogInError::DoesNotExist)?;
 
-        let matches = argon2::verify_encoded(&account.password_hash, password.value().as_bytes())
+        let password_hash = match &account.password_hash {
+            Some(password_hash) => password_hash,
+            None => {
+                tracing::warn!("Account has no password");
+                return Err(LogInError::NoPassword);
+            }
+        };
+
+        let matches = argon2::verify_encoded(&password_hash, password.value().as_bytes())
             .trace_err()
-            .expect("TODO");
+            .expect("TODO: handle password hashing error");
 
         if !matches {
-            todo!()
+            tracing::warn!("Account provided incorrect password");
+            return Err(LogInError::IncorrectPassword);
         }
 
         let created = time::OffsetDateTime::now_utc();
@@ -46,8 +60,8 @@ VALUES ($1, $2, $3);
         .execute(&self.postgres)
         .await
         .trace_err()
-        .expect("TODO");
+        .expect("TODO: handle database error");
 
-        Some(session_id)
+        Ok(session_id)
     }
 }

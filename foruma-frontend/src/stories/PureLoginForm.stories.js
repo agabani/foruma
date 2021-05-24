@@ -1,20 +1,20 @@
-import PureSignupForm from "./PureSignupForm.vue";
+import PureLoginForm from "./PureLoginForm.vue";
 
 export default {
-  title: "Components/PureSignupForm",
-  component: PureSignupForm,
+  title: "Components/PureLoginForm",
+  component: PureLoginForm,
   argTypes: {
     onSubmit: {},
   },
 };
 
 const Template = (args) => ({
-  components: { PureSignupForm },
+  components: { PureLoginForm },
   setup() {
     return { args };
   },
   template: `
-    <PureSignupForm v-bind="args" />
+    <PureLoginForm v-bind="args" />
     `,
 });
 

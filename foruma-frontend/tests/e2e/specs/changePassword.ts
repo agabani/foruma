@@ -32,15 +32,15 @@ describe("authentication", () => {
 
     cy.url().should("include", "/login");
 
-    cy.get('.base-login-form input[type="text"]')
+    cy.get('.pure-login-form input[type="text"]')
       .type(username)
       .should("have.value", username);
 
-    cy.get('.base-login-form input[type="password"]')
+    cy.get('.pure-login-form input[type="password"]')
       .type(password)
       .should("have.value", password);
 
-    cy.get('.base-login-form button[type="submit"]').click();
+    cy.get('.pure-login-form button[type="submit"]').click();
 
     cy.get(".base-header").contains(username);
 
@@ -71,15 +71,15 @@ describe("authentication", () => {
 
     cy.url().should("include", "/login");
 
-    cy.get('.base-login-form input[type="text"]')
+    cy.get('.pure-login-form input[type="text"]')
       .type(username)
       .should("have.value", username);
 
-    cy.get('.base-login-form input[type="password"]')
+    cy.get('.pure-login-form input[type="password"]')
       .type(newPassword)
       .should("have.value", newPassword);
 
-    cy.get('.base-login-form button[type="submit"]').click();
+    cy.get('.pure-login-form button[type="submit"]').click();
 
     cy.get(".base-header").contains(username);
   });

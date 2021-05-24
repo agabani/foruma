@@ -46,7 +46,11 @@ pub trait GetAccount {
 
 #[async_trait::async_trait]
 pub trait LogIn {
-    async fn log_in(&self, username: &Username, password: &Password) -> Option<SessionId>;
+    async fn log_in(
+        &self,
+        username: &Username,
+        password: &Password,
+    ) -> Result<SessionId, LogInError>;
 }
 
 #[async_trait::async_trait]
@@ -61,7 +65,13 @@ pub trait TerminateAccount {
 
 // Errors
 pub enum CreateAccountError {
-    AccountExists,
+    AlreadyExists,
+}
+
+pub enum LogInError {
+    DoesNotExist,
+    IncorrectPassword,
+    NoPassword,
 }
 
 // Implementations

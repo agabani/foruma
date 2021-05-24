@@ -1,8 +1,8 @@
 import axios from "axios";
-import { PasswordChanged, Signup } from "@vue/runtime-core";
+import { Login, PasswordChanged, Signup } from "@vue/runtime-core";
 import { Commit } from "vuex";
 import type {
-  AuthenticatePayload,
+  LoginPayload,
   ChangePasswordPayload,
   SignupPayload,
 } from "./types";
@@ -13,9 +13,9 @@ const api = axios.create({
   withCredentials: true,
 });
 
-export const authenticate = async (
+export const login = async (
   { commit }: { commit: Commit },
-  payload: AuthenticatePayload
+  payload: LoginPayload
 ): Promise<void> => {
   const loginResponse = await api.post("/api/authentication/login", {
     username: payload.username,
@@ -23,6 +23,14 @@ export const authenticate = async (
   });
 
   if (loginResponse.status === 401) {
+    const event: Login = {
+      eventDate: new Date(),
+      error: {
+        title: "Uh oh, something went wrong",
+        message: "Sorry! There was a problem with your request!",
+      },
+    };
+    commit("login", event);
     return;
   } else if (loginResponse.status !== 200) {
     throw new Error("unexpected response");
