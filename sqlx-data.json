@@ -110,14 +110,14 @@
       "nullable": []
     }
   },
-  "a4ca6232604f3cd629954a6685cd0831388f6c7a57f3b5882dc9e1a70db3e4c0": {
-    "query": "\nSELECT\n    A.id AS id,\n    AP.password_hash AS password_hash\nFROM account AS A\nINNER JOIN account_password AS AP ON A.id = AP.account_id\nWHERE A.username = $1\n  AND AP.deleted IS NULL\n",
+  "aa321a6f203014b44d76b21074d961e9d7ebcc940ac1232a035c58538249b078": {
+    "query": "\nSELECT\n    AP.public_id AS public_id,\n    AP.password_hash AS password_hash\nFROM account AS A\nINNER JOIN account_password AS AP ON A.id = AP.account_id\nWHERE A.public_id = $1\n  AND AP.deleted IS NULL;\n",
     "describe": {
       "columns": [
         {
           "ordinal": 0,
-          "name": "id",
-          "type_info": "Int8"
+          "name": "public_id",
+          "type_info": "Varchar"
         },
         {
           "ordinal": 1,
@@ -136,18 +136,18 @@
       ]
     }
   },
-  "aa321a6f203014b44d76b21074d961e9d7ebcc940ac1232a035c58538249b078": {
-    "query": "\nSELECT\n    AP.public_id AS public_id,\n    AP.password_hash AS password_hash\nFROM account AS A\nINNER JOIN account_password AS AP ON A.id = AP.account_id\nWHERE A.public_id = $1\n  AND AP.deleted IS NULL;\n",
+  "e412ffe60d85735a51c79ec9689ddfd4b1ff270438719540168578f280f8355f": {
+    "query": "\nSELECT\n    A.id AS id,\n    AP.password_hash AS \"password_hash?\"\nFROM account AS A\nLEFT JOIN account_password AS AP ON A.id = AP.account_id\nWHERE A.username = $1\n  AND AP.deleted IS NULL\n",
     "describe": {
       "columns": [
         {
           "ordinal": 0,
-          "name": "public_id",
-          "type_info": "Varchar"
+          "name": "id",
+          "type_info": "Int8"
         },
         {
           "ordinal": 1,
-          "name": "password_hash",
+          "name": "password_hash?",
           "type_info": "Text"
         }
       ],

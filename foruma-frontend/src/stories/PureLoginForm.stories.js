@@ -27,7 +27,6 @@ Username.args = { ...Default.args, username: "Username" };
 export const MissingFieldsAlert = Template.bind({});
 MissingFieldsAlert.args = {
   ...Default.args,
-  username: "Username",
   alertEventDate: new Date(),
   alertTitle: "Sorry! There was a problem with your request!",
   alertMessage: "Make sure your passwords match then try again!",
