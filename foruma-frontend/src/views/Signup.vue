@@ -1,15 +1,16 @@
 <template>
-  <SignupForm />
+  <!-- <SignupForm /> -->
+  <ContainerSignupForm />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import SignupForm from "@/components/SignupForm.vue";
+import ContainerSignupForm from "@/components/ContainerSignupForm.vue";
 
 export default defineComponent({
   name: "Signup",
   components: {
-    SignupForm,
+    ContainerSignupForm,
   },
 });
 </script>

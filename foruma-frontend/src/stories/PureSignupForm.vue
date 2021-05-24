@@ -1,8 +1,8 @@
 <template>
-  <div class="signup-form">
+  <div class="pure-signup-form">
     <BaseSplashPanel>
       <template v-slot:splash>
-        <div class="signup-form--splash">
+        <div class="pure-signup-form--splash">
           <h1>WEL</h1>
           <h1>COME</h1>
           <h1>_</h1>
@@ -11,27 +11,27 @@
       <template v-slot>
         <div>
           <form @submit="onSubmit">
-            <h1 class="signup-form--header">Create your account</h1>
+            <h1 class="pure-signup-form--header">Create your account</h1>
             <BaseAlert
               type="warning"
               :title="alertTitle"
               :message="alertMessage"
               :eventDate="alertEventDate"
             ></BaseAlert>
-            <div class="signup-form--label">Username</div>
+            <div class="pure-signup-form--label">Username</div>
             <BaseTextField
               :fullWidth="true"
               :value="dataUsername"
               @change="updateUsername"
             />
-            <div class="signup-form--label">Password</div>
+            <div class="pure-signup-form--label">Password</div>
             <BasePasswordField :fullWidth="true" @change="updatePassword" />
-            <div class="signup-form--label">Confirm Password</div>
+            <div class="pure-signup-form--label">Confirm Password</div>
             <BasePasswordField
               :fullWidth="true"
               @change="updateConfirmPassword"
             />
-            <div class="signup-form--button">
+            <div class="pure-signup-form--button">
               <BaseButton label="Signup" :fullWidth="true" :primary="true" />
             </div>
           </form>
@@ -51,8 +51,14 @@ import BaseTextField from "./BaseTextField.vue";
 import { Change as BasePasswordFieldChange } from "./BasePasswordField.vue";
 import { Change as BaseTextFieldChange } from "./BaseTextField.vue";
 
+export interface Sumbit {
+  username: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export default defineComponent({
-  name: "SignupForm",
+  name: "PureSignupForm",
   components: {
     BaseAlert,
     BaseButton,
@@ -65,50 +71,65 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    alertEventDate: {
+      type: Date,
+    },
+    alertMessage: {
+      type: String,
+      default: "",
+    },
+    alertTitle: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
       dataUsername: this.username,
       dataPassword: "",
       dataConfirmPassword: "",
-      alertEventDate: undefined as Date | undefined,
-      alertMessage: "Sorry! There was a problem with your request!",
-      alertTitle: "Uh oh, something went wrong",
     };
   },
+  emits: ["submit"],
   methods: {
     onSubmit(event: { preventDefault: () => void }): void {
       event.preventDefault();
-      if (
-        !this.dataUsername ||
-        !this.dataPassword ||
-        !this.dataConfirmPassword
-      ) {
-        this.alertTitle = "Sorry! There was a problem with your request!";
-        this.alertMessage =
-          "All fields needs to be filled in order to create an account!";
-        this.alertEventDate = new Date();
-        return;
-      }
+      this.$emit("submit", {
+        username: this.dataUsername,
+        password: this.dataPassword,
+        confirmPassword: this.dataConfirmPassword,
+      } as Sumbit);
 
-      if (this.dataPassword !== this.dataConfirmPassword) {
-        this.alertTitle = "Sorry! There was a problem with your request!";
-        this.alertMessage = "Make sure your passwords match then try again!";
-        this.alertEventDate = new Date();
-        return;
-      }
+      // if (
+      //   !this.dataUsername ||
+      //   !this.dataPassword ||
+      //   !this.dataConfirmPassword
+      // ) {
+      //   this.alertTitle = "Sorry! There was a problem with your request!";
+      //   this.alertMessage =
+      //     "All fields needs to be filled in order to create an account!";
+      //   this.alertEventDate = new Date();
+      //   return;
+      // }
 
-      if (
-        this.dataUsername &&
-        this.dataPassword &&
-        this.dataConfirmPassword &&
-        this.dataPassword === this.dataConfirmPassword
-      ) {
-        this.$emit("submit", {
-          username: this.dataUsername,
-          password: this.dataPassword,
-        });
-      }
+      // if (this.dataPassword !== this.dataConfirmPassword) {
+      //   this.alertTitle = "Sorry! There was a problem with your request!";
+      //   this.alertMessage = "Make sure your passwords match then try again!";
+      //   this.alertEventDate = new Date();
+      //   return;
+      // }
+
+      // if (
+      //   this.dataUsername &&
+      //   this.dataPassword &&
+      //   this.dataConfirmPassword &&
+      //   this.dataPassword === this.dataConfirmPassword
+      // ) {
+      //   this.$emit("submit", {
+      //     username: this.dataUsername,
+      //     password: this.dataPassword,
+      //   });
+      // }
     },
     updateUsername(value: BaseTextFieldChange): void {
       this.dataUsername = value.newValue;
@@ -124,30 +145,30 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.signup-form {
+.pure-signup-form {
 }
 
-.signup-form--splash h1 {
+.pure-signup-form--splash h1 {
   display: block;
 
   color: white;
   font-size: 4em;
 }
 
-.signup-form--header {
+.pure-signup-form--header {
   display: block;
 
   margin-bottom: 2em;
 }
 
-.signup-form--label {
+.pure-signup-form--label {
   margin: 0em 1em;
 
   font-size: 14px;
   font-weight: 700;
 }
 
-.signup-form--button {
+.pure-signup-form--button {
   margin-top: 4em;
 }
 </style>
