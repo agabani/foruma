@@ -1,20 +1,20 @@
-import PureSignupForm from "./PureSignupForm.vue";
+import PureLoginForm from "./PureLoginForm.vue";
 
 export default {
-  title: "Components/PureSignupForm",
-  component: PureSignupForm,
+  title: "Components/PureLoginForm",
+  component: PureLoginForm,
   argTypes: {
     onSubmit: {},
   },
 };
 
 const Template = (args) => ({
-  components: { PureSignupForm },
+  components: { PureLoginForm },
   setup() {
     return { args };
   },
   template: `
-    <PureSignupForm v-bind="args" />
+    <PureLoginForm v-bind="args" />
     `,
 });
 
@@ -27,6 +27,7 @@ Username.args = { ...Default.args, username: "Username" };
 export const MissingFieldsAlert = Template.bind({});
 MissingFieldsAlert.args = {
   ...Default.args,
+  username: "Username",
   alertEventDate: new Date(),
   alertTitle: "Sorry! There was a problem with your request!",
   alertMessage: "Make sure your passwords match then try again!",
