@@ -23,8 +23,9 @@ export const SuccessAlert = Template.bind({});
 SuccessAlert.args = {
   ...Default.args,
   displayAlert: true,
-  alertType: "success",
+  alertEventDate: new Date(),
   alertTitle: "Your password has been changed",
+  alertType: "success",
 };
 
 export const WarningAlertMessage = Template.bind({});
@@ -32,7 +33,7 @@ WarningAlertMessage.args = {
   ...Default.args,
   displayAlert: true,
   alertEventDate: new Date(),
-  alertType: "warning",
-  alertTitle: "Uh oh, something went wrong",
   alertMessage: "Sorry! There was a problem with your request!",
+  alertTitle: "Uh oh, something went wrong",
+  alertType: "warning",
 };
