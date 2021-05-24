@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent, Signup } from "vue";
 import { useStore } from "@/store";
 import { SignupPayload } from "@/store/types";
 import PureSignupForm, { Sumbit } from "@/stories/PureSignupForm.vue";
@@ -25,6 +25,7 @@ export default defineComponent({
       createAccount: (payload: SignupPayload) => {
         store.dispatch("signup", payload);
       },
+      state: computed(() => store.getters.signup),
     };
   },
   data() {
@@ -33,6 +34,15 @@ export default defineComponent({
       alertMessage: "",
       alertEventDate: undefined as Date | undefined,
     };
+  },
+  watch: {
+    state(newState: Signup) {
+      if (newState.error) {
+        this.alertEventDate = newState.eventDate;
+        this.alertMessage = newState.error.message;
+        this.alertTitle = newState.error.title;
+      }
+    },
   },
   methods: {
     onSubmit(payload: Sumbit) {

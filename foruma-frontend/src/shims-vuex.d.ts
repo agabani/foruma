@@ -10,10 +10,21 @@ declare module "@vue/runtime-core" {
     message: string | undefined;
   }
 
+  interface Signup {
+    eventDate: Date;
+    error:
+      | {
+          title: string;
+          message: string;
+        }
+      | undefined;
+  }
+
   interface State {
     authentication: {
       authenticated: boolean | undefined;
       passwordChanged: PasswordChanged | undefined;
+      signup: Signup | undefined;
       username: string | undefined;
     };
   }

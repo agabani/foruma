@@ -1,4 +1,4 @@
-import { State, PasswordChanged } from "@vue/runtime-core";
+import { State, PasswordChanged, Signup } from "@vue/runtime-core";
 
 export const authenticate = (state: State, username: string): void => {
   state.authentication.authenticated = true;
@@ -8,6 +8,10 @@ export const authenticate = (state: State, username: string): void => {
 export const unauthenticate = (state: State): void => {
   state.authentication.authenticated = false;
   state.authentication.username = undefined;
+};
+
+export const signup = (state: State, signup: Signup): void => {
+  state.authentication.signup = signup;
 };
 
 export const passwordChanged = (

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { PasswordChanged } from "@vue/runtime-core";
+import { PasswordChanged, Signup } from "@vue/runtime-core";
 import { Commit } from "vuex";
 import type {
   AuthenticatePayload,
@@ -62,6 +62,16 @@ export const signup = async (
 
   if (signupResponse.status === 200) {
     commit("authenticate", signupResponse.data.username);
+  } else if (signupResponse.status === 401) {
+    const event: Signup = {
+      eventDate: new Date(),
+      error: {
+        title: "Uh oh, something went wrong",
+        message: "Sorry! There was a problem with your request!",
+      },
+    };
+    commit("signup", event);
+    return;
   } else {
     throw new Error("unexpected response");
   }
