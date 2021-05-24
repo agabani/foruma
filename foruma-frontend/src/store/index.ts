@@ -10,6 +10,7 @@ const store = createStore<State>({
   state: {
     authentication: {
       authenticated: false,
+      passwordChanged: undefined,
       username: undefined,
     },
   },

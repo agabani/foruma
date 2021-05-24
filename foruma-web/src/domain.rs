@@ -25,6 +25,16 @@ pub trait CreateAccount {
 }
 
 #[async_trait::async_trait]
+pub trait ChangePassword {
+    async fn change_password(
+        &self,
+        account: &Account,
+        old_password: &Password,
+        new_password: &Password,
+    ) -> Result<(), ()>;
+}
+
+#[async_trait::async_trait]
 pub trait CreatePassword {
     async fn create_password(&self, account: &Account, password: &Password);
 }

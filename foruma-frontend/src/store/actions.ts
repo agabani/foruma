@@ -1,6 +1,11 @@
 import axios from "axios";
+import { PasswordChanged } from "@vue/runtime-core";
 import { Commit } from "vuex";
-import type { AuthenticatePayload, SignupPayload } from "./types";
+import type {
+  AuthenticatePayload,
+  ChangePasswordPayload,
+  SignupPayload,
+} from "./types";
 
 const api = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
@@ -97,5 +102,45 @@ export const terminateOwnAccount = async ({
     commit("unauthenticate", terminateResponse.data.username);
   } else {
     throw new Error("unexpected response");
+  }
+};
+
+export const changeOwnPassword = async (
+  { commit }: { commit: Commit },
+  payload: ChangePasswordPayload
+): Promise<void> => {
+  const changePasswordResponse = await api.post(
+    "/api/authentication/change-password",
+    {
+      oldPassword: payload.oldPassword,
+      newPassword: payload.newPassword,
+    }
+  );
+
+  if (changePasswordResponse.status === 401) {
+    commit("passwordChanged", {
+      when: new Date(),
+      success: false,
+      message: "Sorry! You're not logged in...",
+    } as PasswordChanged);
+  } else if (changePasswordResponse.status === 400) {
+    commit("passwordChanged", {
+      when: new Date(),
+      success: false,
+      message: "Sorry! Bad pass...",
+    } as PasswordChanged);
+  } else if (changePasswordResponse.status !== 200) {
+    commit("passwordChanged", {
+      when: new Date(),
+      success: false,
+      message: "unexpected response",
+    } as PasswordChanged);
+    throw new Error("unexpected response");
+  } else {
+    commit("passwordChanged", {
+      when: new Date(),
+      success: true,
+      message: undefined,
+    } as PasswordChanged);
   }
 };

@@ -3,6 +3,11 @@ export interface AuthenticatePayload {
   password: string;
 }
 
+export interface ChangePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+}
+
 export interface SignupPayload {
   username: string;
   password: string;

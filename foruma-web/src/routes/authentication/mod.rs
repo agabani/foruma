@@ -1,3 +1,4 @@
+mod change_password;
 mod login;
 mod logout;
 mod signup;
@@ -7,6 +8,11 @@ use actix_web::{http::Method, web};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(
+        web::resource("/change-password")
+            .route(web::method(Method::OPTIONS).to(change_password::option))
+            .route(web::method(Method::POST).to(change_password::post)),
+    )
+    .service(
         web::resource("/login")
             .route(web::method(Method::OPTIONS).to(login::option))
             .route(web::method(Method::POST).to(login::post)),
