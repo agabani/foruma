@@ -1,109 +1,30 @@
 <template>
-  <div class="base-signup-form">
-    <div class="base-signup-form--splash">
-      <h1 class="base-signup-form--greeting">WEL</h1>
-      <h1 class="base-signup-form--greeting">COME</h1>
-      <h1 class="base-signup-form--greeting">_</h1>
+  <div class="base-splash-panel">
+    <div class="base-splash-panel--splash">
+      <slot name="splash"></slot>
     </div>
-    <div class="base-signup-form--panel">
-      <h1 class="base-signup-form--header">Create your account</h1>
-      <form @submit="onSubmit">
-        <div class="base-signup-form--label">Username</div>
-        <div class="base-signup-form--field">
-          <BaseTextField
-            :fullWidth="true"
-            :value="username"
-            @change="updateUsername"
-          />
-        </div>
-        <div class="base-signup-form--label">Password</div>
-        <div class="base-signup-form--field">
-          <BasePasswordField :fullWidth="true" @change="updatePassword" />
-        </div>
-        <div class="base-signup-form--label">Confirm Password</div>
-        <div class="base-signup-form--field">
-          <BasePasswordField
-            :fullWidth="true"
-            @change="updateConfirmPassword"
-          />
-        </div>
-        <div class="base-signup-form--button">
-          <BaseButton label="Signup" :fullWidth="true" :primary="true" />
-        </div>
-      </form>
+    <div class="base-splash-panel--content">
+      <slot></slot>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import BaseButton from "./BaseButton.vue";
-import BasePasswordField from "./BasePasswordField.vue";
-import { Change as BasePasswordFieldChange } from "./BasePasswordField.vue";
-import BaseTextField from "./BaseTextField.vue";
-import { Change as BaseTextFieldChange } from "./BaseTextField.vue";
-
 export default defineComponent({
-  name: "BaseSignupForm",
-  components: {
-    BaseButton,
-    BasePasswordField,
-    BaseTextField,
-  },
-  props: {
-    username: {
-      type: String,
-      default: "",
-    },
-  },
-  data() {
-    return {
-      dataUsername: this.username,
-      dataPassword: "",
-      dataConfirmPassword: "",
-    };
-  },
-  emits: ["submit"],
-  methods: {
-    onSubmit(event: { preventDefault: () => void }): void {
-      event.preventDefault();
-      if (
-        this.dataUsername &&
-        this.dataPassword &&
-        this.dataConfirmPassword &&
-        this.dataPassword === this.dataConfirmPassword
-      ) {
-        this.$emit("submit", {
-          username: this.dataUsername,
-          password: this.dataPassword,
-        });
-      }
-    },
-    updateUsername(value: BaseTextFieldChange): void {
-      this.dataUsername = value.newValue;
-    },
-    updatePassword(value: BasePasswordFieldChange): void {
-      this.dataPassword = value.newValue;
-    },
-    updateConfirmPassword(value: BasePasswordFieldChange): void {
-      this.dataConfirmPassword = value.newValue;
-    },
-  },
+  name: "BaseSplashPanel",
 });
 </script>
 
 <style lang="css" scoped>
-.base-signup-form {
+.base-splash-panel {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
-
-  max-width: 960px;
+  align-items: stretch;
 }
 
-.base-signup-form--splash {
+.base-splash-panel--splash {
   flex: auto;
-  align-self: stretch;
 
   padding: 4em 3em;
 
@@ -113,38 +34,11 @@ export default defineComponent({
   box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 1px inset;
 }
 
-.base-signup-form--greeting {
-  display: block;
-
-  color: white;
-  font-size: 4em;
-}
-
-.base-signup-form--panel {
+.base-splash-panel--content {
   padding: 4em 2em;
-  max-width: 280px;
 
   background-color: white;
   border-radius: 0 0.5em 0.5em 0;
   box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 1px inset;
-}
-
-.base-signup-form--header {
-  margin-bottom: 2em;
-}
-
-.base-signup-form--label {
-  margin: 0.5em 0;
-
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.base-signup-form--field {
-  margin: 0.5em 0;
-}
-
-.base-signup-form--button {
-  margin: 4em 2em 0;
 }
 </style>

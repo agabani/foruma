@@ -11,6 +11,7 @@ export default {
       },
     },
     onClose: {},
+    onOpen: {},
   },
 };
 
@@ -24,6 +25,7 @@ const Template = (args) => ({
 
 export const Default = Template.bind({});
 Default.args = {
+  eventDate: new Date(),
   title: "",
   message: "",
   type: "information",
@@ -31,6 +33,7 @@ Default.args = {
 
 export const Information = Template.bind({});
 Information.args = {
+  ...Default.args,
   title: "Did you know?",
   type: "information",
 };
@@ -43,6 +46,7 @@ InformationMessage.args = {
 
 export const Warning = Template.bind({});
 Warning.args = {
+  ...Default.args,
   title: "Uh oh, something went wrong",
   type: "warning",
 };
@@ -55,6 +59,7 @@ WarningMessage.args = {
 
 export const Success = Template.bind({});
 Success.args = {
+  ...Default.args,
   title: "Yay! Everything worked!",
   type: "success",
 };

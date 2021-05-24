@@ -21,7 +21,7 @@ pub struct Username(String);
 // Functions
 #[async_trait::async_trait]
 pub trait CreateAccount {
-    async fn create_account(&self, username: &Username) -> Option<Account>;
+    async fn create_account(&self, username: &Username) -> Result<Account, CreateAccountError>;
 }
 
 #[async_trait::async_trait]
@@ -57,6 +57,11 @@ pub trait LogOut {
 #[async_trait::async_trait]
 pub trait TerminateAccount {
     async fn terminate_account(&self, account: &Account);
+}
+
+// Errors
+pub enum CreateAccountError {
+    AccountExists,
 }
 
 // Implementations

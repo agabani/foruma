@@ -51,6 +51,9 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "BaseAlert",
   props: {
+    eventDate: {
+      type: Date,
+    },
     message: {
       type: String,
       default: "",
@@ -67,15 +70,14 @@ export default defineComponent({
       // },
     },
   },
-  emits: ["close"],
+  emits: ["open", "close"],
   data() {
     return {
-      isClosed: false,
+      isClosed: !this.eventDate,
     };
   },
   computed: {
     classes(): string {
-      console.log(this);
       const c = ["base-alert", `base-alert--${this.type}`];
 
       if (this.isClosed) {
@@ -89,6 +91,12 @@ export default defineComponent({
     onClose() {
       this.isClosed = true;
       this.$emit("close");
+    },
+  },
+  watch: {
+    eventDate() {
+      this.isClosed = false;
+      this.$emit("open");
     },
   },
 });
@@ -149,6 +157,7 @@ export default defineComponent({
 
 .base-alert--close {
   margin-left: auto;
+  padding-left: 1em;
 
   cursor: pointer;
 }

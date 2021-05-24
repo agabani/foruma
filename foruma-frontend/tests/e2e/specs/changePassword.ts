@@ -10,15 +10,15 @@ describe("authentication", () => {
 
     cy.url().should("include", "/signup");
 
-    cy.get('.base-signup-form input[type="text"]')
+    cy.get('.pure-signup-form input[type="text"]')
       .type(username)
       .should("have.value", username);
 
-    cy.get('.base-signup-form input[type="password"]').each((element) => {
+    cy.get('.pure-signup-form input[type="password"]').each((element) => {
       cy.wrap(element).type(password).should("have.value", password);
     });
 
-    cy.get('.base-signup-form button[type="submit"]').click();
+    cy.get('.pure-signup-form button[type="submit"]').click();
 
     cy.get(".base-header").contains(username);
 
