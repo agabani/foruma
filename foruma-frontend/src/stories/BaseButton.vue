@@ -61,6 +61,8 @@ export default defineComponent({
 
 <style lang="css" scoped>
 .base-button {
+  margin: 1em 1em 1em 0;
+
   border: 0;
   border-radius: 3em;
   cursor: pointer;

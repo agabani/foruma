@@ -31,6 +31,7 @@ export const WarningAlertMessage = Template.bind({});
 WarningAlertMessage.args = {
   ...Default.args,
   displayAlert: true,
+  alertEventDate: new Date(),
   alertType: "warning",
   alertTitle: "Uh oh, something went wrong",
   alertMessage: "Sorry! There was a problem with your request!",

@@ -7,6 +7,7 @@
       <template v-slot>
         <BaseAlert
           v-if="displayAlert"
+          :eventDate="alertEventDate"
           :title="alertTitle"
           :message="alertMessage"
           :type="alertType"
@@ -60,6 +61,9 @@ export default defineComponent({
     displayAlert: {
       type: Boolean,
       default: false,
+    },
+    alertEventDate: {
+      type: Date,
     },
     alertType: {
       type: String,
