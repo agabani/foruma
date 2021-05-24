@@ -5,7 +5,12 @@
         <span>Change your password</span>
       </template>
       <template v-slot>
-        <BaseAlert title="Your password has been changed" type="success" />
+        <BaseAlert
+          v-if="displayAlert"
+          :title="alertTitle"
+          :message="alertMessage"
+          :type="alertType"
+        />
         <form @submit="onSubmit">
           <div>
             <BasePasswordField
@@ -51,6 +56,21 @@ export default defineComponent({
     BasePasswordField,
   },
   emits: ["submit"],
+  props: {
+    displayAlert: {
+      type: Boolean,
+      default: false,
+    },
+    alertType: {
+      type: String,
+    },
+    alertTitle: {
+      type: String,
+    },
+    alertMessage: {
+      type: String,
+    },
+  },
   data() {
     return {
       oldPassword: "",

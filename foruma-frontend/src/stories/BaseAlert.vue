@@ -110,7 +110,9 @@ export default defineComponent({
   opacity: 0;
   visibility: hidden;
 
-  transition: visibility 0s ease 300ms, opacity 600ms ease, font-size 600ms ease 600ms, padding 600ms ease 600ms, margin 600ms ease 600ms;
+  transition: visibility 0s ease 300ms, opacity 600ms ease,
+    font-size 600ms ease 600ms, padding 600ms ease 600ms,
+    margin 600ms ease 600ms;
 }
 
 .base-alert--container {
