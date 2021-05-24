@@ -24,7 +24,10 @@ RETURNING id;
         .await
         .trace_err()
         .expect("TODO: handle database error")
-        .ok_or(CreateAccountError::AccountExists)?;
+        .ok_or({
+            tracing::warn!("Account already exists");
+            CreateAccountError::AlreadyExists
+        })?;
 
         Ok(Account::new(&account_id, username))
     }

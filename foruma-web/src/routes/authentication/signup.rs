@@ -2,7 +2,9 @@ use crate::configuration::Configuration;
 use crate::context::Context;
 use crate::cookie::{SessionCookie, SessionCookieHttpResponseBuilder};
 use crate::cors::Cors;
-use crate::domain::{CreateAccount, CreateAccountError, CreatePassword, LogIn, Password, Username};
+use crate::domain::{
+    CreateAccount, CreateAccountError, CreatePassword, LogIn, LogInError, Password, Username,
+};
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
 
 #[derive(serde::Deserialize)]
@@ -34,7 +36,7 @@ pub async fn post(
     let account = context.create_account(&username).await;
     let account = match account {
         Ok(account) => account,
-        Err(CreateAccountError::AccountExists) => {
+        Err(CreateAccountError::AlreadyExists) => {
             return Ok(HttpResponse::Unauthorized()
                 .insert_access_control_headers(&configuration, &http_request)
                 .finish());
@@ -44,13 +46,25 @@ pub async fn post(
     context.create_password(&account, &password).await;
 
     let session_id = context.log_in(&username, &password).await;
-    if session_id.is_none() {
-        return Ok(HttpResponse::Unauthorized()
-            .insert_access_control_headers(&configuration, &http_request)
-            .finish());
-    }
+    let session_id = match session_id {
+        Ok(session_id) => session_id,
+        Err(LogInError::DoesNotExist) => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish());
+        }
+        Err(LogInError::IncorrectPassword) => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish());
+        }
+        Err(LogInError::NoPassword) => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish());
+        }
+    };
 
-    let session_id = session_id.unwrap();
     let cookie = SessionCookie::new(&session_id);
 
     Ok(HttpResponse::Ok()
