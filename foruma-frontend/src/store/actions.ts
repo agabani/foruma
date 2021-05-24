@@ -1,4 +1,5 @@
 import axios from "axios";
+import { PasswordChanged } from "@vue/runtime-core";
 import { Commit } from "vuex";
 import type {
   AuthenticatePayload,
@@ -105,7 +106,7 @@ export const terminateOwnAccount = async ({
 };
 
 export const changeOwnPassword = async (
-  _: { commit: Commit },
+  { commit }: { commit: Commit },
   payload: ChangePasswordPayload
 ): Promise<void> => {
   const changePasswordResponse = await api.post(
@@ -117,10 +118,29 @@ export const changeOwnPassword = async (
   );
 
   if (changePasswordResponse.status === 401) {
-    return;
+    commit("passwordChanged", {
+      when: new Date(),
+      success: false,
+      message: "Sorry! You're not logged in...",
+    } as PasswordChanged);
   } else if (changePasswordResponse.status === 400) {
-    return;
+    commit("passwordChanged", {
+      when: new Date(),
+      success: false,
+      message: "Sorry! Bad pass...",
+    } as PasswordChanged);
   } else if (changePasswordResponse.status !== 200) {
+    commit("passwordChanged", {
+      when: new Date(),
+      success: false,
+      message: "unexpected response",
+    } as PasswordChanged);
     throw new Error("unexpected response");
+  } else {
+    commit("passwordChanged", {
+      when: new Date(),
+      success: true,
+      message: undefined,
+    } as PasswordChanged);
   }
 };

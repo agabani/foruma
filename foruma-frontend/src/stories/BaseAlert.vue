@@ -61,9 +61,10 @@ export default defineComponent({
     },
     type: {
       type: String,
-      validator: function (value: string): boolean {
-        return ["information", "success", "warning"].indexOf(value) !== -1;
-      },
+      default: "success",
+      // validator: function (value: string): boolean {
+      //   return ["information", "success", "warning"].indexOf(value) !== -1;
+      // },
     },
   },
   emits: ["close"],
@@ -74,6 +75,7 @@ export default defineComponent({
   },
   computed: {
     classes(): string {
+      console.log(this);
       const c = ["base-alert", `base-alert--${this.type}`];
 
       if (this.isClosed) {
