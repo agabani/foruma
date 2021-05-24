@@ -4,4 +4,18 @@ if [ "$PORT" ]; then
   export APP_HTTP_SERVER__PORT="$PORT"
 fi
 
+if [ "$DATABASE_URL" ]; then
+  regex="^postgres:\/\/(.*):(.*)@(.*):([0-9]*)\/(.*)$"
+
+  if [[ "$DATABASE_URL" =~ $regex ]]; then
+    export APP_POSTGRES__USERNAME="${BASH_REMATCH[1]}"
+    export APP_POSTGRES__PASSWORD="${BASH_REMATCH[2]}"
+    export APP_POSTGRES__HOST="${BASH_REMATCH[3]}"
+    export APP_POSTGRES__PORT="${BASH_REMATCH[4]}"
+    export APP_POSTGRES__DATABASE_NAME="${BASH_REMATCH[5]}"
+  else
+    echo "Unable to parse environment variable DATABASE_URL"
+  fi
+fi
+
 ./home/appuser/foruma-web
