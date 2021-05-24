@@ -25,10 +25,7 @@
               @change="updateUsername"
             />
             <div class="pure-login-form--label">Password</div>
-            <BasePasswordField
-              :fullWidth="true"
-              @change="updateConfirmPassword"
-            />
+            <BasePasswordField :fullWidth="true" @change="updatePassword" />
             <div class="pure-login-form--button">
               <BaseButton label="Login" :fullWidth="true" :primary="true" />
             </div>
@@ -84,7 +81,6 @@ export default defineComponent({
     return {
       dataUsername: this.username,
       dataPassword: "",
-      dataConfirmPassword: "",
     };
   },
   emits: ["submit"],
