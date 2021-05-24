@@ -99,37 +99,6 @@ export default defineComponent({
         password: this.dataPassword,
         confirmPassword: this.dataConfirmPassword,
       } as Sumbit);
-
-      // if (
-      //   !this.dataUsername ||
-      //   !this.dataPassword ||
-      //   !this.dataConfirmPassword
-      // ) {
-      //   this.alertTitle = "Sorry! There was a problem with your request!";
-      //   this.alertMessage =
-      //     "All fields needs to be filled in order to create an account!";
-      //   this.alertEventDate = new Date();
-      //   return;
-      // }
-
-      // if (this.dataPassword !== this.dataConfirmPassword) {
-      //   this.alertTitle = "Sorry! There was a problem with your request!";
-      //   this.alertMessage = "Make sure your passwords match then try again!";
-      //   this.alertEventDate = new Date();
-      //   return;
-      // }
-
-      // if (
-      //   this.dataUsername &&
-      //   this.dataPassword &&
-      //   this.dataConfirmPassword &&
-      //   this.dataPassword === this.dataConfirmPassword
-      // ) {
-      //   this.$emit("submit", {
-      //     username: this.dataUsername,
-      //     password: this.dataPassword,
-      //   });
-      // }
     },
     updateUsername(value: BaseTextFieldChange): void {
       this.dataUsername = value.newValue;
