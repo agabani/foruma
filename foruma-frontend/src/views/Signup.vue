@@ -1,5 +1,4 @@
 <template>
-  <!-- <SignupForm /> -->
   <ContainerSignupForm />
 </template>
 
