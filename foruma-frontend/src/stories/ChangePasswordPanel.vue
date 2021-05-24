@@ -5,6 +5,7 @@
         <span>Change your password</span>
       </template>
       <template v-slot>
+        <BaseAlert title="Your password has been changed" type="success" />
         <form @submit="onSubmit">
           <div>
             <BasePasswordField
@@ -35,6 +36,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import BaseAlert from "./BaseAlert.vue";
 import BaseButton from "./BaseButton.vue";
 import BasePanel from "./BasePanel.vue";
 import BasePasswordField from "./BasePasswordField.vue";
@@ -43,6 +45,7 @@ import type { Change as BasePasswordFieldChange } from "./BasePasswordField.vue"
 export default defineComponent({
   name: "ChangePasswordPanel",
   components: {
+    BaseAlert,
     BaseButton,
     BasePanel,
     BasePasswordField,

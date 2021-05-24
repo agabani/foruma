@@ -100,13 +100,17 @@ export default defineComponent({
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   box-shadow: rgba(0, 0, 0, 0.1) 0 1px 3px 0;
-
-  transition: visibility 0s linear 300ms, opacity 300ms;
 }
 
 .base-alert--closed {
+  padding: 0;
+  margin: 0;
+
+  font-size: 0;
   opacity: 0;
   visibility: hidden;
+
+  transition: visibility 0s ease 300ms, opacity 600ms ease, font-size 600ms ease 600ms, padding 600ms ease 600ms, margin 600ms ease 600ms;
 }
 
 .base-alert--container {
@@ -119,6 +123,13 @@ export default defineComponent({
   border-left-style: solid;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
+}
+
+.base-alert--closed .base-alert--container {
+  padding: 0;
+  margin: 0;
+
+  transition: padding 600ms ease 600ms, margin 600ms ease 600ms;
 }
 
 .base-alert--icon {
