@@ -148,7 +148,7 @@ export const changeOwnPassword = async (
     case 401:
       event.error = {
         title: "Uh oh, something went wrong",
-        message: "You are somehow not logged in... ¯_(ツ)_/¯",
+        message: "You are somehow not logged in... ¯\\_(ツ)_/¯",
       };
       break;
     default:

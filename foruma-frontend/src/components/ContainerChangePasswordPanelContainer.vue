@@ -56,7 +56,7 @@ export default defineComponent({
         !payload.newPassword ||
         !payload.confirmNewPassword
       ) {
-        this.alertTitle = "Sorry! There was a problem with your request!";
+        this.alertTitle = "Uh oh, something went wrong";
         this.alertMessage =
           "All fields needs to be filled in order to change your password!";
         this.alertEventDate = new Date();
@@ -64,7 +64,7 @@ export default defineComponent({
       }
 
       if (payload.newPassword !== payload.confirmNewPassword) {
-        this.alertTitle = "Sorry! There was a problem with your request!";
+        this.alertTitle = "Uh oh, something went wrong";
         this.alertMessage = "Make sure your passwords match then try again!";
         this.alertEventDate = new Date();
         return;
