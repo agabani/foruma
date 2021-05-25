@@ -31,7 +31,7 @@ pub trait ChangePassword {
         account: &Account,
         old_password: &Password,
         new_password: &Password,
-    ) -> Result<(), ()>;
+    ) -> Result<(), ChangePasswordError>;
 }
 
 #[async_trait::async_trait]
@@ -64,6 +64,12 @@ pub trait TerminateAccount {
 }
 
 // Errors
+pub enum ChangePasswordError {
+    AccountDoesNotExist,
+    IncorrectPassword,
+    AccountHasNoPassword,
+}
+
 pub enum CreateAccountError {
     AlreadyExists,
 }
@@ -71,7 +77,7 @@ pub enum CreateAccountError {
 pub enum LogInError {
     DoesNotExist,
     IncorrectPassword,
-    NoPassword,
+    AccountHasNoPassword,
 }
 
 // Implementations
