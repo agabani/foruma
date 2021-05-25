@@ -25,16 +25,16 @@ export default defineComponent({
     return {
       changePassword: (payload: ChangePasswordPayload) =>
         store.dispatch("changeOwnPassword", payload),
-      displayAlert: computed(() => store.getters.passwordChanged?.when),
+      displayAlert: computed(() => store.getters.passwordChangedEvent?.when),
       alertTitle: computed(() =>
-        store.getters.passwordChanged?.success
+        store.getters.passwordChangedEvent?.success
           ? "Your password has been changed"
           : "Uh oh, something went wrong"
       ),
       alertType: computed(() =>
-        store.getters.passwordChanged?.success ? "success" : "warning"
+        store.getters.passwordChangedEvent?.success ? "success" : "warning"
       ),
-      alertMessage: computed(() => store.getters.passwordChanged?.message),
+      alertMessage: computed(() => store.getters.passwordChangedEvent?.message),
     };
   },
 });

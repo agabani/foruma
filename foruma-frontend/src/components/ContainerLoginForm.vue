@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, Login } from "vue";
+import { computed, defineComponent, LoginChangedEvent } from "vue";
 import { useStore } from "@/store";
 import { LoginPayload } from "@/store/types";
 import PureLoginForm, { Sumbit } from "@/stories/PureLoginForm.vue";
@@ -25,7 +25,7 @@ export default defineComponent({
       authenticate: (payload: LoginPayload) => {
         store.dispatch("login", payload);
       },
-      state: computed(() => store.getters.login),
+      loginChangedEvent: computed(() => store.getters.loginChangedEvent),
     };
   },
   data() {
@@ -36,11 +36,11 @@ export default defineComponent({
     };
   },
   watch: {
-    state(newState: Login) {
-      if (newState.error) {
-        this.alertEventDate = newState.eventDate;
-        this.alertMessage = newState.error.message;
-        this.alertTitle = newState.error.title;
+    loginChangedEvent(event: LoginChangedEvent) {
+      if (event.error) {
+        this.alertEventDate = event.eventDate;
+        this.alertMessage = event.error.message;
+        this.alertTitle = event.error.title;
       }
     },
   },

@@ -1,26 +1,29 @@
-import { State, Login, PasswordChanged, Signup } from "@vue/runtime-core";
+import {
+  State,
+  LoginChangedEvent,
+  SignupChangedEvent,
+  PasswordChangedEvent,
+} from "@vue/runtime-core";
 
 export const authenticate = (state: State, username: string): void => {
-  state.authentication.authenticated = true;
-  state.authentication.username = username;
+  state.data.authentication = { username };
 };
 
 export const unauthenticate = (state: State): void => {
-  state.authentication.authenticated = false;
-  state.authentication.username = undefined;
+  state.data.authentication = undefined;
 };
 
-export const login = (state: State, login: Login): void => {
-  state.authentication.login = login;
+export const login = (state: State, login: LoginChangedEvent): void => {
+  state.events.loginChanged = login;
 };
 
-export const signup = (state: State, signup: Signup): void => {
-  state.authentication.signup = signup;
+export const signup = (state: State, signup: SignupChangedEvent): void => {
+  state.events.signupChanged = signup;
 };
 
 export const passwordChanged = (
   state: State,
-  passwordChanged: PasswordChanged
+  passwordChanged: PasswordChangedEvent
 ): void => {
-  state.authentication.passwordChanged = passwordChanged;
+  state.events.passwordChanged = passwordChanged;
 };
