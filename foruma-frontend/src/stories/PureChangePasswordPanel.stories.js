@@ -38,5 +38,5 @@ WarningAlert.args = {
   ...Default.args,
   alertEventDate: new Date(),
   alertTitle: "Uh oh, something went wrong",
-  alertMessage: "Make sure your passwords match then try again!",
+  alertMessage: "Sorry! There was a problem with your request!",
 };

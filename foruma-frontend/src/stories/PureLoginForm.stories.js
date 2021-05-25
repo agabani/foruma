@@ -24,10 +24,10 @@ Default.args = {};
 export const Username = Template.bind({});
 Username.args = { ...Default.args, username: "Username" };
 
-export const MissingFieldsAlert = Template.bind({});
-MissingFieldsAlert.args = {
+export const WarningAlert = Template.bind({});
+WarningAlert.args = {
   ...Default.args,
   alertEventDate: new Date(),
-  alertTitle: "Sorry! There was a problem with your request!",
-  alertMessage: "Make sure your passwords match then try again!",
+  alertTitle: "Uh oh, something went wrong",
+  alertMessage: "Sorry! There was a problem with your request!",
 };

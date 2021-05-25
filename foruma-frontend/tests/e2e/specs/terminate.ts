@@ -60,7 +60,7 @@ describe("terminate", () => {
 
     cy.get('.pure-login-form button[type="submit"]').click();
 
-    cy.contains("Sorry! There was a problem with your request!");
+    cy.contains("Uh oh, something went wrong");
     cy.contains("Sorry! There was a problem with your request!");
 
     cy.get(".base-alert--close").click();
