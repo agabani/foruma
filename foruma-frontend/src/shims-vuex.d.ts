@@ -11,12 +11,6 @@ declare module "@vue/runtime-core" {
   }
 
   // events
-  interface PasswordChangedEvent {
-    eventDate: Date;
-    success: boolean;
-    message: string | undefined;
-  }
-
   interface ChangedEvent {
     eventDate: Date;
     error:
@@ -25,6 +19,10 @@ declare module "@vue/runtime-core" {
           message: string;
         }
       | undefined;
+  }
+
+  interface PasswordChangedEvent extends ChangedEvent {
+    success: boolean;
   }
 
   interface State {

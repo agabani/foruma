@@ -135,26 +135,25 @@ export const changeOwnPassword = async (
     commit("passwordChangedEvent", {
       eventDate: new Date(),
       success: false,
-      message: "Sorry! You're not logged in...",
+      error: { title: "Sorry! You're not logged in..." },
     } as PasswordChangedEvent);
   } else if (changePasswordResponse.status === 400) {
     commit("passwordChangedEvent", {
       eventDate: new Date(),
       success: false,
-      message: "Sorry! Bad pass...",
+      error: { title: "Sorry! Bad pass..." },
     } as PasswordChangedEvent);
   } else if (changePasswordResponse.status !== 200) {
     commit("passwordChangedEvent", {
       eventDate: new Date(),
       success: false,
-      message: "unexpected response",
+      error: { title: "unexpected response" },
     } as PasswordChangedEvent);
     throw new Error("unexpected response");
   } else {
     commit("passwordChangedEvent", {
       eventDate: new Date(),
       success: true,
-      message: undefined,
     } as PasswordChangedEvent);
   }
 };
