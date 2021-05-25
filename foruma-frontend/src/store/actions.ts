@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ChangedEvent, PasswordChangedEvent } from "@vue/runtime-core";
+import { ChangedEvent } from "vue";
 import { Commit } from "vuex";
 import type {
   LoginPayload,
@@ -131,29 +131,29 @@ export const changeOwnPassword = async (
     }
   );
 
-  if (changePasswordResponse.status === 401) {
-    commit("passwordChangedEvent", {
-      eventDate: new Date(),
-      success: false,
-      error: { title: "Sorry! You're not logged in..." },
-    } as PasswordChangedEvent);
-  } else if (changePasswordResponse.status === 400) {
-    commit("passwordChangedEvent", {
-      eventDate: new Date(),
-      success: false,
-      error: { title: "Sorry! Bad pass..." },
-    } as PasswordChangedEvent);
-  } else if (changePasswordResponse.status !== 200) {
-    commit("passwordChangedEvent", {
-      eventDate: new Date(),
-      success: false,
-      error: { title: "unexpected response" },
-    } as PasswordChangedEvent);
-    throw new Error("unexpected response");
-  } else {
-    commit("passwordChangedEvent", {
-      eventDate: new Date(),
-      success: true,
-    } as PasswordChangedEvent);
+  const event: ChangedEvent = {
+    eventDate: new Date(),
+    error: undefined,
+  };
+
+  switch (changePasswordResponse.status) {
+    case 200:
+      break;
+    case 400:
+      event.error = {
+        title: "Uh oh, something went wrong",
+        message: "Your current password is incorrect!",
+      };
+      break;
+    case 401:
+      event.error = {
+        title: "Uh oh, something went wrong",
+        message: "You are somehow not logged in... ¯_(ツ)_/¯",
+      };
+      break;
+    default:
+      throw new Error("unexpected response");
   }
+
+  commit("passwordChangedEvent", event);
 };

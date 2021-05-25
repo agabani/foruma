@@ -21,16 +21,12 @@ declare module "@vue/runtime-core" {
       | undefined;
   }
 
-  interface PasswordChangedEvent extends ChangedEvent {
-    success: boolean;
-  }
-
   interface State {
     data: {
       authentication: Authentication | undefined;
     };
     events: {
-      passwordChanged: PasswordChangedEvent | undefined;
+      passwordChanged: ChangedEvent | undefined;
       loginChanged: ChangedEvent | undefined;
       signupChanged: ChangedEvent | undefined;
     };

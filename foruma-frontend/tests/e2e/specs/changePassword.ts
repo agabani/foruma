@@ -49,7 +49,7 @@ describe("authentication", () => {
 
     cy.get(".base-header").contains(username).click();
 
-    cy.get('.change-password-panel [type="password"]').each(
+    cy.get('.pure-change-password-panel [type="password"]').each(
       (element, index) => {
         cy.wrap(element)
           .type(index ? newPassword : password)
@@ -57,7 +57,7 @@ describe("authentication", () => {
       }
     );
 
-    cy.get('.change-password-panel button[type="submit"]').click();
+    cy.get('.pure-change-password-panel button[type="submit"]').click();
 
     cy.contains("Your password has been changed");
 
