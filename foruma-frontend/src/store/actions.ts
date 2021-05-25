@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  LoginChangedEvent,
-  PasswordChangedEvent,
-  SignupChangedEvent,
-} from "@vue/runtime-core";
+import { ChangedEvent, PasswordChangedEvent } from "@vue/runtime-core";
 import { Commit } from "vuex";
 import type {
   LoginPayload,
@@ -27,7 +23,7 @@ export const login = async (
   });
 
   if (loginResponse.status === 401) {
-    const event: LoginChangedEvent = {
+    const event: ChangedEvent = {
       eventDate: new Date(),
       error: {
         title: "Uh oh, something went wrong",
@@ -71,7 +67,7 @@ export const signup = async (
   if (signupResponse.status === 200) {
     commit("login", signupResponse.data.username);
   } else if (signupResponse.status === 401) {
-    const event: SignupChangedEvent = {
+    const event: ChangedEvent = {
       eventDate: new Date(),
       error: {
         title: "Uh oh, something went wrong",
@@ -137,26 +133,26 @@ export const changeOwnPassword = async (
 
   if (changePasswordResponse.status === 401) {
     commit("passwordChangedEvent", {
-      when: new Date(),
+      eventDate: new Date(),
       success: false,
       message: "Sorry! You're not logged in...",
     } as PasswordChangedEvent);
   } else if (changePasswordResponse.status === 400) {
     commit("passwordChangedEvent", {
-      when: new Date(),
+      eventDate: new Date(),
       success: false,
       message: "Sorry! Bad pass...",
     } as PasswordChangedEvent);
   } else if (changePasswordResponse.status !== 200) {
     commit("passwordChangedEvent", {
-      when: new Date(),
+      eventDate: new Date(),
       success: false,
       message: "unexpected response",
     } as PasswordChangedEvent);
     throw new Error("unexpected response");
   } else {
     commit("passwordChangedEvent", {
-      when: new Date(),
+      eventDate: new Date(),
       success: true,
       message: undefined,
     } as PasswordChangedEvent);

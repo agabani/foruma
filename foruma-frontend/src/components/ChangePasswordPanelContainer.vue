@@ -25,7 +25,9 @@ export default defineComponent({
     return {
       changePassword: (payload: ChangePasswordPayload) =>
         store.dispatch("changeOwnPassword", payload),
-      displayAlert: computed(() => store.getters.passwordChangedEvent?.when),
+      displayAlert: computed(
+        () => store.getters.passwordChangedEvent?.eventDate
+      ),
       alertTitle: computed(() =>
         store.getters.passwordChangedEvent?.success
           ? "Your password has been changed"

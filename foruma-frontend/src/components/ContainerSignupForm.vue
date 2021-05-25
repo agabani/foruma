@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, SignupChangedEvent } from "vue";
+import { computed, defineComponent, ChangedEvent } from "vue";
 import { useStore } from "@/store";
 import { SignupPayload } from "@/store/types";
 import PureSignupForm, { Sumbit } from "@/stories/PureSignupForm.vue";
@@ -36,7 +36,7 @@ export default defineComponent({
     };
   },
   watch: {
-    signupChangedEvent(event: SignupChangedEvent) {
+    signupChangedEvent(event: ChangedEvent) {
       if (event.error) {
         this.alertEventDate = event.eventDate;
         this.alertMessage = event.error.message;

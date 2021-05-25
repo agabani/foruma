@@ -5,31 +5,19 @@ import { Store } from "vuex";
 declare module "@vue/runtime-core" {
   // declare your own store states
 
-  // state: authentication
+  // data
   interface Authentication {
     username: string;
   }
 
-  // event: password changed
+  // events
   interface PasswordChangedEvent {
-    when: Date;
+    eventDate: Date;
     success: boolean;
     message: string | undefined;
   }
 
-  // event: login
-  interface LoginChangedEvent {
-    eventDate: Date;
-    error:
-      | {
-          title: string;
-          message: string;
-        }
-      | undefined;
-  }
-
-  // event: signup
-  interface SignupChangedEvent {
+  interface ChangedEvent {
     eventDate: Date;
     error:
       | {
@@ -45,8 +33,8 @@ declare module "@vue/runtime-core" {
     };
     events: {
       passwordChanged: PasswordChangedEvent | undefined;
-      loginChanged: LoginChangedEvent | undefined;
-      signupChanged: SignupChangedEvent | undefined;
+      loginChanged: ChangedEvent | undefined;
+      signupChanged: ChangedEvent | undefined;
     };
   }
 

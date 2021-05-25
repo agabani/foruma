@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, LoginChangedEvent } from "vue";
+import { computed, defineComponent, ChangedEvent } from "vue";
 import { useStore } from "@/store";
 import { LoginPayload } from "@/store/types";
 import PureLoginForm, { Sumbit } from "@/stories/PureLoginForm.vue";
@@ -36,7 +36,7 @@ export default defineComponent({
     };
   },
   watch: {
-    loginChangedEvent(event: LoginChangedEvent) {
+    loginChangedEvent(event: ChangedEvent) {
       if (event.error) {
         this.alertEventDate = event.eventDate;
         this.alertMessage = event.error.message;
