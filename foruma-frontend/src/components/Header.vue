@@ -4,7 +4,7 @@
     :username="username"
     @accountSettings="navigateToAccountSettings"
     @login="navigateToLogin"
-    @logout="unauthenticate"
+    @logout="logout"
     @signup="navigateToSignup"
   />
 </template>
@@ -36,7 +36,7 @@ export default defineComponent({
     return {
       authenticated: computed(() => store.getters.authenticated),
       username: computed(() => store.getters.username || ""),
-      unauthenticate: () => store.dispatch("unauthenticate"),
+      logout: () => store.dispatch("logout"),
     };
   },
 });

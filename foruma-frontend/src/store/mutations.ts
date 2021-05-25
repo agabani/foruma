@@ -9,7 +9,7 @@ export const authenticate = (state: State, username: string): void => {
   state.data.authentication = { username };
 };
 
-export const unauthenticate = (state: State): void => {
+export const logout = (state: State): void => {
   state.data.authentication = undefined;
 };
 

@@ -49,7 +49,7 @@ export const login = async (
   }
 };
 
-export const unauthenticate = async ({
+export const logout = async ({
   commit,
 }: {
   commit: Commit;
@@ -60,7 +60,7 @@ export const unauthenticate = async ({
     throw new Error("unexpected response");
   }
 
-  commit("unauthenticate");
+  commit("logout");
 };
 
 export const signup = async (
@@ -107,7 +107,7 @@ export const initialize = async ({
   if (whoamiResponse.status === 200) {
     commit("authenticate", whoamiResponse.data.username);
   } else if (whoamiResponse.status === 401) {
-    commit("unauthenticate");
+    commit("logout");
   } else {
     throw new Error("unexpected response");
   }
@@ -121,7 +121,7 @@ export const terminateOwnAccount = async ({
   const terminateResponse = await api.post("/api/account/terminate");
 
   if (terminateResponse.status === 200) {
-    commit("unauthenticate", terminateResponse.data.username);
+    commit("logout", terminateResponse.data.username);
   } else {
     throw new Error("unexpected response");
   }
