@@ -23,15 +23,15 @@ Default.args = {
   username: "",
 };
 
-export const Authenticated = Template.bind({});
-Authenticated.args = {
+export const LoggedIn = Template.bind({});
+LoggedIn.args = {
   ...Default.args,
   authenticated: true,
   username: "Username",
 };
 
-export const Unauthenticated = Template.bind({});
-Unauthenticated.args = {
+export const LoggedOut = Template.bind({});
+LoggedOut.args = {
   ...Default.args,
   authenticated: false,
 };

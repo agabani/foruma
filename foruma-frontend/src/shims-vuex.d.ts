@@ -4,39 +4,35 @@ import { Store } from "vuex";
 
 declare module "@vue/runtime-core" {
   // declare your own store states
-  interface PasswordChanged {
-    when: Date;
+
+  // data
+  interface Authentication {
+    username: string;
+  }
+
+  // events
+  interface ChangedEvent {
+    eventDate: Date;
+    error:
+      | {
+          title: string;
+          message: string;
+        }
+      | undefined;
+  }
+
+  interface PasswordChangedEvent extends ChangedEvent {
     success: boolean;
-    message: string | undefined;
-  }
-
-  interface Login {
-    eventDate: Date;
-    error:
-      | {
-          title: string;
-          message: string;
-        }
-      | undefined;
-  }
-
-  interface Signup {
-    eventDate: Date;
-    error:
-      | {
-          title: string;
-          message: string;
-        }
-      | undefined;
   }
 
   interface State {
-    authentication: {
-      authenticated: boolean | undefined;
-      passwordChanged: PasswordChanged | undefined;
-      login: Login | undefined;
-      signup: Signup | undefined;
-      username: string | undefined;
+    data: {
+      authentication: Authentication | undefined;
+    };
+    events: {
+      passwordChanged: PasswordChangedEvent | undefined;
+      loginChanged: ChangedEvent | undefined;
+      signupChanged: ChangedEvent | undefined;
     };
   }
 

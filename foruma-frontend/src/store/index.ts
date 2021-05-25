@@ -8,12 +8,13 @@ export const key: InjectionKey<Store<State>> = Symbol();
 
 const store = createStore<State>({
   state: {
-    authentication: {
-      authenticated: false,
+    data: {
+      authentication: undefined,
+    },
+    events: {
       passwordChanged: undefined,
-      login: undefined,
-      signup: undefined,
-      username: undefined,
+      loginChanged: undefined,
+      signupChanged: undefined,
     },
   },
   actions,
