@@ -34,7 +34,7 @@ export const login = async (
         message: "Sorry! There was a problem with your request!",
       },
     };
-    commit("login", event);
+    commit("loginChangedEvent", event);
     return;
   } else if (loginResponse.status !== 200) {
     throw new Error("unexpected response");
@@ -43,17 +43,13 @@ export const login = async (
   const whoamiResponse = await api.get("/api/authentication/whoami");
 
   if (whoamiResponse.status === 200) {
-    commit("authenticate", whoamiResponse.data.username);
+    commit("login", whoamiResponse.data.username);
   } else {
     throw new Error("unexpected response");
   }
 };
 
-export const logout = async ({
-  commit,
-}: {
-  commit: Commit;
-}): Promise<void> => {
+export const logout = async ({ commit }: { commit: Commit }): Promise<void> => {
   const logoutResponse = await api.post("/api/authentication/logout");
 
   if (logoutResponse.status !== 200) {
@@ -73,7 +69,7 @@ export const signup = async (
   });
 
   if (signupResponse.status === 200) {
-    commit("authenticate", signupResponse.data.username);
+    commit("login", signupResponse.data.username);
   } else if (signupResponse.status === 401) {
     const event: SignupChangedEvent = {
       eventDate: new Date(),
@@ -82,7 +78,7 @@ export const signup = async (
         message: "Sorry! There was a problem with your request!",
       },
     };
-    commit("signup", event);
+    commit("signupChangedEvent", event);
     return;
   } else {
     throw new Error("unexpected response");
@@ -91,7 +87,7 @@ export const signup = async (
   const whoamiResponse = await api.get("/api/authentication/whoami");
 
   if (whoamiResponse.status === 200) {
-    commit("authenticate", whoamiResponse.data.username);
+    commit("login", whoamiResponse.data.username);
   } else {
     throw new Error("unexpected response");
   }
@@ -105,7 +101,7 @@ export const initialize = async ({
   const whoamiResponse = await api.get("/api/authentication/whoami");
 
   if (whoamiResponse.status === 200) {
-    commit("authenticate", whoamiResponse.data.username);
+    commit("login", whoamiResponse.data.username);
   } else if (whoamiResponse.status === 401) {
     commit("logout");
   } else {
@@ -140,26 +136,26 @@ export const changeOwnPassword = async (
   );
 
   if (changePasswordResponse.status === 401) {
-    commit("passwordChanged", {
+    commit("passwordChangedEvent", {
       when: new Date(),
       success: false,
       message: "Sorry! You're not logged in...",
     } as PasswordChangedEvent);
   } else if (changePasswordResponse.status === 400) {
-    commit("passwordChanged", {
+    commit("passwordChangedEvent", {
       when: new Date(),
       success: false,
       message: "Sorry! Bad pass...",
     } as PasswordChangedEvent);
   } else if (changePasswordResponse.status !== 200) {
-    commit("passwordChanged", {
+    commit("passwordChangedEvent", {
       when: new Date(),
       success: false,
       message: "unexpected response",
     } as PasswordChangedEvent);
     throw new Error("unexpected response");
   } else {
-    commit("passwordChanged", {
+    commit("passwordChangedEvent", {
       when: new Date(),
       success: true,
       message: undefined,

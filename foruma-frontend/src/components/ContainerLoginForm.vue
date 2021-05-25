@@ -22,7 +22,7 @@ export default defineComponent({
     const store = useStore();
 
     return {
-      authenticate: (payload: LoginPayload) => {
+      login: (payload: LoginPayload) => {
         store.dispatch("login", payload);
       },
       loginChangedEvent: computed(() => store.getters.loginChangedEvent),
@@ -54,7 +54,7 @@ export default defineComponent({
         return;
       }
 
-      this.authenticate({
+      this.login({
         username: payload.username,
         password: payload.password,
       });
