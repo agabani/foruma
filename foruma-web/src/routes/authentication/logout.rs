@@ -2,7 +2,7 @@ use crate::configuration::Configuration;
 use crate::context::Context;
 use crate::cookie::{SessionCookie, SessionCookieHttpRequest, SessionCookieHttpResponseBuilder};
 use crate::cors::Cors;
-use crate::domain::LogOut;
+use crate::domain::{LogOut, LogoutError};
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
 
 pub async fn option(
@@ -29,10 +29,16 @@ pub async fn post(
     }
 
     let mut cookie = cookie.unwrap();
-    context.log_out(&cookie.session_id()).await;
+    let result = context.log_out(&cookie.session_id()).await;
 
-    return Ok(HttpResponse::Ok()
-        .insert_access_control_headers(&configuration, &http_request)
-        .delete_session_cookie(&mut cookie)
-        .finish());
+    match result {
+        Ok(()) => Ok(HttpResponse::Ok()
+            .insert_access_control_headers(&configuration, &http_request)
+            .delete_session_cookie(&mut cookie)
+            .finish()),
+        Err(LogoutError::SessionDoesNotExist) => Ok(HttpResponse::NotFound()
+            .insert_access_control_headers(&configuration, &http_request)
+            .delete_session_cookie(&mut cookie)
+            .finish()),
+    }
 }

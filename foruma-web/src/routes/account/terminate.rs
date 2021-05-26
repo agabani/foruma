@@ -2,7 +2,7 @@ use crate::configuration::Configuration;
 use crate::context::Context;
 use crate::cookie::{SessionCookie, SessionCookieHttpRequest, SessionCookieHttpResponseBuilder};
 use crate::cors::Cors;
-use crate::domain::{GetAccount, TerminateAccount};
+use crate::domain::{GetAccount, TerminateAccount, TerminateAccountError};
 use actix_web::http::Method;
 use actix_web::{web, HttpRequest, HttpResponse};
 
@@ -42,10 +42,16 @@ pub async fn post(
     }
 
     let account = account.unwrap();
-    context.terminate_account(&account).await;
 
-    return Ok(HttpResponse::Ok()
-        .insert_access_control_headers(&configuration, &http_request)
-        .delete_session_cookie(&mut cookie)
-        .finish());
+    let result = context.terminate_account(&account).await;
+
+    match result {
+        Ok(()) => Ok(HttpResponse::Ok()
+            .insert_access_control_headers(&configuration, &http_request)
+            .delete_session_cookie(&mut cookie)
+            .finish()),
+        Err(TerminateAccountError::AccountDoesNotExist) => Ok(HttpResponse::BadRequest()
+            .insert_access_control_headers(&configuration, &http_request)
+            .finish()),
+    }
 }

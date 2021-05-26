@@ -26,7 +26,10 @@ WHERE A.username = $1
         .await
         .trace_err()
         .expect("TODO: handle database error")
-        .ok_or(LogInError::DoesNotExist)?;
+        .ok_or({
+            tracing::warn!("Account does not exist");
+            LogInError::AccountDoesNotExist
+        })?;
 
         let password_hash = match &account.password_hash {
             Some(password_hash) => password_hash,
