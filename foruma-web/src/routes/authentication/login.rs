@@ -44,7 +44,7 @@ pub async fn post(
                 .insert_access_control_headers(&configuration, &http_request)
                 .finish());
         }
-        Err(LogInError::NoPassword) => {
+        Err(LogInError::AccountHasNoPassword) => {
             return Ok(HttpResponse::Unauthorized()
                 .insert_access_control_headers(&configuration, &http_request)
                 .finish());

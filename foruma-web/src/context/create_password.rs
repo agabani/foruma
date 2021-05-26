@@ -15,7 +15,7 @@ impl CreatePassword for Context {
             &argon2::Config::default(),
         )
         .trace_err()
-        .expect("TODO");
+        .expect("TODO: handle password hashing error");
 
         sqlx::query!(
             r#"
@@ -30,7 +30,7 @@ VALUES ($1,
             account.account_id().value(),
             password_hash
         )
-        .execute(&self.postgres)
+        .fetch_optional(&self.postgres)
         .await
         .trace_err()
         .expect("TODO");

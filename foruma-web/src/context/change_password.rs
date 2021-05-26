@@ -1,23 +1,24 @@
 use crate::context::Context;
-use crate::domain::{Account, ChangePassword, Password, PasswordId};
+use crate::domain::{Account, ChangePassword, ChangePasswordError, Password, PasswordId};
 use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl ChangePassword for Context {
-    #[tracing::instrument(skip(self, old_password, new_password))]
+    #[tracing::instrument(skip(self, current_password, new_password))]
     async fn change_password(
         &self,
         account: &Account,
-        old_password: &Password,
+        current_password: &Password,
         new_password: &Password,
-    ) -> Result<(), ()> {
-        let password = sqlx::query!(
+    ) -> Result<(), ChangePasswordError> {
+        let account_password = sqlx::query!(
             r#"
 SELECT
-    AP.public_id AS public_id,
-    AP.password_hash AS password_hash
+    A.public_id AS account_public_id,
+    AP.public_id AS "account_password_public_id?",
+    AP.password_hash AS "account_password_hash?"
 FROM account AS A
-INNER JOIN account_password AS AP ON A.id = AP.account_id
+LEFT JOIN account_password AS AP ON A.id = AP.account_id
 WHERE A.public_id = $1
   AND AP.deleted IS NULL;
 "#,
@@ -26,16 +27,27 @@ WHERE A.public_id = $1
         .fetch_optional(&self.postgres)
         .await
         .trace_err()
-        .expect("TODO")
-        .unwrap();
+        .expect("TODO: handle database error")
+        .ok_or({
+            tracing::warn!("Account does not exist");
+            ChangePasswordError::AccountDoesNotExist
+        })?;
 
-        let matches =
-            argon2::verify_encoded(&password.password_hash, old_password.value().as_bytes())
-                .trace_err()
-                .expect("TODO");
+        let password_hash = match &account_password.account_password_hash {
+            Some(password_hash) => password_hash,
+            None => {
+                tracing::warn!("Account has no password");
+                return Err(ChangePasswordError::AccountHasNoPassword);
+            }
+        };
+
+        let matches = argon2::verify_encoded(&password_hash, current_password.value().as_bytes())
+            .trace_err()
+            .expect("TODO: handle password hashing error");
 
         if !matches {
-            todo!()
+            tracing::warn!("Account provided incorrect password");
+            return Err(ChangePasswordError::IncorrectPassword);
         }
 
         let created = time::OffsetDateTime::now_utc();
@@ -47,9 +59,13 @@ WHERE A.public_id = $1
             &argon2::Config::default(),
         )
         .trace_err()
-        .expect("TODO");
+        .expect("TODO: handle password hashing error");
 
-        let mut tx = self.postgres.begin().await.expect("TODO");
+        let mut tx = self
+            .postgres
+            .begin()
+            .await
+            .expect("TODO: handle database error");
 
         sqlx::query!(
             r#"
@@ -58,12 +74,12 @@ UPDATE account_password
     WHERE account_password.public_id = $2;
 "#,
             created,
-            password.public_id
+            account_password.account_password_public_id
         )
         .execute(&mut tx)
         .await
         .trace_err()
-        .expect("TODO");
+        .expect("TODO: handle database error");
 
         sqlx::query!(
             r#"
@@ -81,9 +97,9 @@ VALUES ($1,
         .execute(&mut tx)
         .await
         .trace_err()
-        .expect("TODO");
+        .expect("TODO: handle database error");
 
-        tx.commit().await.expect("TODO");
+        tx.commit().await.expect("TODO: handle database error");
 
         Ok(())
     }

@@ -32,7 +32,7 @@ WHERE A.username = $1
             Some(password_hash) => password_hash,
             None => {
                 tracing::warn!("Account has no password");
-                return Err(LogInError::NoPassword);
+                return Err(LogInError::AccountHasNoPassword);
             }
         };
 

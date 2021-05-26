@@ -1,22 +1,21 @@
 <template>
-  <div class="change-password-panel">
+  <div class="pure-change-password-panel">
     <BasePanel>
       <template v-slot:header>
         <span>Change your password</span>
       </template>
       <template v-slot>
         <BaseAlert
-          v-if="displayAlert"
           :eventDate="alertEventDate"
+          :type="alertType"
           :title="alertTitle"
           :message="alertMessage"
-          :type="alertType"
-        />
+        ></BaseAlert>
         <form @submit="onSubmit">
           <div>
             <BasePasswordField
-              placeholder="Old password"
-              @change="updateOldPassword"
+              placeholder="Current password"
+              @change="updateCurrentPassword"
             />
           </div>
           <div>
@@ -45,39 +44,43 @@ import { defineComponent } from "vue";
 import BaseAlert from "./BaseAlert.vue";
 import BaseButton from "./BaseButton.vue";
 import BasePanel from "./BasePanel.vue";
-import BasePasswordField from "./BasePasswordField.vue";
-import type { Change as BasePasswordFieldChange } from "./BasePasswordField.vue";
+import BasePasswordField, { Change } from "./BasePasswordField.vue";
+
+export interface Submit {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
 
 export default defineComponent({
-  name: "ChangePasswordPanel",
+  name: "PureChangePasswordPanel",
   components: {
     BaseAlert,
     BaseButton,
     BasePanel,
     BasePasswordField,
   },
-  emits: ["submit"],
   props: {
-    displayAlert: {
-      type: Boolean,
-      default: false,
-    },
     alertEventDate: {
       type: Date,
     },
-    alertType: {
+    alertMessage: {
       type: String,
+      default: "",
     },
     alertTitle: {
       type: String,
+      default: "",
     },
-    alertMessage: {
+    alertType: {
       type: String,
+      default: "warning",
     },
   },
+  emits: ["submit"],
   data() {
     return {
-      oldPassword: "",
+      currentPassword: "",
       newPassword: "",
       confirmNewPassword: "",
     };
@@ -85,25 +88,22 @@ export default defineComponent({
   methods: {
     onSubmit(event: { preventDefault: () => void }) {
       event.preventDefault();
-      if (
-        this.oldPassword &&
-        this.newPassword &&
-        this.confirmNewPassword &&
-        this.newPassword === this.confirmNewPassword
-      ) {
-        this.$emit("submit", {
-          oldPassword: this.oldPassword,
-          newPassword: this.newPassword,
-        });
-      }
+
+      const submit: Submit = {
+        currentPassword: this.currentPassword,
+        newPassword: this.newPassword,
+        confirmNewPassword: this.confirmNewPassword,
+      };
+
+      this.$emit("submit", submit);
     },
-    updateOldPassword(value: BasePasswordFieldChange): void {
-      this.oldPassword = value.newValue;
+    updateCurrentPassword(value: Change): void {
+      this.currentPassword = value.newValue;
     },
-    updateNewPassword(value: BasePasswordFieldChange): void {
+    updateNewPassword(value: Change): void {
       this.newPassword = value.newValue;
     },
-    updateConfirmNewPassword(value: BasePasswordFieldChange): void {
+    updateConfirmNewPassword(value: Change): void {
       this.confirmNewPassword = value.newValue;
     },
   },
@@ -111,6 +111,6 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.change-password-panel {
+.pure-change-password-panel {
 }
 </style>

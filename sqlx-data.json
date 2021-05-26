@@ -41,6 +41,38 @@
       "nullable": []
     }
   },
+  "2ee6388f7fdc7c943968812de88ace027a8efa088a36a1b5f292992ad9bdd162": {
+    "query": "\nSELECT\n    A.public_id AS account_public_id,\n    AP.public_id AS \"account_password_public_id?\",\n    AP.password_hash AS \"account_password_hash?\"\nFROM account AS A\nLEFT JOIN account_password AS AP ON A.id = AP.account_id\nWHERE A.public_id = $1\n  AND AP.deleted IS NULL;\n",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "account_public_id",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 1,
+          "name": "account_password_public_id?",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 2,
+          "name": "account_password_hash?",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
   "697d5718990490bcb08b0b8a016021ddf4c5a361381d0690ef8ac3cfc17e111d": {
     "query": "\nUPDATE account_session\nSET deleted = $2\nWHERE public_id = $1\n  AND deleted IS NULL;\n",
     "describe": {
@@ -108,32 +140,6 @@
         ]
       },
       "nullable": []
-    }
-  },
-  "aa321a6f203014b44d76b21074d961e9d7ebcc940ac1232a035c58538249b078": {
-    "query": "\nSELECT\n    AP.public_id AS public_id,\n    AP.password_hash AS password_hash\nFROM account AS A\nINNER JOIN account_password AS AP ON A.id = AP.account_id\nWHERE A.public_id = $1\n  AND AP.deleted IS NULL;\n",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "public_id",
-          "type_info": "Varchar"
-        },
-        {
-          "ordinal": 1,
-          "name": "password_hash",
-          "type_info": "Text"
-        }
-      ],
-      "parameters": {
-        "Left": [
-          "Text"
-        ]
-      },
-      "nullable": [
-        false,
-        false
-      ]
     }
   },
   "e412ffe60d85735a51c79ec9689ddfd4b1ff270438719540168578f280f8355f": {

@@ -47,7 +47,7 @@ export default defineComponent({
   methods: {
     onSubmit(payload: Sumbit) {
       if (!payload.username || !payload.password) {
-        this.alertTitle = "Sorry! There was a problem with your request!";
+        this.alertTitle = "Uh oh, something went wrong";
         this.alertMessage =
           "All fields needs to be filled in order to login to an account!";
         this.alertEventDate = new Date();

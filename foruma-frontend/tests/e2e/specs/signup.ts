@@ -16,7 +16,7 @@ describe("signup", () => {
 
     cy.get('.pure-signup-form button[type="submit"]').click();
 
-    cy.contains("Sorry! There was a problem with your request!");
+    cy.contains("Uh oh, something went wrong");
     cy.contains("All fields needs to be filled in order to create an account!");
 
     cy.get(".base-alert--close").click();
@@ -32,7 +32,7 @@ describe("signup", () => {
 
     cy.get('.pure-signup-form button[type="submit"]').click();
 
-    cy.contains("Sorry! There was a problem with your request!");
+    cy.contains("Uh oh, something went wrong");
     cy.contains("Make sure your passwords match then try again!");
 
     cy.get(".base-alert--close").click();
