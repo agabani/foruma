@@ -14,8 +14,8 @@
         <form @submit="onSubmit">
           <div>
             <BasePasswordField
-              placeholder="Old password"
-              @change="updateOldPassword"
+              placeholder="Current password"
+              @change="updateCurrentPassword"
             />
           </div>
           <div>
@@ -47,7 +47,7 @@ import BasePanel from "./BasePanel.vue";
 import BasePasswordField, { Change } from "./BasePasswordField.vue";
 
 export interface Submit {
-  oldPassword: string;
+  currentPassword: string;
   newPassword: string;
   confirmNewPassword: string;
 }
@@ -80,7 +80,7 @@ export default defineComponent({
   emits: ["submit"],
   data() {
     return {
-      oldPassword: "",
+      currentPassword: "",
       newPassword: "",
       confirmNewPassword: "",
     };
@@ -90,15 +90,15 @@ export default defineComponent({
       event.preventDefault();
 
       const submit: Submit = {
-        oldPassword: this.oldPassword,
+        currentPassword: this.currentPassword,
         newPassword: this.newPassword,
         confirmNewPassword: this.confirmNewPassword,
       };
 
       this.$emit("submit", submit);
     },
-    updateOldPassword(value: Change): void {
-      this.oldPassword = value.newValue;
+    updateCurrentPassword(value: Change): void {
+      this.currentPassword = value.newValue;
     },
     updateNewPassword(value: Change): void {
       this.newPassword = value.newValue;

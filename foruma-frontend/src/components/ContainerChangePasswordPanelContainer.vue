@@ -52,7 +52,7 @@ export default defineComponent({
   methods: {
     onSubmit(payload: Submit) {
       if (
-        !payload.oldPassword ||
+        !payload.currentPassword ||
         !payload.newPassword ||
         !payload.confirmNewPassword
       ) {
@@ -71,7 +71,7 @@ export default defineComponent({
       }
 
       this.changePassword({
-        oldPassword: payload.oldPassword,
+        currentPassword: payload.currentPassword,
         newPassword: payload.newPassword,
       });
     },

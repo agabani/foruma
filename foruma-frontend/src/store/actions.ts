@@ -160,7 +160,7 @@ export const changeOwnPassword = async (
   const changePasswordResponse = await api.post(
     "/api/authentication/change-password",
     {
-      oldPassword: payload.oldPassword,
+      currentPassword: payload.currentPassword,
       newPassword: payload.newPassword,
     }
   );

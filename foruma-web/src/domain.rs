@@ -29,7 +29,7 @@ pub trait ChangePassword {
     async fn change_password(
         &self,
         account: &Account,
-        old_password: &Password,
+        current_password: &Password,
         new_password: &Password,
     ) -> Result<(), ChangePasswordError>;
 }

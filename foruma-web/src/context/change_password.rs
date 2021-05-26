@@ -4,11 +4,11 @@ use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl ChangePassword for Context {
-    #[tracing::instrument(skip(self, old_password, new_password))]
+    #[tracing::instrument(skip(self, current_password, new_password))]
     async fn change_password(
         &self,
         account: &Account,
-        old_password: &Password,
+        current_password: &Password,
         new_password: &Password,
     ) -> Result<(), ChangePasswordError> {
         let account_password = sqlx::query!(
@@ -41,7 +41,7 @@ WHERE A.public_id = $1
             }
         };
 
-        let matches = argon2::verify_encoded(&password_hash, old_password.value().as_bytes())
+        let matches = argon2::verify_encoded(&password_hash, current_password.value().as_bytes())
             .trace_err()
             .expect("TODO: handle password hashing error");
 
