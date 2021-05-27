@@ -28,7 +28,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
             .wrap(TracingLogger::default())
             .service(web::scope("/health").configure(health::config))
             .service(
-                web::scope("/api")
+                web::scope("/api/v1")
                     .service(web::scope("/account").configure(account::config))
                     .service(web::scope("/authentication").configure(authentication::config)),
             )
