@@ -52,7 +52,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::OPTIONS,
-            &format!("{}/api/authentication/signup", test_server.address),
+            &format!("{}/api/v1/authentication/signup", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .send()
@@ -67,7 +67,7 @@ async fn should_be_able_to_authenticate() {
     map.insert("password", "test-password");
     let response = client
         .post(&format!(
-            "{}/api/authentication/signup",
+            "{}/api/v1/authentication/signup",
             test_server.address
         ))
         .header("Origin", "http://localhost:8080")
@@ -84,7 +84,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::OPTIONS,
-            &format!("{}/api/authentication/whoami", test_server.address),
+            &format!("{}/api/v1/authentication/whoami", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .send()
@@ -97,7 +97,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::GET,
-            &format!("{}/api/authentication/whoami", test_server.address),
+            &format!("{}/api/v1/authentication/whoami", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
@@ -116,7 +116,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::OPTIONS,
-            &format!("{}/api/authentication/logout", test_server.address),
+            &format!("{}/api/v1/authentication/logout", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .send()
@@ -129,7 +129,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::POST,
-            &format!("{}/api/authentication/logout", test_server.address),
+            &format!("{}/api/v1/authentication/logout", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
@@ -146,7 +146,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::OPTIONS,
-            &format!("{}/api/authentication/login", test_server.address),
+            &format!("{}/api/v1/authentication/login", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .send()
@@ -160,7 +160,10 @@ async fn should_be_able_to_authenticate() {
     map.insert("username", "test-username");
     map.insert("password", "test-password");
     let response = client
-        .post(&format!("{}/api/authentication/login", test_server.address))
+        .post(&format!(
+            "{}/api/v1/authentication/login",
+            test_server.address
+        ))
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
         .json(&map)
@@ -176,7 +179,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::OPTIONS,
-            &format!("{}/api/authentication/whoami", test_server.address),
+            &format!("{}/api/v1/authentication/whoami", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .send()
@@ -189,7 +192,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::GET,
-            &format!("{}/api/authentication/whoami", test_server.address),
+            &format!("{}/api/v1/authentication/whoami", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
@@ -208,7 +211,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::OPTIONS,
-            &format!("{}/api/authentication/logout", test_server.address),
+            &format!("{}/api/v1/authentication/logout", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .send()
@@ -221,7 +224,7 @@ async fn should_be_able_to_authenticate() {
     let response = client
         .request(
             Method::POST,
-            &format!("{}/api/authentication/logout", test_server.address),
+            &format!("{}/api/v1/authentication/logout", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
@@ -245,7 +248,10 @@ async fn should_make_unauthenticated_requests() {
     map.insert("username", "admin");
     map.insert("password", "password");
     let response = client
-        .post(&format!("{}/api/authentication/login", test_server.address))
+        .post(&format!(
+            "{}/api/v1/authentication/login",
+            test_server.address
+        ))
         .header("Origin", "http://localhost:8080")
         .json(&map)
         .send()
@@ -257,7 +263,7 @@ async fn should_make_unauthenticated_requests() {
     // logout
     let response = client
         .post(&format!(
-            "{}/api/authentication/logout",
+            "{}/api/v1/authentication/logout",
             test_server.address
         ))
         .header("Origin", "http://localhost:8080")
@@ -270,7 +276,7 @@ async fn should_make_unauthenticated_requests() {
     // whoami
     let response = client
         .get(&format!(
-            "{}/api/authentication/whoami",
+            "{}/api/v1/authentication/whoami",
             test_server.address
         ))
         .header("Origin", "http://localhost:8080")
@@ -292,7 +298,7 @@ async fn should_not_be_able_to_sign_up_using_existing_account() {
     map.insert("password", "test-password");
     let response = client
         .post(&format!(
-            "{}/api/authentication/signup",
+            "{}/api/v1/authentication/signup",
             test_server.address
         ))
         .header("Origin", "http://localhost:8080")
@@ -310,7 +316,7 @@ async fn should_not_be_able_to_sign_up_using_existing_account() {
     map.insert("password", "test-password");
     let response = client
         .post(&format!(
-            "{}/api/authentication/signup",
+            "{}/api/v1/authentication/signup",
             test_server.address
         ))
         .header("Origin", "http://localhost:8080")

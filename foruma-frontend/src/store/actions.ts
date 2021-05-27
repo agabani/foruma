@@ -18,7 +18,7 @@ export const initialize = async ({
 }: {
   commit: Commit;
 }): Promise<void> => {
-  const whoamiResponse = await api.get("/api/authentication/whoami");
+  const whoamiResponse = await api.get("/api/v1/authentication/whoami");
 
   switch (whoamiResponse.status) {
     case 200:
@@ -40,7 +40,7 @@ export const login = async (
   { commit }: { commit: Commit },
   payload: LoginPayload
 ): Promise<void> => {
-  const loginResponse = await api.post("/api/authentication/login", {
+  const loginResponse = await api.post("/api/v1/authentication/login", {
     username: payload.username,
     password: payload.password,
   });
@@ -64,7 +64,7 @@ export const login = async (
       throw new Error("unexpected response");
   }
 
-  const whoamiResponse = await api.get("/api/authentication/whoami");
+  const whoamiResponse = await api.get("/api/v1/authentication/whoami");
 
   switch (whoamiResponse.status) {
     case 200:
@@ -78,7 +78,7 @@ export const login = async (
 };
 
 export const logout = async ({ commit }: { commit: Commit }): Promise<void> => {
-  const logoutResponse = await api.post("/api/authentication/logout");
+  const logoutResponse = await api.post("/api/v1/authentication/logout");
 
   switch (logoutResponse.status) {
     case 200:
@@ -95,7 +95,7 @@ export const signup = async (
   { commit }: { commit: Commit },
   payload: SignupPayload
 ): Promise<void> => {
-  const signupResponse = await api.post("/api/authentication/signup", {
+  const signupResponse = await api.post("/api/v1/authentication/signup", {
     username: payload.username,
     password: payload.password,
   });
@@ -122,7 +122,7 @@ export const signup = async (
       throw new Error("unexpected response");
   }
 
-  const whoamiResponse = await api.get("/api/authentication/whoami");
+  const whoamiResponse = await api.get("/api/v1/authentication/whoami");
 
   switch (whoamiResponse.status) {
     case 200:
@@ -140,7 +140,7 @@ export const terminateOwnAccount = async ({
 }: {
   commit: Commit;
 }): Promise<void> => {
-  const terminateResponse = await api.post("/api/account/terminate");
+  const terminateResponse = await api.post("/api/v1/account/terminate");
 
   switch (terminateResponse.status) {
     case 200:
@@ -158,7 +158,7 @@ export const changeOwnPassword = async (
   payload: ChangePasswordPayload
 ): Promise<void> => {
   const changePasswordResponse = await api.post(
-    "/api/authentication/change-password",
+    "/api/v1/authentication/change-password",
     {
       currentPassword: payload.currentPassword,
       newPassword: payload.newPassword,
