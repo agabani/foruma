@@ -41,8 +41,6 @@ pub trait SessionCookieHttpResponseBuilder {
         key: &cookie::Key,
         cookie: cookie::Cookie<'static>,
     ) -> &mut Self;
-
-    fn delete_session_cookie(&mut self, cookie: &mut cookie::Cookie) -> &mut Self;
 }
 
 impl SessionCookieHttpResponseBuilder for HttpResponseBuilder {
@@ -55,11 +53,5 @@ impl SessionCookieHttpResponseBuilder for HttpResponseBuilder {
         jar.private_mut(&key).add(cookie);
         let cookie = jar.get(SESSION).cloned().unwrap();
         self.cookie(cookie)
-    }
-
-    fn delete_session_cookie(&mut self, cookie: &mut cookie::Cookie) -> &mut Self {
-        cookie.set_http_only(true);
-        cookie.set_secure(true);
-        self.del_cookie(cookie)
     }
 }

@@ -1,6 +1,6 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cookie::{SessionCookie, SessionCookieHttpRequest, SessionCookieHttpResponseBuilder};
+use crate::cookie::{SessionCookie, SessionCookieHttpRequest};
 use crate::cors::Cors;
 use crate::domain::GetAccount;
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
@@ -27,25 +27,26 @@ pub async fn get(
     configuration: web::Data<Configuration>,
     key: web::Data<cookie::Key>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let cookie = http_request.decrypt_session_cookie(&key);
-    if cookie.is_none() {
-        return Ok(HttpResponse::Unauthorized()
-            .insert_access_control_headers(&configuration, &http_request)
-            .finish());
-    }
+    let session_id = match http_request
+        .decrypt_session_cookie(&key)
+        .map(|cookie| cookie.session_id())
+    {
+        Some(session_id) => session_id,
+        None => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish());
+        }
+    };
 
-    let mut cookie = cookie.unwrap();
-    let session_id = cookie.session_id();
-
-    let account = context.get_account(&session_id).await;
-    if account.is_none() {
-        return Ok(HttpResponse::Unauthorized()
-            .insert_access_control_headers(&configuration, &http_request)
-            .delete_session_cookie(&mut cookie)
-            .finish());
-    }
-
-    let account = account.unwrap();
+    let account = match context.get_account(&session_id).await {
+        Some(account) => account,
+        None => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish());
+        }
+    };
 
     return Ok(HttpResponse::Ok()
         .insert_access_control_headers(&configuration, &http_request)

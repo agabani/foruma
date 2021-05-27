@@ -1,6 +1,6 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cookie::{SessionCookie, SessionCookieHttpRequest, SessionCookieHttpResponseBuilder};
+use crate::cookie::{SessionCookie, SessionCookieHttpRequest};
 use crate::cors::Cors;
 use crate::domain::{ChangePassword, ChangePasswordError, GetAccount, Password};
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
@@ -34,51 +34,47 @@ pub async fn post(
     let current_password = Password::new(&request.current_password);
     let new_password = Password::new(&request.new_password);
 
-    let cookie = http_request.decrypt_session_cookie(&key);
-    if cookie.is_none() {
-        return Ok(HttpResponse::Unauthorized()
-            .insert_access_control_headers(&configuration, &http_request)
-            .finish());
-    }
+    let session_id = match http_request
+        .decrypt_session_cookie(&key)
+        .map(|cookie| cookie.session_id())
+    {
+        Some(session_id) => session_id,
+        None => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish());
+        }
+    };
 
-    let mut cookie = cookie.unwrap();
-    let session_id = cookie.session_id();
+    let account = match context.get_account(&session_id).await {
+        Some(account) => account,
+        None => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish());
+        }
+    };
 
-    let account = context.get_account(&session_id).await;
-    if account.is_none() {
-        return Ok(HttpResponse::Unauthorized()
-            .insert_access_control_headers(&configuration, &http_request)
-            .delete_session_cookie(&mut cookie)
-            .finish());
-    }
-
-    let account = account.unwrap();
-
-    let result = context
+    match context
         .change_password(&account, &current_password, &new_password)
-        .await;
-
-    match result {
+        .await
+    {
         Ok(_) => Ok(HttpResponse::Ok()
-            .encrypt_session_cookie(&key, cookie)
             .insert_access_control_headers(&configuration, &http_request)
             .finish()),
         Err(ChangePasswordError::AccountDoesNotExist) => {
             return Ok(HttpResponse::Unauthorized()
                 .insert_access_control_headers(&configuration, &http_request)
-                .delete_session_cookie(&mut cookie)
                 .finish());
         }
         Err(ChangePasswordError::IncorrectPassword) => {
             return Ok(HttpResponse::BadRequest()
                 .insert_access_control_headers(&configuration, &http_request)
-                .delete_session_cookie(&mut cookie)
                 .finish());
         }
         Err(ChangePasswordError::AccountHasNoPassword) => {
             return Ok(HttpResponse::Forbidden()
                 .insert_access_control_headers(&configuration, &http_request)
-                .delete_session_cookie(&mut cookie)
                 .finish());
         }
     }

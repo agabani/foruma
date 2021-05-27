@@ -31,8 +31,7 @@ pub async fn post(
     let username = Username::new(&request.username);
     let password = Password::new(&request.password);
 
-    let session_id = context.log_in(&username, &password).await;
-    let session_id = match session_id {
+    let session_id = match context.log_in(&username, &password).await {
         Ok(session_id) => session_id,
         Err(LogInError::AccountDoesNotExist) => {
             return Ok(HttpResponse::Unauthorized()
@@ -51,10 +50,8 @@ pub async fn post(
         }
     };
 
-    let cookie = SessionCookie::new(&session_id);
-
     Ok(HttpResponse::Ok()
-        .encrypt_session_cookie(&key, cookie)
+        .encrypt_session_cookie(&key, SessionCookie::new(&session_id))
         .insert_access_control_headers(&configuration, &http_request)
         .finish())
 }

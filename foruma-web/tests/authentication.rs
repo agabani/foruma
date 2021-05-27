@@ -138,9 +138,6 @@ async fn should_be_able_to_authenticate() {
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
-    let cookie_header = response.headers().get("Set-Cookie").expect("Set-Cookie");
-    let cookie = cookie::Cookie::parse(cookie_header.to_str().unwrap()).unwrap();
-    assert!(cookie.max_age().unwrap().is_zero());
 
     // log in
     let response = client
@@ -233,9 +230,6 @@ async fn should_be_able_to_authenticate() {
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
-    let cookie_header = response.headers().get("Set-Cookie").expect("Set-Cookie");
-    let cookie = cookie::Cookie::parse(cookie_header.to_str().unwrap()).unwrap();
-    assert!(cookie.max_age().unwrap().is_zero());
 }
 
 #[actix_rt::test]

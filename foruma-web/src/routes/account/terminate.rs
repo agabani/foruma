@@ -1,6 +1,6 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cookie::{SessionCookie, SessionCookieHttpRequest, SessionCookieHttpResponseBuilder};
+use crate::cookie::{SessionCookie, SessionCookieHttpRequest};
 use crate::cors::Cors;
 use crate::domain::{GetAccount, TerminateAccount, TerminateAccountError};
 use actix_web::http::Method;
@@ -22,33 +22,30 @@ pub async fn post(
     context: web::Data<Context>,
     key: web::Data<cookie::Key>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let cookie = http_request.decrypt_session_cookie(&key);
-    if cookie.is_none() {
-        return Ok(HttpResponse::Unauthorized()
-            .insert_access_control_headers(&configuration, &http_request)
-            .finish());
-    }
+    let session_id = match http_request
+        .decrypt_session_cookie(&key)
+        .map(|cookie| cookie.session_id())
+    {
+        Some(session_id) => session_id,
+        None => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish())
+        }
+    };
 
-    let mut cookie = cookie.unwrap();
-    let session_id = cookie.session_id();
+    let account = match context.get_account(&session_id).await {
+        Some(account) => account,
+        None => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish())
+        }
+    };
 
-    let account = context.get_account(&session_id).await;
-
-    if account.is_none() {
-        return Ok(HttpResponse::Unauthorized()
-            .insert_access_control_headers(&configuration, &http_request)
-            .delete_session_cookie(&mut cookie)
-            .finish());
-    }
-
-    let account = account.unwrap();
-
-    let result = context.terminate_account(&account).await;
-
-    match result {
+    match context.terminate_account(&account).await {
         Ok(()) => Ok(HttpResponse::Ok()
             .insert_access_control_headers(&configuration, &http_request)
-            .delete_session_cookie(&mut cookie)
             .finish()),
         Err(TerminateAccountError::AccountDoesNotExist) => Ok(HttpResponse::BadRequest()
             .insert_access_control_headers(&configuration, &http_request)

@@ -1,6 +1,6 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cookie::{SessionCookie, SessionCookieHttpRequest, SessionCookieHttpResponseBuilder};
+use crate::cookie::{SessionCookie, SessionCookieHttpRequest};
 use crate::cors::Cors;
 use crate::domain::{LogOut, LogoutError};
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
@@ -21,24 +21,24 @@ pub async fn post(
     context: web::Data<Context>,
     key: web::Data<cookie::Key>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let cookie = http_request.decrypt_session_cookie(&key);
-    if cookie.is_none() {
-        return Ok(HttpResponse::Unauthorized()
-            .insert_access_control_headers(&configuration, &http_request)
-            .finish());
-    }
+    let session_id = match http_request
+        .decrypt_session_cookie(&key)
+        .map(|cookie| cookie.session_id())
+    {
+        Some(session_id) => session_id,
+        None => {
+            return Ok(HttpResponse::Unauthorized()
+                .insert_access_control_headers(&configuration, &http_request)
+                .finish())
+        }
+    };
 
-    let mut cookie = cookie.unwrap();
-    let result = context.log_out(&cookie.session_id()).await;
-
-    match result {
+    match context.log_out(&session_id).await {
         Ok(()) => Ok(HttpResponse::Ok()
             .insert_access_control_headers(&configuration, &http_request)
-            .delete_session_cookie(&mut cookie)
             .finish()),
         Err(LogoutError::SessionDoesNotExist) => Ok(HttpResponse::NotFound()
             .insert_access_control_headers(&configuration, &http_request)
-            .delete_session_cookie(&mut cookie)
             .finish()),
     }
 }
