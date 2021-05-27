@@ -1,16 +1,16 @@
 <template>
-  <DeleteYourAccountPanel @click="terminateOwnAccount" />
+  <PureDeleteYourAccountPanel @click="terminateOwnAccount" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useStore } from "@/store";
-import DeleteYourAccountPanel from "@/stories/DeleteYourAccountPanel.vue";
+import PureDeleteYourAccountPanel from "@/stories/PureDeleteYourAccountPanel.vue";
 
 export default defineComponent({
-  name: "DeleteYourAccountPanelContainer",
+  name: "ContainerDeleteYourAccountPanel",
   components: {
-    DeleteYourAccountPanel,
+    PureDeleteYourAccountPanel,
   },
   setup() {
     const store = useStore();

@@ -73,19 +73,6 @@
       ]
     }
   },
-  "697d5718990490bcb08b0b8a016021ddf4c5a361381d0690ef8ac3cfc17e111d": {
-    "query": "\nUPDATE account_session\nSET deleted = $2\nWHERE public_id = $1\n  AND deleted IS NULL;\n",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Timestamptz"
-        ]
-      },
-      "nullable": []
-    }
-  },
   "6a6951324cf16454f1d0f62c575a55f3724d5671110ba27b5eb902f0d6b1ee7f": {
     "query": "\nINSERT INTO account (public_id, created, username)\nVALUES ($1, $2, $3)\nON CONFLICT DO NOTHING\nRETURNING id;\n",
     "describe": {
@@ -179,6 +166,27 @@
         ]
       },
       "nullable": []
+    }
+  },
+  "f0cb7a293dda86174629bf6037621edde6adf83130449b9a977e5166a368a7b0": {
+    "query": "\nUPDATE account_session\nSET deleted = $2\nWHERE public_id = $1\n  AND deleted IS NULL\nRETURNING id;\n",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Timestamptz"
+        ]
+      },
+      "nullable": [
+        false
+      ]
     }
   }
 }

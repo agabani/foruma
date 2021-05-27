@@ -1,11 +1,11 @@
 use crate::context::Context;
-use crate::domain::{Account, TerminateAccount};
+use crate::domain::{Account, TerminateAccount, TerminateAccountError};
 use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl TerminateAccount for Context {
     #[tracing::instrument(skip(self))]
-    async fn terminate_account(&self, account: &Account) {
+    async fn terminate_account(&self, account: &Account) -> Result<(), TerminateAccountError> {
         sqlx::query!(
             r#"
 DELETE
@@ -15,9 +15,15 @@ RETURNING id;
             "#,
             account.account_id().value()
         )
-        .fetch_one(&self.postgres)
+        .fetch_optional(&self.postgres)
         .await
         .trace_err()
-        .expect("TODO");
+        .expect("TODO: handle database error")
+        .ok_or({
+            tracing::warn!("Session does not exist");
+            TerminateAccountError::AccountDoesNotExist
+        })?;
+
+        Ok(())
     }
 }

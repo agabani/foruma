@@ -34,7 +34,7 @@ pub async fn post(
     let session_id = context.log_in(&username, &password).await;
     let session_id = match session_id {
         Ok(session_id) => session_id,
-        Err(LogInError::DoesNotExist) => {
+        Err(LogInError::AccountDoesNotExist) => {
             return Ok(HttpResponse::Unauthorized()
                 .insert_access_control_headers(&configuration, &http_request)
                 .finish());

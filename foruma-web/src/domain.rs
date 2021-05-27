@@ -55,29 +55,37 @@ pub trait LogIn {
 
 #[async_trait::async_trait]
 pub trait LogOut {
-    async fn log_out(&self, session_id: &SessionId);
+    async fn log_out(&self, session_id: &SessionId) -> Result<(), LogoutError>;
 }
 
 #[async_trait::async_trait]
 pub trait TerminateAccount {
-    async fn terminate_account(&self, account: &Account);
+    async fn terminate_account(&self, account: &Account) -> Result<(), TerminateAccountError>;
 }
 
 // Errors
 pub enum ChangePasswordError {
     AccountDoesNotExist,
-    IncorrectPassword,
     AccountHasNoPassword,
+    IncorrectPassword,
 }
 
 pub enum CreateAccountError {
-    AlreadyExists,
+    AccountAlreadyExists,
 }
 
 pub enum LogInError {
-    DoesNotExist,
-    IncorrectPassword,
+    AccountDoesNotExist,
     AccountHasNoPassword,
+    IncorrectPassword,
+}
+
+pub enum LogoutError {
+    SessionDoesNotExist,
+}
+
+pub enum TerminateAccountError {
+    AccountDoesNotExist,
 }
 
 // Implementations

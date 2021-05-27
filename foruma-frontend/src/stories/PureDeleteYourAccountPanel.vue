@@ -1,5 +1,5 @@
 <template>
-  <div class="delete-your-account-panel">
+  <div class="pure-delete-your-account-panel">
     <BasePanel>
       <template v-slot:header>
         <span>Delete your account</span>
@@ -21,7 +21,7 @@ import BaseButton from "./BaseButton.vue";
 import BasePanel from "./BasePanel.vue";
 
 export default defineComponent({
-  name: "DeleteYourAccountPanel",
+  name: "PureDeleteYourAccountPanel",
   components: {
     BaseButton,
     BasePanel,
@@ -31,6 +31,6 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.delete-your-account-panel {
+.pure-delete-your-account-panel {
 }
 </style>

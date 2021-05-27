@@ -17,7 +17,7 @@ import PureChangePasswordPanel, {
 } from "@/stories/PureChangePasswordPanel.vue";
 
 export default defineComponent({
-  name: "ContainerChangePasswordContainer",
+  name: "ContainerChangePasswordPanel",
   components: { PureChangePasswordPanel },
   setup() {
     const store = useStore();
