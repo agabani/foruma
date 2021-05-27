@@ -15,7 +15,7 @@ import BaseHeader from "@/stories/BaseHeader.vue";
 import { useStore } from "@/store";
 import router from "@/router";
 export default defineComponent({
-  name: "Header",
+  name: "ContainerHeader",
   components: {
     BaseHeader,
   },
