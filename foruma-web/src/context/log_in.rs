@@ -10,15 +10,14 @@ impl LogIn for Context {
         username: &Username,
         password: &Password,
     ) -> Result<SessionId, LogInError> {
-        let account = sqlx::query!(
+        let record = sqlx::query!(
             r#"
-SELECT
-    A.id AS id,
-    AP.password_hash AS "password_hash?"
+SELECT A.id             AS account_id,
+       AP.password_hash AS "account_password_hash?"
 FROM account AS A
-LEFT JOIN account_password AS AP ON A.id = AP.account_id
+         LEFT JOIN account_password AS AP ON A.id = AP.account_id
 WHERE A.username = $1
-  AND AP.deleted IS NULL
+  AND AP.deleted IS NULL;
 "#,
             username.value()
         )
@@ -31,7 +30,7 @@ WHERE A.username = $1
             LogInError::AccountDoesNotExist
         })?;
 
-        let password_hash = match &account.password_hash {
+        let password_hash = match &record.account_password_hash {
             Some(password_hash) => password_hash,
             None => {
                 tracing::warn!("Account has no password");
@@ -58,7 +57,7 @@ VALUES ($1, $2, $3);
 "#,
             session_id.value(),
             created,
-            account.id
+            record.account_id
         )
         .execute(&self.postgres)
         .await

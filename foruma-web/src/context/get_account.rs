@@ -6,13 +6,12 @@ use crate::telemetry::TraceErrorExt;
 impl GetAccount for Context {
     #[tracing::instrument(skip(self))]
     async fn get_account(&self, session_id: &SessionId) -> Option<Account> {
-        let account = sqlx::query!(
+        let record = sqlx::query!(
             r#"
-SELECT
-    A.public_id AS public_id,
-    A.username AS username
+SELECT A.public_id AS account_public_id,
+       A.username  AS account_username
 FROM account AS A
-INNER JOIN account_session AS "AS" ON A.id = "AS".account_id
+         INNER JOIN account_session AS "AS" ON A.id = "AS".account_id
 WHERE "AS".public_id = $1
   AND "AS".deleted IS NULL;
 "#,
@@ -21,11 +20,11 @@ WHERE "AS".public_id = $1
         .fetch_optional(&self.postgres)
         .await
         .trace_err()
-        .expect("TODO")?;
+        .expect("TODO: handle database error")?;
 
         Some(Account::new(
-            &AccountId::new(&account.public_id),
-            &Username::new(&account.username),
+            &AccountId::new(&record.account_public_id),
+            &Username::new(&record.account_username),
         ))
     }
 }

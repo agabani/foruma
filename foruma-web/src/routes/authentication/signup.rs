@@ -37,6 +37,7 @@ pub async fn post(
     let account = match account {
         Ok(account) => account,
         Err(CreateAccountError::AccountAlreadyExists) => {
+            tracing::warn!("TODO: gracefully handle account creation");
             return Ok(HttpResponse::Unauthorized()
                 .insert_access_control_headers(&configuration, &http_request)
                 .finish());

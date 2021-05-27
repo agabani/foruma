@@ -23,16 +23,16 @@ INSERT INTO account_password(public_id, created, account_id, password_hash)
 VALUES ($1,
         $2,
         (SELECT id FROM account WHERE account.public_id = $3),
-        $4)
+        $4);
 "#,
             password_id.value(),
             created,
             account.account_id().value(),
             password_hash
         )
-        .fetch_optional(&self.postgres)
+        .execute(&self.postgres)
         .await
         .trace_err()
-        .expect("TODO");
+        .expect("TODO: handle database error");
     }
 }

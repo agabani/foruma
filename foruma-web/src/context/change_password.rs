@@ -11,14 +11,13 @@ impl ChangePassword for Context {
         current_password: &Password,
         new_password: &Password,
     ) -> Result<(), ChangePasswordError> {
-        let account_password = sqlx::query!(
+        let record = sqlx::query!(
             r#"
-SELECT
-    A.public_id AS account_public_id,
-    AP.public_id AS "account_password_public_id?",
-    AP.password_hash AS "account_password_hash?"
+SELECT A.public_id      AS account_public_id,
+       AP.public_id     AS "account_password_public_id?",
+       AP.password_hash AS "account_password_hash?"
 FROM account AS A
-LEFT JOIN account_password AS AP ON A.id = AP.account_id
+         LEFT JOIN account_password AS AP ON A.id = AP.account_id
 WHERE A.public_id = $1
   AND AP.deleted IS NULL;
 "#,
@@ -33,7 +32,7 @@ WHERE A.public_id = $1
             ChangePasswordError::AccountDoesNotExist
         })?;
 
-        let password_hash = match &account_password.account_password_hash {
+        let password_hash = match &record.account_password_hash {
             Some(password_hash) => password_hash,
             None => {
                 tracing::warn!("Account has no password");
@@ -70,11 +69,11 @@ WHERE A.public_id = $1
         sqlx::query!(
             r#"
 UPDATE account_password
-    SET deleted = $1
-    WHERE account_password.public_id = $2;
+SET deleted = $1
+WHERE account_password.public_id = $2;
 "#,
             created,
-            account_password.account_password_public_id
+            record.account_password_public_id
         )
         .execute(&mut tx)
         .await
@@ -87,7 +86,7 @@ INSERT INTO account_password(public_id, created, account_id, password_hash)
 VALUES ($1,
         $2,
         (SELECT id FROM account WHERE account.public_id = $3),
-        $4)
+        $4);
 "#,
             password_id.value(),
             created,
