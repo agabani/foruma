@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header />
+    <ContainerHeader />
   </div>
   <div id="nav">
     <router-link to="/">Home</router-link> |
@@ -11,13 +11,13 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Header from "@/components/Header.vue";
+import ContainerHeader from "@/components/ContainerHeader.vue";
 import { useStore } from "@/store";
 
 export default defineComponent({
   name: "App",
   components: {
-    Header,
+    ContainerHeader,
   },
   created: function () {
     if (sessionStorage.spaFallbackRedirect) {
