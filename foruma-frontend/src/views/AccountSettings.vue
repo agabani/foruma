@@ -1,20 +1,20 @@
 <template>
   <div>
-    <ContainerChangePasswordPanelContainer />
-    <DeleteYourAccountPanelContainer />
+    <ContainerChangePasswordPanel />
+    <ContainerDeleteYourAccountPanel />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import DeleteYourAccountPanelContainer from "@/components/DeleteYourAccountPanelContainer.vue";
-import ContainerChangePasswordPanelContainer from "@/components/ContainerChangePasswordPanelContainer.vue";
+import ContainerChangePasswordPanel from "@/components/ContainerChangePasswordPanel.vue";
+import ContainerDeleteYourAccountPanel from "@/components/ContainerDeleteYourAccountPanel.vue";
 
 export default defineComponent({
   name: "AccountSettingsPage",
   components: {
-    ContainerChangePasswordPanelContainer,
-    DeleteYourAccountPanelContainer,
+    ContainerChangePasswordPanel,
+    ContainerDeleteYourAccountPanel,
   },
 });
 </script>
