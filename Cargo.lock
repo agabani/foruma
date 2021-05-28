@@ -742,7 +742,7 @@ dependencies = [
  "actix-web",
  "async-trait",
  "config",
- "cookie",
+ "pin-project",
  "reqwest",
  "rust-argon2",
  "serde 1.0.126",

@@ -1,8 +1,7 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cookie::{SessionCookie, SessionCookieHttpRequest};
 use crate::cors::Cors;
-use crate::domain::GetAccount;
+use crate::domain::{GetAccount, SessionId};
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
 
 #[derive(serde::Serialize)]
@@ -25,12 +24,9 @@ pub async fn get(
     http_request: HttpRequest,
     context: web::Data<Context>,
     configuration: web::Data<Configuration>,
-    key: web::Data<cookie::Key>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let session_id = match http_request
-        .decrypt_session_cookie(&key)
-        .map(|cookie| cookie.session_id())
-    {
+    let extensions = http_request.extensions();
+    let session_id = match extensions.get::<SessionId>() {
         Some(session_id) => session_id,
         None => {
             return Ok(HttpResponse::Unauthorized()
@@ -39,7 +35,7 @@ pub async fn get(
         }
     };
 
-    let account = match context.get_account(&session_id).await {
+    let account = match context.get_account(session_id).await {
         Some(account) => account,
         None => {
             return Ok(HttpResponse::Unauthorized()

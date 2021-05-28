@@ -1,6 +1,5 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cookie::{SessionCookie, SessionCookieHttpResponseBuilder};
 use crate::cors::Cors;
 use crate::domain::{
     CreateAccount, CreateAccountError, CreatePassword, LogIn, LogInError, Password, Username,
@@ -27,7 +26,6 @@ pub async fn post(
     http_request: HttpRequest,
     configuration: web::Data<Configuration>,
     context: web::Data<Context>,
-    key: web::Data<cookie::Key>,
     request: web::Json<Request>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let username = Username::new(&request.username);
@@ -64,8 +62,8 @@ pub async fn post(
         }
     };
 
-    Ok(HttpResponse::Ok()
-        .encrypt_session_cookie(&key, SessionCookie::new(&session_id))
-        .insert_access_control_headers(&configuration, &http_request)
-        .finish())
+    let mut response = HttpResponse::Ok();
+    response.insert_access_control_headers(&configuration, &http_request);
+    response.extensions_mut().insert(session_id);
+    Ok(response.finish())
 }

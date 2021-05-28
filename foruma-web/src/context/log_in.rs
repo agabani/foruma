@@ -25,7 +25,7 @@ WHERE A.username = $1
         .await
         .trace_err()
         .expect("TODO: handle database error")
-        .ok_or({
+        .ok_or_else(|| {
             tracing::warn!("Account does not exist");
             LogInError::AccountDoesNotExist
         })?;

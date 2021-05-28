@@ -1,8 +1,7 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cookie::{SessionCookie, SessionCookieHttpRequest};
 use crate::cors::Cors;
-use crate::domain::{ChangePassword, ChangePasswordError, GetAccount, Password};
+use crate::domain::{ChangePassword, ChangePasswordError, GetAccount, Password, SessionId};
 use actix_web::{http::Method, web, HttpRequest, HttpResponse};
 
 #[derive(serde::Deserialize)]
@@ -28,16 +27,13 @@ pub async fn post(
     http_request: HttpRequest,
     configuration: web::Data<Configuration>,
     context: web::Data<Context>,
-    key: web::Data<cookie::Key>,
     request: web::Json<Request>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let current_password = Password::new(&request.current_password);
     let new_password = Password::new(&request.new_password);
 
-    let session_id = match http_request
-        .decrypt_session_cookie(&key)
-        .map(|cookie| cookie.session_id())
-    {
+    let extensions = http_request.extensions();
+    let session_id = match extensions.get::<SessionId>() {
         Some(session_id) => session_id,
         None => {
             return Ok(HttpResponse::Unauthorized()

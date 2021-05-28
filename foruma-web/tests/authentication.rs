@@ -78,7 +78,7 @@ async fn should_be_able_to_authenticate() {
     assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
     let cookie_header = response.headers().get("Set-Cookie").expect("Set-Cookie");
-    let cookie = cookie::Cookie::parse(cookie_header.to_str().unwrap()).unwrap();
+    let cookie = actix_web::cookie::Cookie::parse(cookie_header.to_str().unwrap()).unwrap();
 
     // who am i
     let response = client
@@ -170,7 +170,7 @@ async fn should_be_able_to_authenticate() {
     assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
     let cookie_header = response.headers().get("Set-Cookie").expect("Set-Cookie");
-    let cookie = cookie::Cookie::parse(cookie_header.to_str().unwrap()).unwrap();
+    let cookie = actix_web::cookie::Cookie::parse(cookie_header.to_str().unwrap()).unwrap();
 
     // who am i
     let response = client

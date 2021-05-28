@@ -1,8 +1,7 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cookie::{SessionCookie, SessionCookieHttpRequest};
 use crate::cors::Cors;
-use crate::domain::{GetAccount, TerminateAccount, TerminateAccountError};
+use crate::domain::{GetAccount, SessionId, TerminateAccount, TerminateAccountError};
 use actix_web::http::Method;
 use actix_web::{web, HttpRequest, HttpResponse};
 
@@ -20,17 +19,14 @@ pub async fn post(
     http_request: HttpRequest,
     configuration: web::Data<Configuration>,
     context: web::Data<Context>,
-    key: web::Data<cookie::Key>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let session_id = match http_request
-        .decrypt_session_cookie(&key)
-        .map(|cookie| cookie.session_id())
-    {
+    let extensions = http_request.extensions();
+    let session_id = match extensions.get::<SessionId>() {
         Some(session_id) => session_id,
         None => {
             return Ok(HttpResponse::Unauthorized()
                 .insert_access_control_headers(&configuration, &http_request)
-                .finish())
+                .finish());
         }
     };
 

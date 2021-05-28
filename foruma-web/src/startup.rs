@@ -1,5 +1,6 @@
 use crate::configuration::Configuration;
 use crate::context::Context;
+use crate::middleware::SessionId;
 use crate::routes::{account, authentication, health};
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
@@ -20,12 +21,16 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
 
     let data_configuration = web::Data::new(configuration.clone());
     let data_context = web::Data::new(context);
-    let data_key = web::Data::new(cookie::Key::generate());
+
+    let key = actix_web::cookie::Key::generate();
+
+    let data_key = web::Data::new(key.clone());
     let data_postgres_pool = web::Data::new(postgres_pool);
 
     let server = HttpServer::new(move || {
         App::new()
             .wrap(TracingLogger::default())
+            .wrap(SessionId::new(key.clone()))
             .service(web::scope("/health").configure(health::config))
             .service(
                 web::scope("/api/v1")
