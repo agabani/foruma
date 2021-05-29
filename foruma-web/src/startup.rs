@@ -2,8 +2,12 @@ use crate::configuration::Configuration;
 use crate::context::Context;
 use crate::middleware::SessionId;
 use crate::routes::{account, authentication, health};
+use actix_cors::Cors;
 use actix_web::dev::Server;
-use actix_web::{web, App, HttpServer};
+use actix_web::{
+    http::{header, Method},
+    web, App, HttpServer,
+};
 use tracing_actix_web::TracingLogger;
 
 pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
@@ -19,7 +23,6 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
 
     let context = Context::new(postgres_pool.clone());
 
-    let data_configuration = web::Data::new(configuration.clone());
     let data_context = web::Data::new(context);
 
     let key = actix_web::cookie::Key::generate();
@@ -27,8 +30,20 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let data_key = web::Data::new(key.clone());
     let data_postgres_pool = web::Data::new(postgres_pool);
 
+    let origins = configuration
+        .cors
+        .as_ref()
+        .map_or_else(|| "".to_string(), |cors| cors.comma_separated_origins());
+
     let server = HttpServer::new(move || {
         App::new()
+            .wrap(
+                Cors::default()
+                    .allowed_origin(&origins)
+                    .allowed_methods(vec![Method::GET, Method::POST])
+                    .allowed_headers(vec![header::CONTENT_TYPE])
+                    .supports_credentials(),
+            )
             .wrap(TracingLogger::default())
             .wrap(SessionId::new(key.clone()))
             .service(web::scope("/health").configure(health::config))
@@ -37,7 +52,6 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
                     .service(web::scope("/account").configure(account::config))
                     .service(web::scope("/authentication").configure(authentication::config)),
             )
-            .app_data(data_configuration.clone())
             .app_data(data_context.clone())
             .app_data(data_key.clone())
             .app_data(data_postgres_pool.clone())

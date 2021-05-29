@@ -4,12 +4,6 @@ use std::collections::HashMap;
 mod test_server;
 
 fn assert_preflight_access_control_allow_headers(methods: &[Method], response: &Response) {
-    let methods = methods
-        .iter()
-        .map(|method| method.as_str())
-        .collect::<Vec<_>>()
-        .join(",");
-
     assert_eq!(
         response
             .headers()
@@ -17,13 +11,16 @@ fn assert_preflight_access_control_allow_headers(methods: &[Method], response: &
             .expect("Access-Control-Allow-Headers"),
         "content-type"
     );
-    assert_eq!(
-        response
+
+    for method in methods {
+        assert!(response
             .headers()
             .get("Access-Control-Allow-Methods")
-            .expect("Access-Control-Allow-Methods"),
-        &methods
-    );
+            .expect("Access-Control-Allow-Methods")
+            .to_str()
+            .unwrap()
+            .contains(method.as_str()))
+    }
 }
 
 fn assert_access_control_allow_headers(response: &Response) {
@@ -54,12 +51,14 @@ async fn should_be_able_to_authenticate() {
             Method::OPTIONS,
             &format!("{}/api/v1/authentication/signup", test_server.address),
         )
+        .header("Access-Control-Request-Headers", "content-type")
+        .header("Access-Control-Request-Method", "POST")
         .header("Origin", "http://localhost:8080")
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::POST], &response);
+    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
     assert_access_control_allow_headers(&response);
 
     let mut map = HashMap::new();
@@ -86,12 +85,14 @@ async fn should_be_able_to_authenticate() {
             Method::OPTIONS,
             &format!("{}/api/v1/authentication/whoami", test_server.address),
         )
+        .header("Access-Control-Request-Headers", "content-type")
+        .header("Access-Control-Request-Method", "GET")
         .header("Origin", "http://localhost:8080")
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::GET], &response);
+    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
     assert_access_control_allow_headers(&response);
 
     let response = client
@@ -118,12 +119,14 @@ async fn should_be_able_to_authenticate() {
             Method::OPTIONS,
             &format!("{}/api/v1/authentication/logout", test_server.address),
         )
+        .header("Access-Control-Request-Headers", "content-type")
+        .header("Access-Control-Request-Method", "POST")
         .header("Origin", "http://localhost:8080")
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::POST], &response);
+    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
     assert_access_control_allow_headers(&response);
 
     let response = client
@@ -145,12 +148,14 @@ async fn should_be_able_to_authenticate() {
             Method::OPTIONS,
             &format!("{}/api/v1/authentication/login", test_server.address),
         )
+        .header("Access-Control-Request-Headers", "content-type")
+        .header("Access-Control-Request-Method", "GET")
         .header("Origin", "http://localhost:8080")
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::POST], &response);
+    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
     assert_access_control_allow_headers(&response);
 
     let mut map = HashMap::new();
@@ -178,12 +183,14 @@ async fn should_be_able_to_authenticate() {
             Method::OPTIONS,
             &format!("{}/api/v1/authentication/whoami", test_server.address),
         )
+        .header("Access-Control-Request-Headers", "content-type")
+        .header("Access-Control-Request-Method", "GET")
         .header("Origin", "http://localhost:8080")
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::GET], &response);
+    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
     assert_access_control_allow_headers(&response);
 
     let response = client
@@ -210,12 +217,14 @@ async fn should_be_able_to_authenticate() {
             Method::OPTIONS,
             &format!("{}/api/v1/authentication/logout", test_server.address),
         )
+        .header("Access-Control-Request-Headers", "content-type")
+        .header("Access-Control-Request-Method", "GET")
         .header("Origin", "http://localhost:8080")
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::POST], &response);
+    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
     assert_access_control_allow_headers(&response);
 
     let response = client

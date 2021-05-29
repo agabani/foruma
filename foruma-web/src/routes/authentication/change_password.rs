@@ -1,8 +1,6 @@
-use crate::configuration::Configuration;
 use crate::context::Context;
-use crate::cors::Cors;
 use crate::domain::{ChangePassword, ChangePasswordError, GetAccount, Password, SessionId};
-use actix_web::{http::Method, web, HttpRequest, HttpResponse};
+use actix_web::{web, HttpRequest, HttpResponse};
 
 #[derive(serde::Deserialize)]
 pub struct Request {
@@ -13,19 +11,8 @@ pub struct Request {
     new_password: String,
 }
 
-pub async fn option(
-    http_request: HttpRequest,
-    configuration: web::Data<Configuration>,
-) -> Result<HttpResponse, actix_web::Error> {
-    Ok(HttpResponse::Ok()
-        .insert_access_control_headers(&configuration, &http_request)
-        .insert_preflight_access_control_headers(&[Method::POST])
-        .finish())
-}
-
 pub async fn post(
     http_request: HttpRequest,
-    configuration: web::Data<Configuration>,
     context: web::Data<Context>,
     request: web::Json<Request>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -36,18 +23,14 @@ pub async fn post(
     let session_id = match extensions.get::<SessionId>() {
         Some(session_id) => session_id,
         None => {
-            return Ok(HttpResponse::Unauthorized()
-                .insert_access_control_headers(&configuration, &http_request)
-                .finish());
+            return Ok(HttpResponse::Unauthorized().finish());
         }
     };
 
     let account = match context.get_account(&session_id).await {
         Some(account) => account,
         None => {
-            return Ok(HttpResponse::Unauthorized()
-                .insert_access_control_headers(&configuration, &http_request)
-                .finish());
+            return Ok(HttpResponse::Unauthorized().finish());
         }
     };
 
@@ -55,23 +38,15 @@ pub async fn post(
         .change_password(&account, &current_password, &new_password)
         .await
     {
-        Ok(_) => Ok(HttpResponse::Ok()
-            .insert_access_control_headers(&configuration, &http_request)
-            .finish()),
+        Ok(_) => Ok(HttpResponse::Ok().finish()),
         Err(ChangePasswordError::AccountDoesNotExist) => {
-            return Ok(HttpResponse::Unauthorized()
-                .insert_access_control_headers(&configuration, &http_request)
-                .finish());
+            return Ok(HttpResponse::Unauthorized().finish());
         }
         Err(ChangePasswordError::IncorrectPassword) => {
-            return Ok(HttpResponse::BadRequest()
-                .insert_access_control_headers(&configuration, &http_request)
-                .finish());
+            return Ok(HttpResponse::BadRequest().finish());
         }
         Err(ChangePasswordError::AccountHasNoPassword) => {
-            return Ok(HttpResponse::Forbidden()
-                .insert_access_control_headers(&configuration, &http_request)
-                .finish());
+            return Ok(HttpResponse::Forbidden().finish());
         }
     }
 }

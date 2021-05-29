@@ -134,9 +134,7 @@ where
     }
 }
 
-fn get_session_id<B>(
-    response: &HttpResponse<B>,
-) -> Option<crate::domain::SessionId> {
+fn get_session_id<B>(response: &HttpResponse<B>) -> Option<crate::domain::SessionId> {
     let extensions = response.extensions();
     let session_id = extensions.get::<crate::domain::SessionId>()?;
     Some(crate::domain::SessionId::new(session_id.value()))
