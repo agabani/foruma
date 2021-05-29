@@ -12,7 +12,7 @@ pub struct Password(String);
 
 pub struct PasswordId(String);
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SessionId(String);
 
 #[derive(Clone, Debug)]

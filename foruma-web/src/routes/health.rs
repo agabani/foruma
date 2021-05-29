@@ -4,14 +4,14 @@ use sqlx::{Pool, Postgres};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.route("liveness", web::get().to(liveness_get))
-        .route("readiness", web::get().to(health_readiness));
+        .route("readiness", web::get().to(readiness_get));
 }
 
 async fn liveness_get() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 
-pub async fn health_readiness(postgres_pool: web::Data<Pool<Postgres>>) -> HttpResponse {
+pub async fn readiness_get(postgres_pool: web::Data<Pool<Postgres>>) -> HttpResponse {
     postgres(postgres_pool.get_ref()).await.map_or_else(
         |_| HttpResponse::InternalServerError().finish(),
         |_| HttpResponse::Ok().finish(),

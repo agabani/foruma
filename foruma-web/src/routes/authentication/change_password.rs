@@ -1,5 +1,8 @@
-use crate::context::Context;
-use crate::domain::{ChangePassword, ChangePasswordError, GetAccount, Password, SessionId};
+use crate::{
+    context::Context,
+    domain::{ChangePassword, ChangePasswordError, GetAccount, Password},
+    http_request_ext::HttpRequestExt,
+};
 use actix_web::{web, HttpRequest, HttpResponse};
 
 #[derive(serde::Deserialize)]
@@ -19,8 +22,7 @@ pub async fn post(
     let current_password = Password::new(&request.current_password);
     let new_password = Password::new(&request.new_password);
 
-    let extensions = http_request.extensions();
-    let session_id = match extensions.get::<SessionId>() {
+    let session_id = match http_request.session_id() {
         Some(session_id) => session_id,
         None => {
             return Ok(HttpResponse::Unauthorized().finish());

@@ -1,7 +1,10 @@
-use crate::configuration::Configuration;
-use crate::context::Context;
-use crate::middleware::SessionId;
-use crate::routes::{account, authentication, health};
+use crate::{
+    configuration,
+    configuration::Configuration,
+    context::Context,
+    middleware::SessionId,
+    routes::{account, authentication, health},
+};
 use actix_cors::Cors;
 use actix_web::dev::Server;
 use actix_web::{
@@ -10,6 +13,9 @@ use actix_web::{
 };
 use tracing_actix_web::TracingLogger;
 
+/// # Panics
+///
+/// Will panic if configuration cannot be fully loaded due to missing environment variables
 pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let configuration = Configuration::load(overrides).expect("Failed to load configuration");
 
@@ -30,10 +36,10 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let data_key = web::Data::new(key.clone());
     let data_postgres_pool = web::Data::new(postgres_pool);
 
-    let origins = configuration
-        .cors
-        .as_ref()
-        .map_or_else(|| "".to_string(), |cors| cors.comma_separated_origins());
+    let origins = configuration.cors.as_ref().map_or_else(
+        || "".to_string(),
+        configuration::Cors::comma_separated_origins,
+    );
 
     let server = HttpServer::new(move || {
         App::new()
