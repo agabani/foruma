@@ -14,7 +14,7 @@ config = "0.11.0"
 pin-project = "1.0.7"
 rust-argon2 = "0.8.3"
 serde = "1.0.126"
-sqlx = { version = "0.5.2", features = ["macros", "migrate", "offline", "postgres", "runtime-tokio-rustls", "time"] }
+sqlx = { version = "0.5.5", features = ["macros", "migrate", "offline", "postgres", "runtime-tokio-rustls", "time"] }
 time = "0.2.26"
 tracing = "0.1.26"
 tracing-actix-web = { path = "../tracing-actix-web" }
@@ -26,4 +26,4 @@ uuid = { version = "0.8.2", features = ["v4"] }
 [dev-dependencies]
 actix-rt = "2.2.0"
 reqwest = { version = "0.11.3", features = ["json"] }
-tokio = "1.6.0"
+tokio = "1.6.1"
