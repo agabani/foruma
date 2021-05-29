@@ -27,7 +27,7 @@ WHERE A.public_id = $1
         .await
         .trace_err()
         .expect("TODO: handle database error")
-        .ok_or({
+        .ok_or_else(|| {
             tracing::warn!("Account does not exist");
             ChangePasswordError::AccountDoesNotExist
         })?;
