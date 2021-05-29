@@ -1,15 +1,15 @@
 use crate::context::Context;
-use crate::domain::{LogIn, LogInError, Password, SessionId, Username};
+use crate::domain::{Login, LoginError, Password, SessionId, Username};
 use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
-impl LogIn for Context {
+impl Login for Context {
     #[tracing::instrument(skip(self, password))]
-    async fn log_in(
+    async fn login(
         &self,
         username: &Username,
         password: &Password,
-    ) -> Result<SessionId, LogInError> {
+    ) -> Result<SessionId, LoginError> {
         let record = sqlx::query!(
             r#"
 SELECT A.id             AS account_id,
@@ -27,14 +27,14 @@ WHERE A.username = $1
         .expect("TODO: handle database error")
         .ok_or_else(|| {
             tracing::warn!("Account does not exist");
-            LogInError::AccountDoesNotExist
+            LoginError::AccountDoesNotExist
         })?;
 
         let password_hash = match &record.account_password_hash {
             Some(password_hash) => password_hash,
             None => {
                 tracing::warn!("Account has no password");
-                return Err(LogInError::AccountHasNoPassword);
+                return Err(LoginError::AccountHasNoPassword);
             }
         };
 
@@ -44,7 +44,7 @@ WHERE A.username = $1
 
         if !matches {
             tracing::warn!("Account provided incorrect password");
-            return Err(LogInError::IncorrectPassword);
+            return Err(LoginError::IncorrectPassword);
         }
 
         let created = time::OffsetDateTime::now_utc();

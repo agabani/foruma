@@ -1,5 +1,5 @@
 use crate::context::Context;
-use crate::domain::{LogIn, LogInError, Password, Username};
+use crate::domain::{Login, LoginError, Password, Username};
 use actix_web::{web, HttpResponse};
 
 #[derive(serde::Deserialize)]
@@ -15,15 +15,15 @@ pub async fn post(
     let username = Username::new(&request.username);
     let password = Password::new(&request.password);
 
-    let session_id = match context.log_in(&username, &password).await {
+    let session_id = match context.login(&username, &password).await {
         Ok(session_id) => session_id,
-        Err(LogInError::AccountDoesNotExist) => {
+        Err(LoginError::AccountDoesNotExist) => {
             return Ok(HttpResponse::Unauthorized().finish());
         }
-        Err(LogInError::IncorrectPassword) => {
+        Err(LoginError::IncorrectPassword) => {
             return Ok(HttpResponse::Unauthorized().finish());
         }
-        Err(LogInError::AccountHasNoPassword) => {
+        Err(LoginError::AccountHasNoPassword) => {
             return Ok(HttpResponse::Unauthorized().finish());
         }
     };

@@ -45,17 +45,17 @@ pub trait GetAccount {
 }
 
 #[async_trait::async_trait]
-pub trait LogIn {
-    async fn log_in(
+pub trait Login {
+    async fn login(
         &self,
         username: &Username,
         password: &Password,
-    ) -> Result<SessionId, LogInError>;
+    ) -> Result<SessionId, LoginError>;
 }
 
 #[async_trait::async_trait]
-pub trait LogOut {
-    async fn log_out(&self, session_id: &SessionId) -> Result<(), LogoutError>;
+pub trait Logout {
+    async fn logout(&self, session_id: &SessionId) -> Result<(), LogoutError>;
 }
 
 #[async_trait::async_trait]
@@ -74,7 +74,7 @@ pub enum CreateAccountError {
     AccountAlreadyExists,
 }
 
-pub enum LogInError {
+pub enum LoginError {
     AccountDoesNotExist,
     AccountHasNoPassword,
     IncorrectPassword,

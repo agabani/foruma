@@ -2,8 +2,8 @@ mod change_password;
 mod create_account;
 mod create_password;
 mod get_account;
-mod log_in;
-mod log_out;
+mod login;
+mod logout;
 mod terminate_account;
 
 pub struct Context {

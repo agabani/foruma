@@ -1,5 +1,5 @@
 use crate::context::Context;
-use crate::domain::{LogOut, LogoutError, SessionId};
+use crate::domain::{Logout, LogoutError, SessionId};
 use actix_web::{web, HttpRequest, HttpResponse};
 
 pub async fn post(
@@ -14,7 +14,7 @@ pub async fn post(
         }
     };
 
-    match context.log_out(&session_id).await {
+    match context.logout(&session_id).await {
         Ok(()) => Ok(HttpResponse::Ok().finish()),
         Err(LogoutError::SessionDoesNotExist) => Ok(HttpResponse::NotFound().finish()),
     }
