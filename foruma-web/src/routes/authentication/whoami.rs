@@ -1,5 +1,4 @@
-use crate::context::Context;
-use crate::domain::{GetAccount, SessionId};
+use crate::{context::Context, domain::GetAccount, http_request_ext::HttpRequestExt};
 use actix_web::{web, HttpRequest, HttpResponse};
 
 #[derive(serde::Serialize)]
@@ -12,15 +11,14 @@ pub async fn get(
     http_request: HttpRequest,
     context: web::Data<Context>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let extensions = http_request.extensions();
-    let session_id = match extensions.get::<SessionId>() {
+    let session_id = match http_request.session_id() {
         Some(session_id) => session_id,
         None => {
             return Ok(HttpResponse::Unauthorized().finish());
         }
     };
 
-    let account = match context.get_account(session_id).await {
+    let account = match context.get_account(&session_id).await {
         Some(account) => account,
         None => {
             return Ok(HttpResponse::Unauthorized().finish());

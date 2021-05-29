@@ -19,7 +19,7 @@ RETURNING id;
         .await
         .trace_err()
         .expect("TODO: handle database error")
-        .ok_or({
+        .ok_or_else(|| {
             tracing::warn!("Session does not exist");
             TerminateAccountError::AccountDoesNotExist
         })?;

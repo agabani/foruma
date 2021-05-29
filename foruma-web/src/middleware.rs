@@ -47,6 +47,7 @@ where
     }
 }
 
+#[allow(clippy::module_name_repetitions)]
 pub struct SessionIdMiddleware<S> {
     inner: Rc<Inner>,
     service: S,

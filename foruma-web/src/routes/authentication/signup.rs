@@ -1,6 +1,8 @@
-use crate::context::Context;
-use crate::domain::{
-    CreateAccount, CreateAccountError, CreatePassword, LogIn, LogInError, Password, Username,
+use crate::{
+    context::Context,
+    domain::{
+        CreateAccount, CreateAccountError, CreatePassword, Login, LoginError, Password, Username,
+    },
 };
 use actix_web::{web, HttpResponse};
 
@@ -27,15 +29,11 @@ pub async fn post(
 
     context.create_password(&account, &password).await;
 
-    let session_id = match context.log_in(&username, &password).await {
+    let session_id = match context.login(&username, &password).await {
         Ok(session_id) => session_id,
-        Err(LogInError::AccountDoesNotExist) => {
-            return Ok(HttpResponse::Unauthorized().finish());
-        }
-        Err(LogInError::IncorrectPassword) => {
-            return Ok(HttpResponse::Unauthorized().finish());
-        }
-        Err(LogInError::AccountHasNoPassword) => {
+        Err(LoginError::AccountDoesNotExist)
+        | Err(LoginError::AccountHasNoPassword)
+        | Err(LoginError::IncorrectPassword) => {
             return Ok(HttpResponse::Unauthorized().finish());
         }
     };

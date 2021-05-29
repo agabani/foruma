@@ -1,9 +1,11 @@
 use config::Config;
 use serde::{Deserialize, Deserializer};
-use sqlx::migrate::MigrateDatabase;
-use sqlx::postgres::{PgConnectOptions, PgPoolOptions, PgSslMode};
-use sqlx::Pool;
-use std::net::TcpListener;
+use sqlx::{
+    migrate::MigrateDatabase,
+    postgres::{PgConnectOptions, PgPoolOptions, PgSslMode},
+    Pool,
+};
+use std::{borrow::ToOwned, net::TcpListener};
 
 #[derive(Clone, serde::Deserialize)]
 pub struct Configuration {
@@ -55,7 +57,7 @@ where
     D: Deserializer<'de>,
 {
     let string = String::deserialize(deserializer)?;
-    Ok(string.split(',').map(|item| item.to_owned()).collect())
+    Ok(string.split(',').map(ToOwned::to_owned).collect())
 }
 
 #[derive(Clone, serde::Deserialize)]
@@ -90,9 +92,10 @@ impl Postgres {
             .port(self.port)
             .username(&self.username)
             .password(&self.password)
-            .ssl_mode(match self.require_ssl {
-                true => PgSslMode::Require,
-                false => PgSslMode::Prefer,
+            .ssl_mode(if self.require_ssl {
+                PgSslMode::Require
+            } else {
+                PgSslMode::Prefer
             })
     }
 

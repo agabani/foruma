@@ -1,11 +1,11 @@
 use crate::context::Context;
-use crate::domain::{LogOut, LogoutError, SessionId};
+use crate::domain::{Logout, LogoutError, SessionId};
 use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
-impl LogOut for Context {
+impl Logout for Context {
     #[tracing::instrument(skip(self))]
-    async fn log_out(&self, session_id: &SessionId) -> Result<(), LogoutError> {
+    async fn logout(&self, session_id: &SessionId) -> Result<(), LogoutError> {
         let deleted = time::OffsetDateTime::now_utc();
 
         sqlx::query!(
@@ -23,7 +23,7 @@ RETURNING id;
         .await
         .trace_err()
         .expect("TODO: handle database error")
-        .ok_or({
+        .ok_or_else(|| {
             tracing::warn!("Session does not exist");
             LogoutError::SessionDoesNotExist
         })?;
