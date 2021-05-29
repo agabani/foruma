@@ -5,6 +5,8 @@
       <sourceFolder url="file://$MODULE_DIR$/foruma-web/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/foruma-web/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tracing-actix-web/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/actix-cors/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/actix-cors/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/foruma-web/target" />
     </content>

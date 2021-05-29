@@ -44,6 +44,12 @@ pub struct Cors {
     pub origins: Vec<String>,
 }
 
+impl Cors {
+    pub fn comma_separated_origins(&self) -> String {
+        self.origins.join(",")
+    }
+}
+
 fn comma_separated_values_deserializer<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
 where
     D: Deserializer<'de>,
