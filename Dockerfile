@@ -1,5 +1,5 @@
 # 1: Build
-FROM rust:1.52.1 as builder
+FROM rust:1.53.0 as builder
 RUN groupadd --gid 1000 appuser && \
     useradd --uid 1000 --gid 1000 --shell /bin/sh appuser && \
     mkdir -p /home/appuser/app && \

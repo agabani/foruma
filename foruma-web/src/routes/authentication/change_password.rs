@@ -41,14 +41,8 @@ pub async fn post(
         .await
     {
         Ok(_) => Ok(HttpResponse::Ok().finish()),
-        Err(ChangePasswordError::AccountDoesNotExist) => {
-            return Ok(HttpResponse::Unauthorized().finish());
-        }
-        Err(ChangePasswordError::IncorrectPassword) => {
-            return Ok(HttpResponse::BadRequest().finish());
-        }
-        Err(ChangePasswordError::AccountHasNoPassword) => {
-            return Ok(HttpResponse::Forbidden().finish());
-        }
+        Err(ChangePasswordError::AccountDoesNotExist) => Ok(HttpResponse::Unauthorized().finish()),
+        Err(ChangePasswordError::IncorrectPassword) => Ok(HttpResponse::BadRequest().finish()),
+        Err(ChangePasswordError::AccountHasNoPassword) => Ok(HttpResponse::Forbidden().finish()),
     }
 }
