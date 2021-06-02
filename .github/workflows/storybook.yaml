@@ -2,9 +2,11 @@ name: Chromatic
 
 on:
   push: {}
-  pull_request_target:
+  workflow_run:
+    workflows:
+      - "Dependabot PR Check"
     types:
-      - labeled
+      - completed
 
 jobs:
   chromatic-deployment:
