@@ -25,7 +25,7 @@
     "@storybook/addon-essentials": "^6.2.9",
     "@storybook/addon-links": "^6.2.9",
     "@storybook/vue3": "^6.2.9",
-    "@types/jest": "^24.0.19",
+    "@types/jest": "^26.0.23",
     "@types/node": "^15.9.0",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
