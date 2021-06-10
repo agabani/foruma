@@ -7,11 +7,6 @@ on:
   pull_request:
     branches:
       - main
-  workflow_run:
-    workflows:
-      - "Dependabot PR Check"
-    types:
-      - completed
 
 jobs:
   cargo-build:
