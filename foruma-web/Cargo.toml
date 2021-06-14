@@ -15,7 +15,7 @@ pin-project = "1.0.7"
 rust-argon2 = "0.8.3"
 serde = "1.0.126"
 sqlx = { version = "0.5.5", features = ["macros", "migrate", "offline", "postgres", "runtime-tokio-rustls", "time"] }
-time = "0.2.26"
+time = "0.2.27"
 tracing = "0.1.26"
 tracing-actix-web = { path = "../tracing-actix-web" }
 tracing-bunyan-formatter = "0.2.4"
