@@ -1,3 +1,4 @@
+import router from "@/router";
 import axios from "axios";
 import { ChangedEvent } from "vue";
 import { Commit } from "vuex";
@@ -31,6 +32,67 @@ export const initialize = async ({
         commit("logout");
       }
       return;
+    default:
+      throw new Error("unexpected response");
+  }
+};
+
+export const changeOwnPassword = async (
+  { commit }: { commit: Commit },
+  payload: ChangePasswordPayload
+): Promise<void> => {
+  const changePasswordResponse = await api.post(
+    "/api/v1/authentication/change-password",
+    {
+      currentPassword: payload.currentPassword,
+      newPassword: payload.newPassword,
+    }
+  );
+
+  const event: ChangedEvent = {
+    eventDate: new Date(),
+    error: undefined,
+  };
+
+  switch (changePasswordResponse.status) {
+    case 200:
+      {
+        commit("passwordChangedEvent", event);
+      }
+      break;
+    case 400:
+      event.error = {
+        title: "Uh oh, something went wrong",
+        message: "Your current password is incorrect!",
+      };
+      commit("passwordChangedEvent", event);
+      break;
+    case 401:
+      event.error = {
+        title: "Uh oh, something went wrong",
+        message: "You are somehow not logged in... ¯\\_(ツ)_/¯",
+      };
+      commit("passwordChangedEvent", event);
+      break;
+    default:
+      throw new Error("unexpected response");
+  }
+};
+
+export const deleteOwnAccount = async ({
+  commit,
+}: {
+  commit: Commit;
+}): Promise<void> => {
+  const terminateResponse = await api.post("/api/v1/account/terminate");
+
+  switch (terminateResponse.status) {
+    case 200:
+      {
+        commit("logout", terminateResponse.data.username);
+        router.push("/");
+      }
+      break;
     default:
       throw new Error("unexpected response");
   }
@@ -84,11 +146,28 @@ export const logout = async ({ commit }: { commit: Commit }): Promise<void> => {
     case 200:
       {
         commit("logout");
+        router.push("/");
       }
       break;
     default:
       throw new Error("unexpected response");
   }
+};
+
+export const navigateToAccountSettings = async (): Promise<void> => {
+  router.push("/account-settings");
+};
+
+export const navigateToHome = async (): Promise<void> => {
+  router.push("/");
+};
+
+export const navigateToLogin = async (): Promise<void> => {
+  router.push("/login");
+};
+
+export const navigateToSignup = async (): Promise<void> => {
+  router.push("/signup");
 };
 
 export const signup = async (
@@ -129,66 +208,6 @@ export const signup = async (
       {
         commit("login", whoamiResponse.data.username);
       }
-      break;
-    default:
-      throw new Error("unexpected response");
-  }
-};
-
-export const terminateOwnAccount = async ({
-  commit,
-}: {
-  commit: Commit;
-}): Promise<void> => {
-  const terminateResponse = await api.post("/api/v1/account/terminate");
-
-  switch (terminateResponse.status) {
-    case 200:
-      {
-        commit("logout", terminateResponse.data.username);
-      }
-      break;
-    default:
-      throw new Error("unexpected response");
-  }
-};
-
-export const changeOwnPassword = async (
-  { commit }: { commit: Commit },
-  payload: ChangePasswordPayload
-): Promise<void> => {
-  const changePasswordResponse = await api.post(
-    "/api/v1/authentication/change-password",
-    {
-      currentPassword: payload.currentPassword,
-      newPassword: payload.newPassword,
-    }
-  );
-
-  const event: ChangedEvent = {
-    eventDate: new Date(),
-    error: undefined,
-  };
-
-  switch (changePasswordResponse.status) {
-    case 200:
-      {
-        commit("passwordChangedEvent", event);
-      }
-      break;
-    case 400:
-      event.error = {
-        title: "Uh oh, something went wrong",
-        message: "Your current password is incorrect!",
-      };
-      commit("passwordChangedEvent", event);
-      break;
-    case 401:
-      event.error = {
-        title: "Uh oh, something went wrong",
-        message: "You are somehow not logged in... ¯\\_(ツ)_/¯",
-      };
-      commit("passwordChangedEvent", event);
       break;
     default:
       throw new Error("unexpected response");

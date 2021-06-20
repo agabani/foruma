@@ -3,6 +3,10 @@ export interface ChangePasswordPayload {
   newPassword: string;
 }
 
+export interface DeleteSessionPayload {
+  id: string;
+}
+
 export interface LoginPayload {
   username: string;
   password: string;

@@ -1,24 +1,14 @@
 <template>
-  <div>
-    <ContainerHeader />
-  </div>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
   <router-view />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ContainerHeader from "@/components/ContainerHeader.vue";
-import { useStore } from "@/store";
+import { useStore } from "./store/use";
 
 export default defineComponent({
   name: "App",
-  components: {
-    ContainerHeader,
-  },
+  components: {},
   created: function () {
     if (sessionStorage.spaFallbackRedirect) {
       const redirect = sessionStorage.spaFallbackRedirect;

@@ -1,7 +1,7 @@
 import { State, ChangedEvent } from "@vue/runtime-core";
 
 export const login = (state: State, username: string): void => {
-  state.data.authentication = { username };
+  state.data.authentication = { username, sessions: [] };
 };
 
 export const logout = (state: State): void => {
