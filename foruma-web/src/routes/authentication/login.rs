@@ -19,9 +19,11 @@ pub async fn post(
 
     let session_id = match context.login(&username, &password).await {
         Ok(session_id) => session_id,
-        Err(LoginError::AccountDoesNotExist)
-        | Err(LoginError::AccountHasNoPassword)
-        | Err(LoginError::IncorrectPassword) => {
+        Err(
+            LoginError::AccountDoesNotExist
+            | LoginError::AccountHasNoPassword
+            | LoginError::IncorrectPassword,
+        ) => {
             return Ok(HttpResponse::Unauthorized().finish());
         }
     };

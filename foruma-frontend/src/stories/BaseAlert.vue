@@ -2,33 +2,24 @@
   <div :class="classes">
     <div class="base-alert--container">
       <div class="base-alert--icon">
-        <svg
+        <PureIcon
           v-if="type === 'information'"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M12,24A12,12,0,1,0,0,12,12.013,12.013,0,0,0,12,24ZM12,5a1.5,1.5,0,1,1-1.5,1.5A1.5,1.5,0,0,1,12,5Zm-1,5h1a2,2,0,0,1,2,2v6a1,1,0,0,1-2,0V12H11a1,1,0,0,1,0-2Z"
-          />
-        </svg>
-        <svg
-          v-if="type === 'success'"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M19,0H5A5.006,5.006,0,0,0,0,5V19a5.006,5.006,0,0,0,5,5H19a5.006,5.006,0,0,0,5-5V5A5.006,5.006,0,0,0,19,0Zm1,8.079-9.254,9.254a2,2,0,0,1-2.829,0L4,13.417A1,1,0,0,1,5.417,12l3.916,3.916,9.255-9.254A1,1,0,1,1,20,8.079Z"
-          />
-        </svg>
-        <svg
-          v-if="type === 'warning'"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M12,24A12,12,0,1,0,0,12,12.013,12.013,0,0,0,12,24ZM11,6a1,1,0,0,1,2,0v8a1,1,0,0,1-2,0Zm1,12a1,1,0,1,1-1,1A1,1,0,0,1,12,18Z"
-          />
-        </svg>
+          iconName="info"
+          height="24"
+          width="24"
+        />
+        <PureIcon
+          v-else-if="type === 'warning'"
+          iconName="warning"
+          height="24"
+          width="24"
+        />
+        <PureIcon
+          v-else-if="type === 'success'"
+          iconName="checkmark"
+          height="24"
+          width="24"
+        />
       </div>
       <div class="base-alert--content">
         <div class="base-alert--title">{{ title }}</div>
@@ -47,9 +38,13 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import PureIcon from "./PureIcon.vue";
 
 export default defineComponent({
   name: "BaseAlert",
+  components: {
+    PureIcon,
+  },
   props: {
     eventDate: {
       type: Date,
@@ -148,10 +143,6 @@ export default defineComponent({
   margin-right: 1em;
 }
 
-.base-alert--icon svg {
-  max-height: 1.8em;
-}
-
 .base-alert--contents {
 }
 
@@ -179,26 +170,14 @@ export default defineComponent({
 }
 
 .base-alert--information .base-alert--container {
-  border-left-color: #007bc2;
-}
-
-.base-alert--information .base-alert--icon svg {
-  fill: #007bc2;
+  border-left-color: #24aae8;
 }
 
 .base-alert--success .base-alert--container {
-  border-left-color: #21a67a;
-}
-
-.base-alert--success .base-alert--icon svg {
-  fill: #21a67a;
+  border-left-color: #32bea6;
 }
 
 .base-alert--warning .base-alert--container {
-  border-left-color: #f0a92e;
-}
-
-.base-alert--warning .base-alert--icon svg {
-  fill: #f0a92e;
+  border-left-color: #f9c353;
 }
 </style>
