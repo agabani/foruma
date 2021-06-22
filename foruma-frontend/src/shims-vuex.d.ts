@@ -8,6 +8,12 @@ declare module "@vue/runtime-core" {
   // data
   interface Authentication {
     username: string;
+    sessions: {
+      id: string;
+      browser: string;
+      operatingSystem: string;
+      lastActiveDate: Date;
+    }[];
   }
 
   // events

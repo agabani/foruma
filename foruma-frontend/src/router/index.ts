@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import PureHomeScreen from "../stories/screens/pure/PureHomeScreen.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: PureHomeScreen,
   },
   {
     path: "/about",
@@ -21,20 +21,24 @@ const routes: Array<RouteRecordRaw> = [
     name: "AccountSettings",
     component: () =>
       import(
-        /*  webpackChunkName: "account-settings" */ "../views/AccountSettings.vue"
+        /*  webpackChunkName: "account-settings" */ "../stories/screens/pure/PureAccountSettingsScreen.vue"
       ),
   },
   {
     path: "/login",
     name: "Login",
     component: () =>
-      import(/* webpackChunkName: "login" */ "../views/Login.vue"),
+      import(
+        /* webpackChunkName: "login" */ "../stories/screens/pure/PureLoginScreen.vue"
+      ),
   },
   {
     path: "/signup",
     name: "Signup",
     component: () =>
-      import(/*  webpackChunkName: "signup" */ "../views/Signup.vue"),
+      import(
+        /*  webpackChunkName: "signup" */ "../stories/screens/pure/PureSignupScreen.vue"
+      ),
   },
 ];
 
