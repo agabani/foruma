@@ -37,7 +37,7 @@ impl Response {
             is_current_session: current_session_id.value() == account_session.session_id().value(),
             browser: parse_browser(account_session.user_agent()),
             operating_system: parse_operating_system(account_session.user_agent()),
-            last_active_date: OffsetDateTime::now_utc().to_string(),
+            last_active_date: OffsetDateTime::now_utc().format("%Y-%m-%dT%H:%M:%S.%NZ"),
         }
     }
 }
