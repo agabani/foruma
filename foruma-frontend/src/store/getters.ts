@@ -1,7 +1,10 @@
-import { State, ChangedEvent } from "@vue/runtime-core";
+import { AuthenticationSession, State, ChangedEvent } from "@vue/runtime-core";
 
 export const authenticated = (state: State): boolean | undefined =>
   !!state.data.authentication;
+
+export const sessions = (state: State): AuthenticationSession[] =>
+  state.data.authentication?.sessions || [];
 
 export const username = (state: State): string | undefined =>
   state.data.authentication?.username;

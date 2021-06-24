@@ -46,7 +46,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
             .wrap(
                 Cors::default()
                     .allowed_origin(&origins)
-                    .allowed_methods(vec![Method::GET, Method::POST])
+                    .allowed_methods(vec![Method::DELETE, Method::GET, Method::POST])
                     .allowed_headers(vec![header::CONTENT_TYPE])
                     .supports_credentials(),
             )

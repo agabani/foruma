@@ -1,11 +1,13 @@
 import router from "@/router";
 import axios from "axios";
-import { ChangedEvent } from "vue";
+import type { AuthenticationSession, ChangedEvent } from "@vue/runtime-core";
 import { Commit } from "vuex";
+import { SessionChangedEventPayload } from "./mutations";
 import type {
   LoginPayload,
   ChangePasswordPayload,
   SignupPayload,
+  DeleteSessionPayload,
 } from "./types";
 
 const api = axios.create({
@@ -91,6 +93,72 @@ export const deleteOwnAccount = async ({
       {
         commit("logout", terminateResponse.data.username);
         router.push("/");
+      }
+      break;
+    default:
+      throw new Error("unexpected response");
+  }
+};
+
+export const deleteSession = async (
+  { commit }: { commit: Commit },
+  payload: DeleteSessionPayload
+): Promise<void> => {
+  const deleteSessionResponse = await api.delete(
+    `/api/v1/authentication/sessions/${payload.id}`
+  );
+
+  switch (deleteSessionResponse.status) {
+    case 204:
+      {
+        await getSessions({ commit });
+      }
+      break;
+    default:
+      throw new Error("unexpected response");
+  }
+};
+
+export const getSessions = async ({
+  commit,
+}: {
+  commit: Commit;
+}): Promise<void> => {
+  const getSessionsResponse = await api.get("/api/v1/authentication/sessions");
+
+  switch (getSessionsResponse.status) {
+    case 200:
+      {
+        const payload: SessionChangedEventPayload = {
+          data: getSessionsResponse.data.map(
+            (s: {
+              id: string;
+              isCurrentSession: boolean;
+              browser: string;
+              operatingSystem: string;
+              lastActiveDate: string;
+            }) => {
+              const d: AuthenticationSession = {
+                id: s.id,
+                isCurrentSession: s.isCurrentSession,
+                browser: s.browser,
+                operatingSystem: s.operatingSystem,
+                lastActiveDate: new Date(s.lastActiveDate),
+              };
+              return d;
+            }
+          ),
+          event: {
+            eventDate: new Date(),
+            error: undefined,
+          },
+        };
+        commit("sessionChangedEvent", payload);
+      }
+      break;
+    case 401:
+      {
+        commit("logout");
       }
       break;
     default:
