@@ -13,18 +13,21 @@ export function appUseStore(configure?: (store: Store<State>) => void): void {
           sessions: [
             {
               id: "1",
+              isCurrentSession: true,
               browser: "Chrome",
               operatingSystem: "Linux",
               lastActiveDate: new Date("2021-06-19T22:55:55"),
             },
             {
               id: "2",
+              isCurrentSession: false,
               browser: "Safari",
               operatingSystem: "Mac OS",
               lastActiveDate: new Date("2021-06-19T22:56:09"),
             },
             {
               id: "3",
+              isCurrentSession: false,
               browser: "Edge",
               operatingSystem: "Windows",
               lastActiveDate: new Date("2021-06-19T22:56:17"),

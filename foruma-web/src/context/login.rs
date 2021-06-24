@@ -1,5 +1,5 @@
 use crate::context::Context;
-use crate::domain::{Login, LoginError, Password, SessionId, Username};
+use crate::domain::{Login, LoginError, Password, SessionId, UserAgent, Username};
 use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
@@ -9,6 +9,7 @@ impl Login for Context {
         &self,
         username: &Username,
         password: &Password,
+        user_agent: &Option<UserAgent>,
     ) -> Result<SessionId, LoginError> {
         let record = sqlx::query!(
             r#"
@@ -50,19 +51,39 @@ WHERE A.username = $1
         let created = time::OffsetDateTime::now_utc();
         let session_id = SessionId::new(&uuid::Uuid::new_v4().to_string());
 
-        sqlx::query!(
-            r#"
+        match user_agent {
+            None => {
+                sqlx::query!(
+                    r#"
 INSERT INTO account_session (public_id, created, account_id)
 VALUES ($1, $2, $3);
 "#,
-            session_id.value(),
-            created,
-            record.account_id
-        )
-        .execute(&self.postgres)
-        .await
-        .trace_err()
-        .expect("TODO: handle database error");
+                    session_id.value(),
+                    created,
+                    record.account_id
+                )
+                .execute(&self.postgres)
+                .await
+                .trace_err()
+                .expect("TODO: handle database error");
+            }
+            Some(user_agent) => {
+                sqlx::query!(
+                    r#"
+INSERT INTO account_session (public_id, created, account_id, user_agent)
+VALUES ($1, $2, $3, $4);
+"#,
+                    session_id.value(),
+                    created,
+                    record.account_id,
+                    user_agent.value()
+                )
+                .execute(&self.postgres)
+                .await
+                .trace_err()
+                .expect("TODO: handle database error");
+            }
+        }
 
         Ok(session_id)
     }

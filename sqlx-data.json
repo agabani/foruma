@@ -1,5 +1,37 @@
 {
   "db": "PostgreSQL",
+  "01ebae9acde59ac9aadd94350911e485352c1a7eac6cd511d6b55d3dd17b3221": {
+    "query": "\nSELECT \"A\".id          AS account_id,\n       \"AS\".public_id  AS \"account_session_public_id?\",\n       \"AS\".user_agent AS \"account_session_user_agent?\"\nFROM account AS \"A\"\n         LEFT JOIN account_session AS \"AS\" ON \"A\".id = \"AS\".account_id\nWHERE \"A\".public_id = $1\n  AND \"A\".deleted IS NULL\n  AND \"AS\".deleted IS NULL;\n",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "account_id",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "account_session_public_id?",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 2,
+          "name": "account_session_user_agent?",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        true
+      ]
+    }
+  },
   "353487abd4351cf9826ae994d40fc240774779b32ecff79ef2b15d727e7749da": {
     "query": "\nSELECT A.id             AS account_id,\n       AP.password_hash AS \"account_password_hash?\"\nFROM account AS A\n         LEFT JOIN account_password AS AP ON A.id = AP.account_id\nWHERE A.username = $1\n  AND AP.deleted IS NULL;\n",
     "describe": {
@@ -153,6 +185,21 @@
         false,
         false
       ]
+    }
+  },
+  "9b2640becbcc091fb3c1b3bf9e7443946bcaed5bd34c9c81acfe3088b93edc27": {
+    "query": "\nINSERT INTO account_session (public_id, created, account_id, user_agent)\nVALUES ($1, $2, $3, $4);\n",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Timestamptz",
+          "Int8",
+          "Text"
+        ]
+      },
+      "nullable": []
     }
   },
   "d78d1ffac7331f78319029aec2a56ddc3466bc097ac43a70a88616a4c258e410": {

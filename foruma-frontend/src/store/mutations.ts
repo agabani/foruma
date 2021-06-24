@@ -1,4 +1,8 @@
-import { State, ChangedEvent } from "@vue/runtime-core";
+import type {
+  AuthenticationSession,
+  ChangedEvent,
+  State,
+} from "@vue/runtime-core";
 
 export const login = (state: State, username: string): void => {
   state.data.authentication = { username, sessions: [] };
@@ -11,6 +15,22 @@ export const logout = (state: State): void => {
 export const loginChangedEvent = (state: State, login: ChangedEvent): void => {
   state.events.loginChanged = login;
 };
+
+export const sessionChangedEvent = (
+  state: State,
+  payload: SessionChangedEventPayload
+): void => {
+  if (state.data.authentication) {
+    state.data.authentication.sessions = payload.data;
+  } else {
+    throw new Error("unexpected state");
+  }
+};
+
+export interface SessionChangedEventPayload {
+  data: AuthenticationSession[];
+  event: ChangedEvent;
+}
 
 export const signupChangedEvent = (
   state: State,

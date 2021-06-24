@@ -7,6 +7,7 @@
       <PureSessionCard
         v-for="session in sessions"
         :key="session.id"
+        :isCurrentSession="session.isCurrentSession"
         :browser="session.browser"
         :operatingSystem="session.operatingSystem"
         :lastActiveDate="session.lastActiveDate"

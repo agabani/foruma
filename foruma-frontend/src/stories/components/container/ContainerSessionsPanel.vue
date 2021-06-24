@@ -20,12 +20,18 @@ export default defineComponent({
       sessions: computed(() => store.getters.sessions),
       deleteSession: (payload: DeleteSessionPayload) =>
         store.dispatch("deleteSession", payload),
+      getSessions: () => {
+        store.dispatch("getSessions");
+      },
     };
   },
   methods: {
     onDelete(payload: PureSessionsPanelEventDeleteClicked) {
       this.deleteSession(payload);
     },
+  },
+  created: function () {
+    this.getSessions();
   },
 });
 </script>

@@ -6,7 +6,7 @@
       </div>
       <div class="pure-session-card--contents">
         <div class="pure-session-card--title">
-          {{ browserText }} {{ operatingSystemText }}
+          {{ browserText }} {{ operatingSystemText }} {{ isCurrentSessionText }}
         </div>
         <div class="pure-session-card--details">
           Last active {{ lastActiveDateText }}
@@ -32,6 +32,9 @@ export default defineComponent({
     BaseIcon,
   },
   props: {
+    isCurrentSession: {
+      type: Boolean,
+    },
     browser: {
       type: String,
     },
@@ -44,6 +47,9 @@ export default defineComponent({
   },
   emits: [...pureSessionCardEvents],
   computed: {
+    isCurrentSessionText(): string {
+      return this.isCurrentSession ? "(current session)" : "";
+    },
     lastActiveDateText() {
       const formatter = new Intl.DateTimeFormat(undefined, {
         month: "long",

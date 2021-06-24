@@ -8,12 +8,20 @@ pub struct Account {
 #[derive(Clone, Debug)]
 pub struct AccountId(String);
 
+pub struct AccountSession {
+    session_id: SessionId,
+    user_agent: Option<UserAgent>,
+}
+
 pub struct Password(String);
 
 pub struct PasswordId(String);
 
 #[derive(Clone, Debug)]
 pub struct SessionId(String);
+
+#[derive(Clone, Debug)]
+pub struct UserAgent(String);
 
 #[derive(Clone, Debug)]
 pub struct Username(String);
@@ -45,11 +53,20 @@ pub trait GetAccount {
 }
 
 #[async_trait::async_trait]
+pub trait GetAccountSessions {
+    async fn get_account_sessions(
+        &self,
+        account_id: &AccountId,
+    ) -> Result<Vec<AccountSession>, GetAccountSessionsError>;
+}
+
+#[async_trait::async_trait]
 pub trait Login {
     async fn login(
         &self,
         username: &Username,
         password: &Password,
+        user_agent: &Option<UserAgent>,
     ) -> Result<SessionId, LoginError>;
 }
 
@@ -72,6 +89,10 @@ pub enum ChangePasswordError {
 
 pub enum CreateAccountError {
     AccountAlreadyExists,
+}
+
+pub enum GetAccountSessionsError {
+    AccountDoesNotExist,
 }
 
 pub enum LoginError {
@@ -116,6 +137,23 @@ impl AccountId {
     }
 }
 
+impl AccountSession {
+    pub fn new(session_id: &SessionId, user_agent: &Option<UserAgent>) -> Self {
+        Self {
+            session_id: session_id.clone(),
+            user_agent: user_agent.clone(),
+        }
+    }
+
+    pub fn session_id(&self) -> &SessionId {
+        &self.session_id
+    }
+
+    pub fn user_agent(&self) -> &Option<UserAgent> {
+        &self.user_agent
+    }
+}
+
 impl Password {
     pub fn new(value: &str) -> Self {
         Self(value.to_string())
@@ -137,6 +175,16 @@ impl PasswordId {
 }
 
 impl SessionId {
+    pub fn new(value: &str) -> Self {
+        Self(value.to_string())
+    }
+
+    pub fn value(&self) -> &str {
+        &self.0
+    }
+}
+
+impl UserAgent {
     pub fn new(value: &str) -> Self {
         Self(value.to_string())
     }

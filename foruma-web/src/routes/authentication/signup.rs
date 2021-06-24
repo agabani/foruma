@@ -1,10 +1,11 @@
+use crate::domain::UserAgent;
 use crate::{
     context::Context,
     domain::{
         CreateAccount, CreateAccountError, CreatePassword, Login, LoginError, Password, Username,
     },
 };
-use actix_web::{web, HttpResponse};
+use actix_web::{web, HttpRequest, HttpResponse};
 
 #[derive(serde::Deserialize)]
 pub struct Request {
@@ -14,10 +15,17 @@ pub struct Request {
 
 pub async fn post(
     context: web::Data<Context>,
+    http: HttpRequest,
     request: web::Json<Request>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let username = Username::new(&request.username);
     let password = Password::new(&request.password);
+
+    let user_agent = http
+        .headers()
+        .get("User-Agent")
+        .and_then(|value| value.to_str().ok())
+        .map(|value| UserAgent::new(value));
 
     let account = match context.create_account(&username).await {
         Ok(account) => account,
@@ -29,7 +37,7 @@ pub async fn post(
 
     context.create_password(&account, &password).await;
 
-    let session_id = match context.login(&username, &password).await {
+    let session_id = match context.login(&username, &password, &user_agent).await {
         Ok(session_id) => session_id,
         Err(
             LoginError::AccountDoesNotExist
