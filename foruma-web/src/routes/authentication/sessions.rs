@@ -74,6 +74,8 @@ fn parse_operating_system(user_agent: &Option<UserAgent>) -> Option<String> {
         Some("Windows".to_string())
     } else if normalized.contains("macos") {
         Some("MacOS".to_string())
+    } else if normalized.contains("android") {
+        Some("Android".to_string())
     } else if normalized.contains("linux") {
         Some("Linux".to_string())
     } else {
