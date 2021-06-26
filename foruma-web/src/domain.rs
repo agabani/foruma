@@ -10,6 +10,7 @@ pub struct AccountId(String);
 
 pub struct AccountSession {
     session_id: SessionId,
+    ip_address: Option<IpAddress>,
     user_agent: Option<UserAgent>,
 }
 
@@ -142,15 +143,24 @@ impl AccountId {
 }
 
 impl AccountSession {
-    pub fn new(session_id: &SessionId, user_agent: &Option<UserAgent>) -> Self {
+    pub fn new(
+        session_id: &SessionId,
+        ip_address: &Option<IpAddress>,
+        user_agent: &Option<UserAgent>,
+    ) -> Self {
         Self {
             session_id: session_id.clone(),
+            ip_address: ip_address.clone(),
             user_agent: user_agent.clone(),
         }
     }
 
     pub fn session_id(&self) -> &SessionId {
         &self.session_id
+    }
+
+    pub fn ip_address(&self) -> &Option<IpAddress> {
+        &self.ip_address
     }
 
     pub fn user_agent(&self) -> &Option<UserAgent> {

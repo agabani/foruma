@@ -2,6 +2,7 @@ use crate::domain::{
     AccountSession, GetAccountSessions, GetAccountSessionsError, Logout, LogoutError, SessionId,
     UserAgent,
 };
+use crate::geoip::GeoIp;
 use crate::{context::Context, domain::GetAccount, http_request_ext::HttpRequestExt};
 use actix_web::{web, HttpRequest, HttpResponse};
 use time::OffsetDateTime;
@@ -22,6 +23,9 @@ struct Response {
 
     #[serde(rename = "lastActiveDate")]
     last_active_date: String,
+
+    #[serde(rename = "location")]
+    location: Option<String>,
 }
 
 #[derive(serde::Deserialize)]
@@ -31,13 +35,29 @@ pub struct Request {
 }
 
 impl Response {
-    fn parse(current_session_id: &SessionId, account_session: &AccountSession) -> Self {
+    fn parse(
+        geoip: &GeoIp,
+        current_session_id: &SessionId,
+        account_session: &AccountSession,
+    ) -> Self {
+        let location = account_session
+            .ip_address()
+            .as_ref()
+            .and_then(|ip_address| {
+                if let Ok(lookup) = geoip.lookup(&ip_address.value().ip(), "en") {
+                    Some(lookup.to_human_readable())
+                } else {
+                    None
+                }
+            });
+
         Self {
             id: account_session.session_id().value().to_string(),
             is_current_session: current_session_id.value() == account_session.session_id().value(),
             browser: parse_browser(account_session.user_agent()),
             operating_system: parse_operating_system(account_session.user_agent()),
             last_active_date: OffsetDateTime::now_utc().format("%Y-%m-%dT%H:%M:%S.%NZ"),
+            location,
         }
     }
 }
@@ -86,7 +106,10 @@ fn parse_operating_system(user_agent: &Option<UserAgent>) -> Option<String> {
 pub async fn get(
     http_request: HttpRequest,
     context: web::Data<Context>,
+    geoip: web::Data<GeoIp>,
 ) -> Result<HttpResponse, actix_web::Error> {
+    let geoip = geoip.get_ref();
+
     let session_id = match http_request.session_id() {
         Some(session_id) => session_id,
         None => {
@@ -111,7 +134,7 @@ pub async fn get(
     return Ok(HttpResponse::Ok().json(
         account_sessions
             .iter()
-            .map(|account_session| Response::parse(&session_id, &account_session))
+            .map(|account_session| Response::parse(geoip, &session_id, &account_session))
             .collect::<Vec<_>>(),
     ));
 }

@@ -37,6 +37,12 @@ Default.args = {
   lastActiveDate: new Date("2021-06-19T22:57:50"),
 };
 
+export const Location = Template.bind({});
+Location.args = {
+  ...Default.args,
+  location: "City of Westminister, United Kingdom",
+};
+
 export const Chrome = Template.bind({});
 Chrome.args = {
   ...Default.args,

@@ -12,6 +12,7 @@ pub struct Configuration {
     pub http_server: HttpServer,
     pub cors: Option<Cors>,
     pub postgres: Postgres,
+    pub geo_ip: GeoIp,
 }
 
 impl Configuration {
@@ -125,4 +126,9 @@ impl Postgres {
             migrator.run(&database_pool).await.expect("TODO");
         }
     }
+}
+
+#[derive(Clone, serde::Deserialize)]
+pub struct GeoIp {
+    pub path: String,
 }

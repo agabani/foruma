@@ -1,5 +1,43 @@
 {
   "db": "PostgreSQL",
+  "1ab80facfa3f6a7048f00bf634c47437e9c3794da6acddd7538fdee0d3cc82fd": {
+    "query": "\nSELECT A.id           AS account_id,\n       AAS.public_id  AS \"account_authentication_session_public_id?\",\n       AAS.ip_address AS \"account_authentication_ip_address?\",\n       AAS.user_agent AS \"account_authentication_session_user_agent?\"\nFROM account AS A\n         LEFT JOIN account_authentication_session AS AAS ON A.id = AAS.account_id\nWHERE A.public_id = $1;\n",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "account_id",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "account_authentication_session_public_id?",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 2,
+          "name": "account_authentication_ip_address?",
+          "type_info": "Inet"
+        },
+        {
+          "ordinal": 3,
+          "name": "account_authentication_session_user_agent?",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false,
+        true,
+        true
+      ]
+    }
+  },
   "384eae8b39a4d149ab04407c35910caa480d6abcf36ce801b6f984051311abaa": {
     "query": "\nSELECT A.public_id AS account_public_id,\n       A.username  AS account_username\nFROM account AS A\n         INNER JOIN account_authentication_session AS AAS ON A.id = AAS.account_id\nWHERE AAS.public_id = $1;\n",
     "describe": {
@@ -23,38 +61,6 @@
       "nullable": [
         false,
         false
-      ]
-    }
-  },
-  "58ab24d847422b1753545d54cab10619aa88430c8b9231850c6cde55dd46e98f": {
-    "query": "\nSELECT A.id           AS account_id,\n       AAS.public_id  AS \"account_authentication_session_public_id?\",\n       AAS.user_agent AS \"account_authentication_session_user_agent?\"\nFROM account AS A\n         LEFT JOIN account_authentication_session AS AAS ON A.id = AAS.account_id\nWHERE A.public_id = $1;\n",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "account_id",
-          "type_info": "Int8"
-        },
-        {
-          "ordinal": 1,
-          "name": "account_authentication_session_public_id?",
-          "type_info": "Varchar"
-        },
-        {
-          "ordinal": 2,
-          "name": "account_authentication_session_user_agent?",
-          "type_info": "Text"
-        }
-      ],
-      "parameters": {
-        "Left": [
-          "Text"
-        ]
-      },
-      "nullable": [
-        false,
-        false,
-        true
       ]
     }
   },

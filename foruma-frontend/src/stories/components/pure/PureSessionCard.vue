@@ -9,7 +9,7 @@
           {{ browserText }} {{ operatingSystemText }} {{ isCurrentSessionText }}
         </div>
         <div class="pure-session-card--details">
-          Last active {{ lastActiveDateText }}
+          Last active {{ lastActiveDateText }} {{ locationText }}
         </div>
       </div>
       <div class="pure-session-card--trash">
@@ -41,6 +41,9 @@ export default defineComponent({
     operatingSystem: {
       type: String,
     },
+    location: {
+      type: String,
+    },
     lastActiveDate: {
       type: Date,
     },
@@ -65,6 +68,9 @@ export default defineComponent({
     },
     iconName(): string {
       return this.browser ? this.browser.toLowerCase() : "placeholder";
+    },
+    locationText(): string {
+      return this.location ? `(${this.location})` : "";
     },
     operatingSystemText(): string {
       return this.operatingSystem ? `(${this.operatingSystem})` : "";

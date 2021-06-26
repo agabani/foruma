@@ -1,3 +1,4 @@
+use crate::geoip::GeoIp;
 use crate::{
     configuration,
     configuration::Configuration,
@@ -19,27 +20,32 @@ use tracing_actix_web::TracingLogger;
 pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let configuration = Configuration::load(overrides).expect("Failed to load configuration");
 
+    // configure http listener
     let listener = configuration
         .http_server
         .tcp_listener()
         .expect("Failed to bind port");
     let port = listener.local_addr().unwrap().port();
 
+    // configure database
     let postgres_pool = configuration.postgres.database_pool();
-
     let context = Context::new(postgres_pool.clone());
-
     let data_context = web::Data::new(context);
-
-    let key = actix_web::cookie::Key::generate();
-
-    let data_key = web::Data::new(key.clone());
     let data_postgres_pool = web::Data::new(postgres_pool);
 
+    // configure cookie
+    let key = actix_web::cookie::Key::generate();
+    let data_key = web::Data::new(key.clone());
+
+    // configure cors
     let origins = configuration.cors.as_ref().map_or_else(
         || "".to_string(),
         configuration::Cors::comma_separated_origins,
     );
+
+    // configure geo ip
+    let result = GeoIp::new(&configuration.geo_ip.path).expect("Failed to read database");
+    let data_geoip = web::Data::new(result);
 
     let server = HttpServer::new(move || {
         App::new()
@@ -60,6 +66,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
             )
             .app_data(data_context.clone())
             .app_data(data_key.clone())
+            .app_data(data_geoip.clone())
             .app_data(data_postgres_pool.clone())
     })
     .listen(listener)

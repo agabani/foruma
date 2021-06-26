@@ -39,6 +39,7 @@ RUN groupadd --gid 1000 appuser && \
     chown 1000:1000 /home/appuser/app
 USER 1000:1000
 COPY --chown=appuser entrypoint.sh entrypoint.sh
+COPY --chown=appuser geoip geoip
 COPY --chown=appuser --from=builder /home/appuser/app/target/release/foruma-web /home/appuser/foruma-web
 COPY --chown=appuser migrations/ migrations/
 ENTRYPOINT ["./entrypoint.sh"]
