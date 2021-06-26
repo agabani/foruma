@@ -12,10 +12,14 @@ pub struct AccountSession {
     session_id: SessionId,
     ip_address: Option<IpAddress>,
     user_agent: Option<UserAgent>,
+    last_active: LastActive,
 }
 
 #[derive(Clone, Debug)]
 pub struct IpAddress(ipnetwork::IpNetwork);
+
+#[derive(Clone)]
+pub struct LastActive(time::OffsetDateTime);
 
 pub struct Password(String);
 
@@ -85,6 +89,12 @@ pub trait TerminateAccount {
     async fn terminate_account(&self, account: &Account) -> Result<(), TerminateAccountError>;
 }
 
+#[async_trait::async_trait]
+pub trait UpdateLastActive {
+    async fn update_last_active(&self, session_id: &SessionId)
+        -> Result<(), UpdateLastActiveError>;
+}
+
 // Errors
 pub enum ChangePasswordError {
     AccountDoesNotExist,
@@ -112,6 +122,10 @@ pub enum LogoutError {
 
 pub enum TerminateAccountError {
     AccountDoesNotExist,
+}
+
+pub enum UpdateLastActiveError {
+    SessionDoesNotExist,
 }
 
 // Implementations
@@ -147,11 +161,13 @@ impl AccountSession {
         session_id: &SessionId,
         ip_address: &Option<IpAddress>,
         user_agent: &Option<UserAgent>,
+        last_active: &LastActive,
     ) -> Self {
         Self {
             session_id: session_id.clone(),
             ip_address: ip_address.clone(),
             user_agent: user_agent.clone(),
+            last_active: last_active.clone(),
         }
     }
 
@@ -165,6 +181,10 @@ impl AccountSession {
 
     pub fn user_agent(&self) -> &Option<UserAgent> {
         &self.user_agent
+    }
+
+    pub fn last_active(&self) -> &LastActive {
+        &self.last_active
     }
 }
 
@@ -187,6 +207,16 @@ impl IpAddress {
     }
 
     pub fn value(&self) -> &ipnetwork::IpNetwork {
+        &self.0
+    }
+}
+
+impl LastActive {
+    pub fn new(value: &time::OffsetDateTime) -> Self {
+        Self(*value)
+    }
+
+    pub fn value(&self) -> &time::OffsetDateTime {
         &self.0
     }
 }
