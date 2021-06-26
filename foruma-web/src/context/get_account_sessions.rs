@@ -7,7 +7,12 @@ use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl GetAccountSessions for Context {
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(
+        skip(self, account_id),
+        fields(
+            context.account_id = account_id.value()
+        )
+    )]
     async fn get_account_sessions(
         &self,
         account_id: &AccountId,

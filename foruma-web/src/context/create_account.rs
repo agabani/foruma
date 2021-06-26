@@ -4,7 +4,12 @@ use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl CreateAccount for Context {
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(
+        skip(self, username),
+        fields(
+            context.username = username.value()
+        )
+    )]
     async fn create_account(&self, username: &Username) -> Result<Account, CreateAccountError> {
         let account_id = AccountId::new(&uuid::Uuid::new_v4().to_string());
         let created = time::OffsetDateTime::now_utc();

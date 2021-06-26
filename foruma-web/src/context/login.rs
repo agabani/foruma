@@ -4,7 +4,14 @@ use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl Login for Context {
-    #[tracing::instrument(skip(self, password))]
+    #[tracing::instrument(
+        skip(self, username, password, ip_address, user_agent),
+        fields(
+            context.username = username.value(),
+            context.ip_address = tracing::field::Empty,
+            context.user_agent = tracing::field::Empty,
+        )
+    )]
     async fn login(
         &self,
         username: &Username,
@@ -12,6 +19,16 @@ impl Login for Context {
         ip_address: &Option<IpAddress>,
         user_agent: &Option<UserAgent>,
     ) -> Result<SessionId, LoginError> {
+        if let Some(ip_address) = ip_address {
+            tracing::Span::current().record(
+                "context.ip_address",
+                &ip_address.value().to_string().as_str(),
+            );
+        }
+        if let Some(user_agent) = user_agent {
+            tracing::Span::current().record("context.user_agent", &user_agent.value());
+        }
+
         let record = sqlx::query!(
             r#"
 SELECT A.id              AS account_id,

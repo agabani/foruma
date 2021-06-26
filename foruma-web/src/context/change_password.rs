@@ -4,7 +4,13 @@ use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl ChangePassword for Context {
-    #[tracing::instrument(skip(self, current_password, new_password))]
+    #[tracing::instrument(
+        skip(self, account, current_password, new_password),
+        fields(
+            context.account_id = account.account_id().value(),
+            context.username = account.username().value()
+        )
+    )]
     async fn change_password(
         &self,
         account: &Account,

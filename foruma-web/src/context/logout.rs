@@ -4,7 +4,12 @@ use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl Logout for Context {
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(
+        skip(self, session_id),
+        fields(
+            context.session_id = session_id.value()
+        )
+    )]
     async fn logout(&self, session_id: &SessionId) -> Result<(), LogoutError> {
         sqlx::query!(
             r#"

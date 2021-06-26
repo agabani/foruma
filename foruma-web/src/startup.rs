@@ -1,14 +1,14 @@
-use crate::geoip::GeoIp;
 use crate::{
     configuration,
     configuration::Configuration,
     context::Context,
-    middleware::SessionId,
+    geoip::GeoIp,
+    middleware::{DomainRootSpanBuilder, SessionId},
     routes::{account, authentication, health},
 };
 use actix_cors::Cors;
-use actix_web::dev::Server;
 use actix_web::{
+    dev::Server,
     http::{header, Method},
     web, App, HttpServer,
 };
@@ -60,7 +60,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
                     .allowed_headers(vec![header::CONTENT_TYPE])
                     .supports_credentials(),
             )
-            .wrap(TracingLogger::default())
+            .wrap(TracingLogger::<DomainRootSpanBuilder>::new())
             .wrap(SessionId::new(key.clone()))
             .service(web::scope("/health").configure(health::config))
             .service(

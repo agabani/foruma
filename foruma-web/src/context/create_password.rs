@@ -4,7 +4,13 @@ use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl CreatePassword for Context {
-    #[tracing::instrument(skip(self, password))]
+    #[tracing::instrument(
+        skip(self, account, password),
+        fields(
+            context.account_id = account.account_id().value(),
+            context.username = account.username().value()
+        )
+    )]
     async fn create_password(&self, account: &Account, password: &Password) {
         let created = time::OffsetDateTime::now_utc();
         let password_id = PasswordId::new(&uuid::Uuid::new_v4().to_string());
