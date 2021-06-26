@@ -11,10 +11,11 @@ actix-cors = { path = "../actix-cors" }
 actix-web = { version = "4.0.0-beta.6", features = ["secure-cookies"] }
 async-trait = "0.1.50"
 config = "0.11.0"
+ipnetwork = "0.17.0"
 pin-project = "1.0.7"
 rust-argon2 = "0.8.3"
 serde = "1.0.126"
-sqlx = { version = "0.5.5", features = ["macros", "migrate", "offline", "postgres", "runtime-tokio-rustls", "time"] }
+sqlx = { version = "0.5.5", features = ["ipnetwork", "macros", "migrate", "offline", "postgres", "runtime-tokio-rustls", "time"] }
 time = "0.2.27"
 tracing = "0.1.26"
 tracing-actix-web = { path = "../tracing-actix-web" }

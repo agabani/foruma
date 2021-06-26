@@ -1,5 +1,5 @@
 use crate::context::Context;
-use crate::domain::{Account, ChangePassword, ChangePasswordError, Password, PasswordId};
+use crate::domain::{Account, ChangePassword, ChangePasswordError, Password};
 use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
@@ -17,9 +17,8 @@ SELECT A.public_id      AS account_public_id,
        AP.public_id     AS "account_password_public_id?",
        AP.password_hash AS "account_password_hash?"
 FROM account AS A
-         LEFT JOIN account_password AS AP ON A.id = AP.account_id
-WHERE A.public_id = $1
-  AND AP.deleted IS NULL;
+         LEFT JOIN account_authentication_password AS AP ON A.id = AP.account_id
+WHERE A.public_id = $1;
 "#,
             account.account_id().value()
         )
@@ -49,9 +48,6 @@ WHERE A.public_id = $1
             return Err(ChangePasswordError::IncorrectPassword);
         }
 
-        let created = time::OffsetDateTime::now_utc();
-        let password_id = PasswordId::new(&uuid::Uuid::new_v4().to_string());
-
         let password_hash = argon2::hash_encoded(
             new_password.value().as_bytes(),
             uuid::Uuid::new_v4().as_bytes(),
@@ -60,45 +56,19 @@ WHERE A.public_id = $1
         .trace_err()
         .expect("TODO: handle password hashing error");
 
-        let mut tx = self
-            .postgres
-            .begin()
-            .await
-            .expect("TODO: handle database error");
-
         sqlx::query!(
             r#"
-UPDATE account_password
-SET deleted = $1
-WHERE account_password.public_id = $2;
+UPDATE account_authentication_password
+SET password_hash = $1
+WHERE public_id = $2;
 "#,
-            created,
+            password_hash,
             record.account_password_public_id
         )
-        .execute(&mut tx)
+        .execute(&self.postgres)
         .await
         .trace_err()
         .expect("TODO: handle database error");
-
-        sqlx::query!(
-            r#"
-INSERT INTO account_password(public_id, created, account_id, password_hash)
-VALUES ($1,
-        $2,
-        (SELECT id FROM account WHERE account.public_id = $3),
-        $4);
-"#,
-            password_id.value(),
-            created,
-            account.account_id().value(),
-            password_hash
-        )
-        .execute(&mut tx)
-        .await
-        .trace_err()
-        .expect("TODO: handle database error");
-
-        tx.commit().await.expect("TODO: handle database error");
 
         Ok(())
     }

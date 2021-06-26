@@ -13,6 +13,9 @@ pub struct AccountSession {
     user_agent: Option<UserAgent>,
 }
 
+#[derive(Clone, Debug)]
+pub struct IpAddress(ipnetwork::IpNetwork);
+
 pub struct Password(String);
 
 pub struct PasswordId(String);
@@ -66,6 +69,7 @@ pub trait Login {
         &self,
         username: &Username,
         password: &Password,
+        ip_address: &Option<IpAddress>,
         user_agent: &Option<UserAgent>,
     ) -> Result<SessionId, LoginError>;
 }
@@ -151,6 +155,16 @@ impl AccountSession {
 
     pub fn user_agent(&self) -> &Option<UserAgent> {
         &self.user_agent
+    }
+}
+
+impl IpAddress {
+    pub fn new(ip_address: &ipnetwork::IpNetwork) -> Self {
+        Self(*ip_address)
+    }
+
+    pub fn value(&self) -> &ipnetwork::IpNetwork {
+        &self.0
     }
 }
 

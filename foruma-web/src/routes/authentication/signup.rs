@@ -1,8 +1,9 @@
-use crate::domain::UserAgent;
+use crate::http_request_ext::HttpRequestExt;
 use crate::{
     context::Context,
     domain::{
-        CreateAccount, CreateAccountError, CreatePassword, Login, LoginError, Password, Username,
+        CreateAccount, CreateAccountError, CreatePassword, Login, LoginError, Password, UserAgent,
+        Username,
     },
 };
 use actix_web::{web, HttpRequest, HttpResponse};
@@ -20,6 +21,7 @@ pub async fn post(
 ) -> Result<HttpResponse, actix_web::Error> {
     let username = Username::new(&request.username);
     let password = Password::new(&request.password);
+    let ip_address = http.client_ip();
 
     let user_agent = http
         .headers()
@@ -37,7 +39,10 @@ pub async fn post(
 
     context.create_password(&account, &password).await;
 
-    let session_id = match context.login(&username, &password, &user_agent).await {
+    let session_id = match context
+        .login(&username, &password, &ip_address, &user_agent)
+        .await
+    {
         Ok(session_id) => session_id,
         Err(
             LoginError::AccountDoesNotExist
