@@ -13,14 +13,12 @@ impl GetAccountSessions for Context {
     ) -> Result<Vec<AccountSession>, GetAccountSessionsError> {
         let records = sqlx::query!(
             r#"
-SELECT "A".id          AS account_id,
-       "AS".public_id  AS "account_session_public_id?",
-       "AS".user_agent AS "account_session_user_agent?"
-FROM account AS "A"
-         LEFT JOIN account_session AS "AS" ON "A".id = "AS".account_id
-WHERE "A".public_id = $1
-  AND "A".deleted IS NULL
-  AND "AS".deleted IS NULL;
+SELECT A.id           AS account_id,
+       AAS.public_id  AS "account_authentication_session_public_id?",
+       AAS.user_agent AS "account_authentication_session_user_agent?"
+FROM account AS A
+         LEFT JOIN account_authentication_session AS AAS ON A.id = AAS.account_id
+WHERE A.public_id = $1;
 "#,
             account_id.value()
         )
@@ -35,15 +33,15 @@ WHERE "A".public_id = $1
 
         let account_sessions = records
             .iter()
-            .filter(|record| record.account_session_public_id.is_some())
+            .filter(|record| record.account_authentication_session_public_id.is_some())
             .map(|record| {
-                let session_id = match &record.account_session_public_id {
+                let session_id = match &record.account_authentication_session_public_id {
                     Some(session_id) => SessionId::new(session_id),
                     None => unreachable!(),
                 };
 
                 let user_agent = &record
-                    .account_session_user_agent
+                    .account_authentication_session_user_agent
                     .as_ref()
                     .map(|user_agent| UserAgent::new(user_agent));
 

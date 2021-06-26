@@ -3,7 +3,6 @@ create table account
     id        bigserial    not null,
     public_id varchar(36)  not null,
     created   timestamptz  not null,
-    deleted   timestamptz,
     username  varchar(320) not null,
     constraint account_pk
         primary key (id)
@@ -15,38 +14,38 @@ create unique index account_public_id_uindex
 create unique index account_username_uindex
     on account (username);
 
-create table account_password
+create table account_authentication_password
 (
     id            bigserial   not null,
     public_id     varchar(36) not null,
     created       timestamptz not null,
-    deleted       timestamptz,
     account_id    bigserial   not null,
     password_hash text        not null,
-    constraint account_password_pk
+    constraint account_authentication_password_pk
         primary key (id),
-    constraint account_password_account_id_fk
+    constraint account_authentication_password_account_id_fk
         foreign key (account_id) references account
             on delete cascade
 );
 
-create unique index account_password_public_id_uindex
-    on account_password (public_id);
+create unique index account_authentication_password_public_id_uindex
+    on account_authentication_password (public_id);
 
-create table account_session
+create table account_authentication_session
 (
     id         bigserial   not null,
     public_id  varchar(36) not null,
     created    timestamptz not null,
-    deleted    timestamptz,
     account_id bigserial   not null,
-    constraint account_session_pk
+    ip_address inet,
+    user_agent text,
+    constraint account_authentication_session_pk
         primary key (id),
-    constraint account_session_account_id_fk
+    constraint account_authentication_session_account_id_fk
         foreign key (account_id) references account
             on delete cascade
 );
 
-create unique index account_session_public_id_uindex
-    on account_session (public_id);
+create unique index account_authentication_session_public_id_uindex
+    on account_authentication_session (public_id);
 

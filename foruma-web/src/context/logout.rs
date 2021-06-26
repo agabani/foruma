@@ -6,18 +6,13 @@ use crate::telemetry::TraceErrorExt;
 impl Logout for Context {
     #[tracing::instrument(skip(self))]
     async fn logout(&self, session_id: &SessionId) -> Result<(), LogoutError> {
-        let deleted = time::OffsetDateTime::now_utc();
-
         sqlx::query!(
             r#"
-UPDATE account_session
-SET deleted = $2
+DELETE FROM account_authentication_session
 WHERE public_id = $1
-  AND deleted IS NULL
 RETURNING id;
 "#,
-            session_id.value(),
-            deleted
+            session_id.value()
         )
         .fetch_optional(&self.postgres)
         .await

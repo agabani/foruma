@@ -19,7 +19,7 @@ impl CreatePassword for Context {
 
         sqlx::query!(
             r#"
-INSERT INTO account_password(public_id, created, account_id, password_hash)
+INSERT INTO account_authentication_password(public_id, created, account_id, password_hash)
 VALUES ($1,
         $2,
         (SELECT id FROM account WHERE account.public_id = $3),

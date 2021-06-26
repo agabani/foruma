@@ -11,9 +11,8 @@ impl GetAccount for Context {
 SELECT A.public_id AS account_public_id,
        A.username  AS account_username
 FROM account AS A
-         INNER JOIN account_session AS "AS" ON A.id = "AS".account_id
-WHERE "AS".public_id = $1
-  AND "AS".deleted IS NULL;
+         INNER JOIN account_authentication_session AS AAS ON A.id = AAS.account_id
+WHERE AAS.public_id = $1;
 "#,
             session_id.value()
         )
