@@ -1,6 +1,5 @@
 use crate::domain::{IpAddress, SessionId};
 use actix_web::HttpRequest;
-use std::net::SocketAddr;
 
 pub trait HttpRequestExt {
     fn client_ip(&self) -> Option<IpAddress>;
@@ -9,16 +8,7 @@ pub trait HttpRequestExt {
 
 impl HttpRequestExt for HttpRequest {
     fn client_ip(&self) -> Option<IpAddress> {
-        let connection_info = self.connection_info();
-        let ip_port = connection_info.realip_remote_addr()?;
-        let socket_addr: SocketAddr = ip_port.parse().ok()?;
-        let ipnetwork = ipnetwork::IpNetwork::new(
-            socket_addr.ip(),
-            if socket_addr.is_ipv4() { 32 } else { 128 },
-        )
-        .ok()?;
-
-        Some(IpAddress::new(&ipnetwork))
+        IpAddress::parse(self.connection_info().realip_remote_addr()?).ok()
     }
 
     fn session_id(&self) -> Option<SessionId> {
