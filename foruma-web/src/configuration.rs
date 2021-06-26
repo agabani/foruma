@@ -13,6 +13,7 @@ pub struct Configuration {
     pub cors: Option<Cors>,
     pub postgres: Postgres,
     pub geo_ip: GeoIp,
+    pub cookie: Option<Cookie>,
 }
 
 impl Configuration {
@@ -131,4 +132,17 @@ impl Postgres {
 #[derive(Clone, serde::Deserialize)]
 pub struct GeoIp {
     pub path: String,
+}
+
+#[derive(Clone, serde::Deserialize)]
+pub struct Cookie {
+    pub key: Option<String>,
+}
+
+impl Cookie {
+    pub fn get_key(&self) -> Option<actix_web::cookie::Key> {
+        self.key
+            .as_ref()
+            .map(|key| actix_web::cookie::Key::from(key.as_bytes()))
+    }
 }

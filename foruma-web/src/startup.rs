@@ -34,7 +34,11 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let data_postgres_pool = web::Data::new(postgres_pool);
 
     // configure cookie
-    let key = actix_web::cookie::Key::generate();
+    let key = configuration
+        .cookie
+        .as_ref()
+        .and_then(configuration::Cookie::get_key)
+        .unwrap_or_else(actix_web::cookie::Key::generate);
     let data_key = web::Data::new(key.clone());
 
     // configure cors
