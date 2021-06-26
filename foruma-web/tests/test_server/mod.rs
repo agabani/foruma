@@ -8,6 +8,7 @@ impl TestServer {
     pub async fn spawn(overrides: &[(&str, &str)]) -> Self {
         let defaults = &[
             ("cors.origins", "http://localhost:8080"),
+            ("geo_ip.path", "../geoip"),
             ("http_server.host", "127.0.0.1"),
             ("http_server.port", "0"),
             (

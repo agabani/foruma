@@ -5,6 +5,7 @@ extern crate argon2;
 mod configuration;
 mod context;
 mod domain;
+mod geoip;
 mod http_request_ext;
 mod middleware;
 mod routes;

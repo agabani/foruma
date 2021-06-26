@@ -2,6 +2,7 @@ export interface PureSessionCardProps {
   browser: PureSessionPropsBrowser;
   isCurrentSession: boolean;
   operatingSystem: PureSessionPropsOperatingSystem;
+  location: string | null;
   lastActiveDate: Date;
 }
 

@@ -134,8 +134,9 @@ export const getSessions = async ({
             (s: {
               id: string;
               isCurrentSession: boolean;
-              browser: string;
-              operatingSystem: string;
+              browser: string | null;
+              operatingSystem: string | null;
+              location: string | null;
               lastActiveDate: string;
             }) => {
               const d: AuthenticationSession = {
@@ -143,6 +144,7 @@ export const getSessions = async ({
                 isCurrentSession: s.isCurrentSession,
                 browser: s.browser,
                 operatingSystem: s.operatingSystem,
+                location: s.location,
                 lastActiveDate: new Date(s.lastActiveDate),
               };
               return d;

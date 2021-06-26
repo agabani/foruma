@@ -1,6 +1,7 @@
 use crate::context::Context;
 use crate::domain::{
-    AccountId, AccountSession, GetAccountSessions, GetAccountSessionsError, SessionId, UserAgent,
+    AccountId, AccountSession, GetAccountSessions, GetAccountSessionsError, IpAddress, SessionId,
+    UserAgent,
 };
 use crate::telemetry::TraceErrorExt;
 
@@ -15,6 +16,7 @@ impl GetAccountSessions for Context {
             r#"
 SELECT A.id           AS account_id,
        AAS.public_id  AS "account_authentication_session_public_id?",
+       AAS.ip_address AS "account_authentication_ip_address?",
        AAS.user_agent AS "account_authentication_session_user_agent?"
 FROM account AS A
          LEFT JOIN account_authentication_session AS AAS ON A.id = AAS.account_id
@@ -40,12 +42,17 @@ WHERE A.public_id = $1;
                     None => unreachable!(),
                 };
 
+                let ip_address = &record
+                    .account_authentication_ip_address
+                    .as_ref()
+                    .map(|ip_address| IpAddress::new(ip_address));
+
                 let user_agent = &record
                     .account_authentication_session_user_agent
                     .as_ref()
                     .map(|user_agent| UserAgent::new(user_agent));
 
-                AccountSession::new(&session_id, &user_agent)
+                AccountSession::new(&session_id, &ip_address, &user_agent)
             })
             .collect();
 

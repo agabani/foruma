@@ -16,6 +16,7 @@ export function appUseStore(configure?: (store: Store<State>) => void): void {
               isCurrentSession: true,
               browser: "Chrome",
               operatingSystem: "Linux",
+              location: "City of Westminster, United Kingdom",
               lastActiveDate: new Date("2021-06-19T22:55:55"),
             },
             {
@@ -23,6 +24,7 @@ export function appUseStore(configure?: (store: Store<State>) => void): void {
               isCurrentSession: false,
               browser: "Safari",
               operatingSystem: "Mac OS",
+              location: null,
               lastActiveDate: new Date("2021-06-19T22:56:09"),
             },
             {
@@ -30,6 +32,7 @@ export function appUseStore(configure?: (store: Store<State>) => void): void {
               isCurrentSession: false,
               browser: "Edge",
               operatingSystem: "Windows",
+              location: "United States",
               lastActiveDate: new Date("2021-06-19T22:56:17"),
             },
           ],

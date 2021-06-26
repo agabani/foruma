@@ -10,6 +10,7 @@
         :isCurrentSession="session.isCurrentSession"
         :browser="session.browser"
         :operatingSystem="session.operatingSystem"
+        :location="session.location"
         :lastActiveDate="session.lastActiveDate"
         @deleteClicked="onDelete(session.id)"
       />

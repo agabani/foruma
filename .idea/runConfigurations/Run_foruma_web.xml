@@ -6,9 +6,11 @@
     <option name="requiredFeatures" value="true" />
     <option name="allFeatures" value="false" />
     <option name="emulateTerminal" value="false" />
+    <option name="withSudo" value="false" />
     <option name="backtrace" value="SHORT" />
     <envs>
       <env name="app_cors__origins" value="http://localhost:8080" />
+      <env name="app_geo_ip__path" value="geoip" />
       <env name="app_http_server__host" value="0.0.0.0" />
       <env name="app_http_server__port" value="18080" />
       <env name="app_postgres__database_name" value="foruma" />

@@ -15,6 +15,7 @@ declare module "@vue/runtime-core" {
     id: string;
     isCurrentSession: boolean;
     browser: string | null;
+    location: string | null;
     operatingSystem: string | null;
     lastActiveDate: Date;
   }
