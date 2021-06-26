@@ -4,7 +4,13 @@ use crate::telemetry::TraceErrorExt;
 
 #[async_trait::async_trait]
 impl TerminateAccount for Context {
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(
+        skip(self, account),
+        fields(
+            context.account_id = account.account_id().value(),
+            context.username = account.username().value()
+        )
+    )]
     async fn terminate_account(&self, account: &Account) -> Result<(), TerminateAccountError> {
         sqlx::query!(
             r#"
