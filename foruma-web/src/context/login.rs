@@ -48,7 +48,7 @@ WHERE A.username = $1;
             return Err(LoginError::IncorrectPassword);
         }
 
-        let created = time::OffsetDateTime::now_utc();
+        let now = time::OffsetDateTime::now_utc();
         let session_id = SessionId::new(&uuid::Uuid::new_v4().to_string());
 
         let ip_address = ip_address.as_ref().map(IpAddress::value);
@@ -56,12 +56,13 @@ WHERE A.username = $1;
 
         sqlx::query!(
             r#"
-INSERT INTO account_authentication_session (public_id, created, account_id, ip_address, user_agent)
-VALUES ($1, $2, $3, $4, $5);
+INSERT INTO account_authentication_session (public_id, created, account_id, last_active, ip_address, user_agent)
+VALUES ($1, $2, $3, $4, $5, $6);
 "#,
             session_id.value(),
-            created,
+            now,
             record.account_id,
+            now,
             ip_address,
             user_agent
         )

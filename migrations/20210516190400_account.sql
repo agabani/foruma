@@ -33,12 +33,13 @@ create unique index account_authentication_password_public_id_uindex
 
 create table account_authentication_session
 (
-    id         bigserial   not null,
-    public_id  varchar(36) not null,
-    created    timestamptz not null,
-    account_id bigserial   not null,
-    ip_address inet,
-    user_agent text,
+    id          bigserial   not null,
+    public_id   varchar(36) not null,
+    created     timestamptz not null,
+    account_id  bigserial   not null,
+    last_active timestamptz not null,
+    ip_address  inet,
+    user_agent  text,
     constraint account_authentication_session_pk
         primary key (id),
     constraint account_authentication_session_account_id_fk

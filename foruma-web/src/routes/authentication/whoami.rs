@@ -1,3 +1,4 @@
+use crate::domain::{UpdateLastActive, UpdateLastActiveError};
 use crate::{context::Context, domain::GetAccount, http_request_ext::HttpRequestExt};
 use actix_web::{web, HttpRequest, HttpResponse};
 
@@ -21,6 +22,13 @@ pub async fn get(
     let account = match context.get_account(&session_id).await {
         Some(account) => account,
         None => {
+            return Ok(HttpResponse::Unauthorized().finish());
+        }
+    };
+
+    match context.update_last_active(&session_id).await {
+        Ok(_) => (),
+        Err(UpdateLastActiveError::SessionDoesNotExist) => {
             return Ok(HttpResponse::Unauthorized().finish());
         }
     };

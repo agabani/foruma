@@ -6,6 +6,7 @@ mod get_account_sessions;
 mod login;
 mod logout;
 mod terminate_account;
+mod update_last_active;
 
 pub struct Context {
     postgres: sqlx::Pool<sqlx::Postgres>,
