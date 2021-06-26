@@ -22,7 +22,7 @@ impl Login for Context {
         if let Some(ip_address) = ip_address {
             tracing::Span::current().record(
                 "context.ip_address",
-                &ip_address.value().to_string().as_str(),
+                &ip_address.value().ip().to_string().as_str(),
             );
         }
         if let Some(user_agent) = user_agent {
