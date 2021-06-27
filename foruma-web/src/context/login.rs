@@ -10,6 +10,7 @@ impl Login for Context {
             context.username = username.value(),
             context.ip_address = tracing::field::Empty,
             context.user_agent = tracing::field::Empty,
+            context.session_id = tracing::field::Empty,
         )
     )]
     async fn login(
@@ -67,6 +68,8 @@ WHERE A.username = $1;
 
         let now = time::OffsetDateTime::now_utc();
         let session_id = SessionId::new(&uuid::Uuid::new_v4().to_string());
+
+        tracing::Span::current().record("context.session_id", &session_id.value());
 
         let ip_address = ip_address.as_ref().map(IpAddress::value);
         let user_agent = user_agent.as_ref().map(UserAgent::value);
