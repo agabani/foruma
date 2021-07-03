@@ -9,6 +9,8 @@ edition = "2018"
 [dependencies]
 actix-cors = { path = "../actix-cors" }
 actix-web = { version = "4.0.0-beta.7", features = ["secure-cookies"] }
+async-graphql = { git= "https://github.com/async-graphql/async-graphql.git", branch = "actix-web-v4-beta"}
+async-graphql-actix-web = { git= "https://github.com/async-graphql/async-graphql.git", branch = "actix-web-v4-beta"}
 async-trait = "0.1.50"
 config = "0.11.0"
 ipnetwork = "0.17.0"

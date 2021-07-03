@@ -3,6 +3,7 @@ use crate::{
     configuration::Configuration,
     context::Context,
     geoip::GeoIp,
+    graphql,
     middleware::{DomainRootSpanBuilder, SessionId},
     routes::{account, authentication, health},
 };
@@ -51,6 +52,10 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let result = GeoIp::new(&configuration.geo_ip.path).expect("Failed to read database");
     let data_geoip = web::Data::new(result);
 
+    // graphql
+    let schema = graphql::schema();
+    let data_schema = web::Data::new(schema);
+
     let server = HttpServer::new(move || {
         App::new()
             .wrap(
@@ -68,6 +73,8 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
                     .service(web::scope("/account").configure(account::config))
                     .service(web::scope("/authentication").configure(authentication::config)),
             )
+            .service(web::scope("").configure(graphql::config))
+            .app_data(data_schema.clone())
             .app_data(data_context.clone())
             .app_data(data_key.clone())
             .app_data(data_geoip.clone())

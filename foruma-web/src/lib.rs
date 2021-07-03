@@ -6,6 +6,7 @@ mod configuration;
 mod context;
 mod domain;
 mod geoip;
+mod graphql;
 mod http_request_ext;
 mod middleware;
 mod routes;
