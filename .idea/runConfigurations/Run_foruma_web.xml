@@ -10,7 +10,7 @@
     <option name="backtrace" value="SHORT" />
     <envs>
       <env name="app_cookie__key" value="a_cryptographically_random_key_&gt;=_64_bytes_for_web_session_farm!" />
-      <env name="app_cors__origins" value="http://localhost:8080" />
+      <env name="app_cors__origins" value="http://localhost:8080,http://localhost:18080" />
       <env name="app_geo_ip__path" value="geoip" />
       <env name="app_http_server__host" value="0.0.0.0" />
       <env name="app_http_server__port" value="18080" />

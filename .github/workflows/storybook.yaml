@@ -2,8 +2,8 @@ name: Chromatic
 
 on:
   push:
-    branches:
-      - '!wip/**'
+    branches-ignore:
+      - 'wip/**'
 
 jobs:
   chromatic-deployment:

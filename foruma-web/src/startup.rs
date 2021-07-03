@@ -43,10 +43,10 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let data_key = web::Data::new(key.clone());
 
     // configure cors
-    let origins = configuration.cors.as_ref().map_or_else(
-        || "".to_string(),
-        configuration::Cors::comma_separated_origins,
-    );
+    let origins = configuration
+        .cors
+        .as_ref()
+        .map_or_else(Vec::new, |cors| cors.origins.clone());
 
     // configure geo ip
     let result = GeoIp::new(&configuration.geo_ip.path).expect("Failed to read database");
@@ -59,8 +59,10 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let server = HttpServer::new(move || {
         App::new()
             .wrap(
-                Cors::default()
-                    .allowed_origin(&origins)
+                origins
+                    .clone()
+                    .iter()
+                    .fold(Cors::default(), |cors, origin| cors.allowed_origin(origin))
                     .allowed_methods(vec![Method::DELETE, Method::GET, Method::POST])
                     .allowed_headers(vec![header::CONTENT_TYPE])
                     .supports_credentials(),
