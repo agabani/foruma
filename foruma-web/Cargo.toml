@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 actix-cors = { path = "../actix-cors" }
-actix-web = { version = "4.0.0-beta.6", features = ["secure-cookies"] }
+actix-web = { version = "4.0.0-beta.7", features = ["secure-cookies"] }
 async-trait = "0.1.50"
 config = "0.11.0"
 ipnetwork = "0.17.0"
@@ -22,10 +22,10 @@ tracing = "0.1.26"
 tracing-actix-web = { path = "../tracing-actix-web" }
 tracing-bunyan-formatter = "0.2.4"
 tracing-futures = "0.2.5"
-tracing-subscriber = "0.2.18"
+tracing-subscriber = "0.2.19"
 uuid = { version = "0.8.2", features = ["v4"] }
 
 [dev-dependencies]
 actix-rt = "2.2.0"
-reqwest = { version = "0.11.3", features = ["json"] }
-tokio = "1.6.1"
+reqwest = { version = "0.11.4", features = ["json"] }
+tokio = "1.7.1"
