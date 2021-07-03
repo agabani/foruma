@@ -1,4 +1,5 @@
 use actix_web::dev::Payload;
+use actix_web::error::Error;
 use actix_web::{FromRequest, HttpRequest};
 use std::future::{ready, Ready};
 use uuid::Uuid;
@@ -54,11 +55,16 @@ impl std::fmt::Display for RequestId {
     }
 }
 impl FromRequest for RequestId {
-    type Error = ();
-    type Future = Ready<Result<Self, Self::Error>>;
     type Config = ();
+    type Error = Error;
+    type Future = Ready<Result<Self, Self::Error>>;
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        ready(req.extensions().get::<RequestId>().copied().ok_or(()))
+        ready(
+            req.extensions()
+                .get::<RequestId>()
+                .copied()
+                .ok_or(actix_web::error::ErrorBadRequest("internal server error")),
+        )
     }
 }

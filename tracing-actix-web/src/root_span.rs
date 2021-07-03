@@ -1,5 +1,5 @@
 use actix_web::dev::Payload;
-use actix_web::{FromRequest, HttpRequest};
+use actix_web::{error::Error, FromRequest, HttpRequest};
 use std::future::{ready, Ready};
 use tracing::Span;
 
@@ -47,11 +47,16 @@ impl std::convert::Into<Span> for RootSpan {
 }
 
 impl FromRequest for RootSpan {
-    type Error = ();
-    type Future = Ready<Result<Self, Self::Error>>;
     type Config = ();
+    type Error = Error;
+    type Future = Ready<Result<Self, Self::Error>>;
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        ready(req.extensions().get::<RootSpan>().cloned().ok_or(()))
+        ready(
+            req.extensions()
+                .get::<RootSpan>()
+                .cloned()
+                .ok_or(actix_web::error::ErrorBadRequest("internal server error")),
+        )
     }
 }
