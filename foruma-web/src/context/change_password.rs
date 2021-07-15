@@ -7,8 +7,8 @@ impl ChangePassword for Context {
     #[tracing::instrument(
         skip(self, account, current_password, new_password),
         fields(
-            context.account_id = account.account_id().value(),
-            context.username = account.username().value()
+            context.account_id = account.get_account_id().value(),
+            context.username = account.get_username().value()
         )
     )]
     async fn change_password(
@@ -26,7 +26,7 @@ FROM account AS A
          LEFT JOIN account_authentication_password AS AP ON A.id = AP.account_id
 WHERE A.public_id = $1;
 "#,
-            account.account_id().value()
+            account.get_account_id().value()
         )
         .fetch_optional(&self.postgres)
         .await

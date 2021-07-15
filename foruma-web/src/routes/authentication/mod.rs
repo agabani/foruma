@@ -3,7 +3,6 @@ mod login;
 mod logout;
 mod sessions;
 mod signup;
-mod whoami;
 
 use actix_web::{http::Method, web};
 
@@ -18,6 +17,5 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(
         web::resource("/sessions/{id}").route(web::method(Method::DELETE).to(sessions::delete)),
     )
-    .service(web::resource("/signup").route(web::method(Method::POST).to(signup::post)))
-    .service(web::resource("/whoami").route(web::method(Method::GET).to(whoami::get)));
+    .service(web::resource("/signup").route(web::method(Method::POST).to(signup::post)));
 }

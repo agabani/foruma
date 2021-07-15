@@ -9,6 +9,7 @@ import type {
   SignupPayload,
   DeleteSessionPayload,
 } from "./types";
+import { queryCurrentAccount } from "@/graphql";
 
 const api = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
@@ -21,21 +22,12 @@ export const initialize = async ({
 }: {
   commit: Commit;
 }): Promise<void> => {
-  const whoamiResponse = await api.get("/api/v1/authentication/whoami");
+  const currentAccount = await queryCurrentAccount();
 
-  switch (whoamiResponse.status) {
-    case 200:
-      {
-        commit("login", whoamiResponse.data.username);
-      }
-      break;
-    case 401:
-      {
-        commit("logout");
-      }
-      return;
-    default:
-      throw new Error("unexpected response");
+  if (currentAccount) {
+    commit("login", currentAccount.username);
+  } else {
+    commit("logout");
   }
 };
 
@@ -196,16 +188,10 @@ export const login = async (
       throw new Error("unexpected response");
   }
 
-  const whoamiResponse = await api.get("/api/v1/authentication/whoami");
+  const currentAccount = await queryCurrentAccount();
 
-  switch (whoamiResponse.status) {
-    case 200:
-      {
-        commit("login", whoamiResponse.data.username);
-      }
-      break;
-    default:
-      throw new Error("unexpected response");
+  if (currentAccount) {
+    commit("login", currentAccount.username);
   }
 };
 
@@ -271,15 +257,9 @@ export const signup = async (
       throw new Error("unexpected response");
   }
 
-  const whoamiResponse = await api.get("/api/v1/authentication/whoami");
+  const currentAccount = await queryCurrentAccount();
 
-  switch (whoamiResponse.status) {
-    case 200:
-      {
-        commit("login", whoamiResponse.data.username);
-      }
-      break;
-    default:
-      throw new Error("unexpected response");
+  if (currentAccount) {
+    commit("login", currentAccount.username);
   }
 };

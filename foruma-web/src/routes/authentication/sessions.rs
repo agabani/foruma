@@ -126,7 +126,10 @@ pub async fn get(
         }
     };
 
-    let account_sessions = match context.get_account_sessions(&account.account_id()).await {
+    let account_sessions = match context
+        .get_account_sessions(&account.get_account_id())
+        .await
+    {
         Ok(account_sessions) => account_sessions,
         Err(GetAccountSessionsError::AccountDoesNotExist) => {
             return Ok(HttpResponse::NotFound().finish())
