@@ -1,6 +1,6 @@
 use crate::graphql::model::ForumaSchema;
-use actix_web::{guard, web};
-use async_graphql::{http::playground_source, http::GraphQLPlaygroundConfig};
+use actix_web::{guard, web, HttpRequest, HttpResponse};
+use async_graphql::{http::playground_source, http::GraphQLPlaygroundConfig, Request};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/").guard(guard::Get()).to(index_playground))
@@ -17,7 +17,12 @@ pub async fn index_playground() -> Result<actix_web::HttpResponse, actix_web::Er
 
 pub async fn index(
     schema: web::Data<ForumaSchema>,
-    req: async_graphql_actix_web::Request,
-) -> async_graphql_actix_web::Response {
-    schema.execute(req.into_inner()).await.into()
+    _http_request: HttpRequest,
+    request: web::Json<Request>,
+) -> HttpResponse {
+    let request = request.0;
+
+    let response = schema.execute(request).await;
+
+    HttpResponse::Ok().json(response)
 }
