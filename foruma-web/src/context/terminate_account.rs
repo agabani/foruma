@@ -7,8 +7,8 @@ impl TerminateAccount for Context {
     #[tracing::instrument(
         skip(self, account),
         fields(
-            context.account_id = account.account_id().value(),
-            context.username = account.username().value()
+            context.account_id = account.get_account_id().value(),
+            context.username = account.get_username().value()
         )
     )]
     async fn terminate_account(&self, account: &Account) -> Result<(), TerminateAccountError> {
@@ -19,7 +19,7 @@ FROM account
 WHERE account.public_id = $1
 RETURNING id;
             "#,
-            account.account_id().value()
+            account.get_account_id().value()
         )
         .fetch_optional(&self.postgres)
         .await

@@ -75,7 +75,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
                     .service(web::scope("/account").configure(account::config))
                     .service(web::scope("/authentication").configure(authentication::config)),
             )
-            .service(web::scope("").configure(graphql::config))
+            .service(web::scope("/api/graphql").configure(graphql::config))
             .app_data(data_schema.clone())
             .app_data(data_context.clone())
             .app_data(data_key.clone())

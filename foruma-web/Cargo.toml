@@ -8,13 +8,12 @@ edition = "2018"
 
 [dependencies]
 actix-cors = { path = "../actix-cors" }
-actix-web = { version = "4.0.0-beta.7", features = ["secure-cookies"] }
-async-graphql = { git= "https://github.com/async-graphql/async-graphql.git", branch = "actix-web-v4-beta"}
-async-graphql-actix-web = { git= "https://github.com/async-graphql/async-graphql.git", branch = "actix-web-v4-beta"}
+actix-web = { version = "4.0.0-beta.8", features = ["secure-cookies"] }
+async-graphql = "2.9.8"
 async-trait = "0.1.50"
 config = "0.11.0"
 ipnetwork = "0.17.0"
-maxminddb = "0.19.0"
+maxminddb = "0.20.0"
 pin-project = "1.0.7"
 rust-argon2 = "0.8.3"
 serde = "1.0.126"
@@ -30,4 +29,4 @@ uuid = { version = "0.8.2", features = ["v4"] }
 [dev-dependencies]
 actix-rt = "2.2.0"
 reqwest = { version = "0.11.4", features = ["json"] }
-tokio = "1.7.1"
+tokio = "1.8.1"

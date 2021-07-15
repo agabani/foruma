@@ -7,8 +7,8 @@ impl CreatePassword for Context {
     #[tracing::instrument(
         skip(self, account, password),
         fields(
-            context.account_id = account.account_id().value(),
-            context.username = account.username().value()
+            context.account_id = account.get_account_id().value(),
+            context.username = account.get_username().value()
         )
     )]
     async fn create_password(&self, account: &Account, password: &Password) {
@@ -33,7 +33,7 @@ VALUES ($1,
 "#,
             password_id.value(),
             created,
-            account.account_id().value(),
+            account.get_account_id().value(),
             password_hash
         )
         .execute(&self.postgres)

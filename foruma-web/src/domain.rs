@@ -137,11 +137,11 @@ impl Account {
         }
     }
 
-    pub fn account_id(&self) -> &AccountId {
+    pub fn get_account_id(&self) -> &AccountId {
         &self.account_id
     }
 
-    pub fn username(&self) -> &Username {
+    pub fn get_username(&self) -> &Username {
         &self.username
     }
 }

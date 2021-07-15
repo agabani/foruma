@@ -80,38 +80,45 @@ async fn should_be_able_to_authenticate() {
     let cookie = actix_web::cookie::Cookie::parse(cookie_header.to_str().unwrap()).unwrap();
 
     // who am i
+    let mut map = HashMap::new();
+    map.insert(
+        "query",
+        r#"
+{
+    currentAccount {
+        id
+        username
+    }
+}
+"#,
+    );
     let response = client
         .request(
-            Method::OPTIONS,
-            &format!("{}/api/v1/authentication/whoami", test_server.address),
-        )
-        .header("Access-Control-Request-Headers", "content-type")
-        .header("Access-Control-Request-Method", "GET")
-        .header("Origin", "http://localhost:8080")
-        .send()
-        .await
-        .expect("Failed to send request.");
-    assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
-    assert_access_control_allow_headers(&response);
-
-    let response = client
-        .request(
-            Method::GET,
-            &format!("{}/api/v1/authentication/whoami", test_server.address),
+            Method::POST,
+            &format!("{}/api/graphql/", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
+        .json(&map)
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
     let result = response
-        .json::<HashMap<String, String>>()
+        .json::<HashMap<String, HashMap<String, HashMap<String, String>>>>()
         .await
         .expect("Failed to parse body.");
-    assert_eq!(result.get("username").unwrap(), "test-username");
+    assert_eq!(
+        result
+            .get("data")
+            .unwrap()
+            .get("currentAccount")
+            .unwrap()
+            .get("username")
+            .unwrap(),
+        "test-username"
+    );
 
     // logout
     let response = client
@@ -178,38 +185,45 @@ async fn should_be_able_to_authenticate() {
     let cookie = actix_web::cookie::Cookie::parse(cookie_header.to_str().unwrap()).unwrap();
 
     // who am i
+    let mut map = HashMap::new();
+    map.insert(
+        "query",
+        r#"
+{
+    currentAccount {
+        id
+        username
+    }
+}
+"#,
+    );
     let response = client
         .request(
-            Method::OPTIONS,
-            &format!("{}/api/v1/authentication/whoami", test_server.address),
-        )
-        .header("Access-Control-Request-Headers", "content-type")
-        .header("Access-Control-Request-Method", "GET")
-        .header("Origin", "http://localhost:8080")
-        .send()
-        .await
-        .expect("Failed to send request.");
-    assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
-    assert_access_control_allow_headers(&response);
-
-    let response = client
-        .request(
-            Method::GET,
-            &format!("{}/api/v1/authentication/whoami", test_server.address),
+            Method::POST,
+            &format!("{}/api/graphql/", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
+        .json(&map)
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
     let result = response
-        .json::<HashMap<String, String>>()
+        .json::<HashMap<String, HashMap<String, HashMap<String, String>>>>()
         .await
         .expect("Failed to parse body.");
-    assert_eq!(result.get("username").unwrap(), "test-username");
+    assert_eq!(
+        result
+            .get("data")
+            .unwrap()
+            .get("currentAccount")
+            .unwrap()
+            .get("username")
+            .unwrap(),
+        "test-username"
+    );
 
     // logout
     let response = client
@@ -277,17 +291,41 @@ async fn should_make_unauthenticated_requests() {
     assert_access_control_allow_headers(&response);
 
     // whoami
+    let mut map = HashMap::new();
+    map.insert(
+        "query",
+        r#"
+{
+    currentAccount {
+        id
+        username
+    }
+}
+"#,
+    );
     let response = client
-        .get(&format!(
-            "{}/api/v1/authentication/whoami",
-            test_server.address
-        ))
+        .request(
+            Method::POST,
+            &format!("{}/api/graphql/", test_server.address),
+        )
         .header("Origin", "http://localhost:8080")
+        .json(&map)
         .send()
         .await
         .expect("Failed to send request.");
-    assert_eq!(response.status().as_u16(), 401);
+    assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
+    let result = response
+        .json::<HashMap<String, HashMap<String, Option<HashMap<String, String>>>>>()
+        .await
+        .expect("Failed to parse body.");
+    assert!(result
+        .get("data")
+        .as_ref()
+        .unwrap()
+        .get("currentAccount")
+        .unwrap()
+        .is_none());
 }
 
 #[actix_rt::test]
