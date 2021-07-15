@@ -171,19 +171,19 @@ impl AccountSession {
         }
     }
 
-    pub fn session_id(&self) -> &SessionId {
+    pub fn get_session_id(&self) -> &SessionId {
         &self.session_id
     }
 
-    pub fn ip_address(&self) -> &Option<IpAddress> {
+    pub fn get_ip_address(&self) -> &Option<IpAddress> {
         &self.ip_address
     }
 
-    pub fn user_agent(&self) -> &Option<UserAgent> {
+    pub fn get_user_agent(&self) -> &Option<UserAgent> {
         &self.user_agent
     }
 
-    pub fn last_active(&self) -> &LastActive {
+    pub fn get_last_active(&self) -> &LastActive {
         &self.last_active
     }
 }
@@ -218,6 +218,10 @@ impl LastActive {
 
     pub fn value(&self) -> &time::OffsetDateTime {
         &self.0
+    }
+
+    pub fn to_8601_string(&self) -> String {
+        self.value().format("%Y-%m-%dT%H:%M:%S.%NZ")
     }
 }
 

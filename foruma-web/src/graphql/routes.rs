@@ -1,4 +1,3 @@
-use crate::context::Context;
 use crate::graphql::model::GraphQlSchema;
 use crate::http_request_ext::HttpRequestExt;
 use actix_web::{guard, web, HttpRequest, HttpResponse};
@@ -18,12 +17,11 @@ pub async fn index_playground() -> Result<actix_web::HttpResponse, actix_web::Er
 }
 
 pub async fn index(
-    context: web::Data<Context>,
     schema: web::Data<GraphQlSchema>,
     http_request: HttpRequest,
     request: web::Json<Request>,
 ) -> HttpResponse {
-    let mut request = request.0.data(context);
+    let mut request = request.0;
 
     if let Some(session_id) = http_request.session_id() {
         request = request.data(session_id);

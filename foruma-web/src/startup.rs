@@ -53,7 +53,10 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let data_geoip = web::Data::new(result);
 
     // graphql
-    let schema = graphql::schema();
+    let schema = graphql::schema()
+        .data(data_geoip.clone())
+        .data(data_context.clone())
+        .finish();
     let data_schema = web::Data::new(schema);
 
     let server = HttpServer::new(move || {

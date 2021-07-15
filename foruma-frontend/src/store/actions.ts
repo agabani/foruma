@@ -1,6 +1,6 @@
 import router from "@/router";
 import axios from "axios";
-import type { AuthenticationSession, ChangedEvent } from "@vue/runtime-core";
+import type { ChangedEvent } from "@vue/runtime-core";
 import { Commit } from "vuex";
 import { SessionChangedEventPayload } from "./mutations";
 import type {
@@ -9,7 +9,10 @@ import type {
   SignupPayload,
   DeleteSessionPayload,
 } from "./types";
-import { queryCurrentAccount } from "@/graphql";
+import {
+  queryCurrentAccount,
+  queryCurrentAccountAuthenticationSessions,
+} from "@/graphql";
 
 const api = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
@@ -116,47 +119,29 @@ export const getSessions = async ({
 }: {
   commit: Commit;
 }): Promise<void> => {
-  const getSessionsResponse = await api.get("/api/v1/authentication/sessions");
+  const response = await queryCurrentAccountAuthenticationSessions();
 
-  switch (getSessionsResponse.status) {
-    case 200:
-      {
-        const payload: SessionChangedEventPayload = {
-          data: getSessionsResponse.data.map(
-            (s: {
-              id: string;
-              isCurrentSession: boolean;
-              browser: string | null;
-              operatingSystem: string | null;
-              location: string | null;
-              lastActiveDate: string;
-            }) => {
-              const d: AuthenticationSession = {
-                id: s.id,
-                isCurrentSession: s.isCurrentSession,
-                browser: s.browser,
-                operatingSystem: s.operatingSystem,
-                location: s.location,
-                lastActiveDate: new Date(s.lastActiveDate),
-              };
-              return d;
-            }
-          ),
-          event: {
-            eventDate: new Date(),
-            error: undefined,
-          },
+  if (response) {
+    const payload: SessionChangedEventPayload = {
+      event: {
+        eventDate: new Date(),
+        error: undefined,
+      },
+      data: response.map((s) => {
+        return {
+          browser: s.browser,
+          id: s.id,
+          isCurrentSession: s.isCurrentSession,
+          lastActiveDate: new Date(s.lastActiveDate),
+          location: s.location,
+          operatingSystem: s.operatingSystem,
         };
-        commit("sessionChangedEvent", payload);
-      }
-      break;
-    case 401:
-      {
-        commit("logout");
-      }
-      break;
-    default:
-      throw new Error("unexpected response");
+      }),
+    };
+
+    commit("sessionChangedEvent", payload);
+  } else {
+    commit("logout");
   }
 };
 
