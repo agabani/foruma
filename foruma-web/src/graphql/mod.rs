@@ -1,4 +1,5 @@
 mod model;
+mod query;
 mod routes;
 
 pub use model::schema;
