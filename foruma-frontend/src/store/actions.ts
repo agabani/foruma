@@ -10,6 +10,7 @@ import type {
   DeleteSessionPayload,
 } from "./types";
 import {
+  mutationChangeAccountAuthenticationPassword,
   mutationDeleteAccountAuthenticationSession,
   queryCurrentAccount,
   queryCurrentAccountAuthenticationSessions,
@@ -39,41 +40,34 @@ export const changeOwnPassword = async (
   { commit }: { commit: Commit },
   payload: ChangePasswordPayload
 ): Promise<void> => {
-  const changePasswordResponse = await api.post(
-    "/api/v1/authentication/change-password",
-    {
-      currentPassword: payload.currentPassword,
-      newPassword: payload.newPassword,
-    }
-  );
+  const response = await mutationChangeAccountAuthenticationPassword(payload);
 
   const event: ChangedEvent = {
     eventDate: new Date(),
     error: undefined,
   };
 
-  switch (changePasswordResponse.status) {
-    case 200:
-      {
+  if (response.success) {
+    commit("passwordChangedEvent", event);
+  } else {
+    switch (response.errorCode) {
+      case "incorrect_password":
+        event.error = {
+          title: "Uh oh, something went wrong",
+          message: "Your current password is incorrect!",
+        };
         commit("passwordChangedEvent", event);
-      }
-      break;
-    case 400:
-      event.error = {
-        title: "Uh oh, something went wrong",
-        message: "Your current password is incorrect!",
-      };
-      commit("passwordChangedEvent", event);
-      break;
-    case 401:
-      event.error = {
-        title: "Uh oh, something went wrong",
-        message: "You are somehow not logged in... ¯\\_(ツ)_/¯",
-      };
-      commit("passwordChangedEvent", event);
-      break;
-    default:
-      throw new Error("unexpected response");
+        break;
+      case "unauthenticated":
+        event.error = {
+          title: "Uh oh, something went wrong",
+          message: "You are somehow not logged in... ¯\\_(ツ)_/¯",
+        };
+        commit("passwordChangedEvent", event);
+        break;
+      default:
+        throw new Error("unexpected response");
+    }
   }
 };
 

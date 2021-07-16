@@ -8,6 +8,42 @@ const api = axios.create({
 
 const GraphQL = "/api/graphql/";
 
+export async function mutationChangeAccountAuthenticationPassword(input: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<{
+  success: boolean;
+  errorCode?:
+    | "incorrect_password"
+    | "unauthenticated"
+    | "unauthorized"
+    | "bad_request";
+}> {
+  const response = await api.post(GraphQL, {
+    query: `
+mutation {
+  changeAccountAuthenticationPassword(
+    input: { currentPassword: "${input.currentPassword}", newPassword: "${input.newPassword}" }
+  )
+}`,
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Unexpected status code");
+  }
+
+  if (response.data.errors?.[0]) {
+    return {
+      success: false,
+      errorCode: response.data.errors[0].message,
+    };
+  }
+
+  return {
+    success: response.data.data.changeAccountAuthenticationPassword,
+  };
+}
+
 export async function mutationDeleteAccountAuthenticationSession(
   sessionId: string
 ): Promise<
