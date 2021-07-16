@@ -1,12 +1,10 @@
+use async_graphql::{EmptySubscription, Schema, SchemaBuilder};
+
+use crate::graphql::mutation::MutationRoot;
 use crate::graphql::query::QueryRoot;
-use async_graphql::{EmptyMutation, EmptySubscription, Schema, SchemaBuilder};
 
-pub type GraphQlSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
+pub type GraphQlSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
-pub fn schema() -> SchemaBuilder<QueryRoot, EmptyMutation, EmptySubscription> {
-    Schema::build(
-        QueryRoot,
-        async_graphql::EmptyMutation,
-        async_graphql::EmptySubscription,
-    )
+pub fn schema() -> SchemaBuilder<QueryRoot, MutationRoot, EmptySubscription> {
+    Schema::build(QueryRoot, MutationRoot, async_graphql::EmptySubscription)
 }

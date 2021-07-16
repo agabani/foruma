@@ -10,6 +10,7 @@ import type {
   DeleteSessionPayload,
 } from "./types";
 import {
+  mutationDeleteAccountAuthenticationSession,
   queryCurrentAccount,
   queryCurrentAccountAuthenticationSessions,
 } from "@/graphql";
@@ -99,18 +100,12 @@ export const deleteSession = async (
   { commit }: { commit: Commit },
   payload: DeleteSessionPayload
 ): Promise<void> => {
-  const deleteSessionResponse = await api.delete(
-    `/api/v1/authentication/sessions/${payload.id}`
-  );
+  const response = await mutationDeleteAccountAuthenticationSession(payload.id);
 
-  switch (deleteSessionResponse.status) {
-    case 204:
-      {
-        await getSessions({ commit });
-      }
-      break;
-    default:
-      throw new Error("unexpected response");
+  if (response) {
+    await getSessions({ commit });
+  } else {
+    throw new Error("unexpected response");
   }
 };
 

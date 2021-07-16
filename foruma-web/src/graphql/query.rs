@@ -1,9 +1,11 @@
+use async_graphql::{Context, Object};
+
 use crate::domain::{
     Account, AccountId, AccountSession, GetAccount, GetAccountSessions, SessionId,
     UpdateLastActive, UpdateLastActiveError,
 };
-use async_graphql::{Context, Object};
 
+#[allow(clippy::module_name_repetitions)]
 pub struct QueryRoot;
 
 #[Object]

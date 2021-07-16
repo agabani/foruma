@@ -1,7 +1,8 @@
-use crate::graphql::model::GraphQlSchema;
-use crate::http_request_ext::HttpRequestExt;
 use actix_web::{guard, web, HttpRequest, HttpResponse};
 use async_graphql::{http::playground_source, http::GraphQLPlaygroundConfig, Request};
+
+use crate::graphql::model::GraphQlSchema;
+use crate::http_request_ext::HttpRequestExt;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/").guard(guard::Get()).to(index_playground))

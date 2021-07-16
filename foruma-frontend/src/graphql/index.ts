@@ -8,6 +8,46 @@ const api = axios.create({
 
 const GraphQL = "/api/graphql/";
 
+export async function mutationDeleteAccountAuthenticationSession(
+  sessionId: string
+): Promise<
+  | [
+      {
+        id: string;
+        isCurrentSession: boolean;
+        browser: string | null;
+        operatingSystem: string | null;
+        location: string | null;
+        lastActiveDate: string;
+      }
+    ]
+  | null
+> {
+  const response = await api.post(GraphQL, {
+    query: `
+mutation {
+  deleteAccountAuthenticationSession(
+    input: { sessionId: "${sessionId}" }
+  ) {
+    id
+    browser
+    isCurrentSession
+    lastActiveDate
+    location
+    operatingSystem
+  }
+}`,
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Unexpected status code");
+  }
+
+  return response.data.data.deleteAccountAuthenticationSession
+    ? response.data.data.deleteAccountAuthenticationSession
+    : null;
+}
+
 export async function queryCurrentAccount(): Promise<{
   id: string;
   username: string;
