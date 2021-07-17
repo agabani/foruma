@@ -84,6 +84,36 @@ mutation {
     : null;
 }
 
+export async function mutationLogin(input: {
+  username: string;
+  password: string;
+}): Promise<{
+  success: boolean;
+  errorCode?: "bad_request";
+}> {
+  const response = await api.post(GraphQL, {
+    query: `
+mutation {
+  login(input: { username: "${input.username}", password: "${input.password}" })
+}`,
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Unexpected status code");
+  }
+
+  if (response.data.errors?.[0]) {
+    return {
+      success: false,
+      errorCode: response.data.errors[0].message,
+    };
+  }
+
+  return {
+    success: response.data.data.login,
+  };
+}
+
 export async function mutationLogoutCurrentAccount(): Promise<{
   success: boolean;
   errorCode?: "unauthenticated";

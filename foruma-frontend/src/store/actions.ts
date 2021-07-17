@@ -12,6 +12,7 @@ import type {
 import {
   mutationChangeAccountAuthenticationPassword,
   mutationDeleteAccountAuthenticationSession,
+  mutationLogin,
   mutationLogoutCurrentAccount,
   queryCurrentAccount,
   queryCurrentAccountAuthenticationSessions,
@@ -139,28 +140,18 @@ export const login = async (
   { commit }: { commit: Commit },
   payload: LoginPayload
 ): Promise<void> => {
-  const loginResponse = await api.post("/api/v1/authentication/login", {
-    username: payload.username,
-    password: payload.password,
-  });
+  const response = await mutationLogin(payload);
 
-  switch (loginResponse.status) {
-    case 200:
-      break;
-    case 401:
-      {
-        const event: ChangedEvent = {
-          eventDate: new Date(),
-          error: {
-            title: "Uh oh, something went wrong",
-            message: "Sorry! There was a problem with your request!",
-          },
-        };
-        commit("loginChangedEvent", event);
-      }
-      return;
-    default:
-      throw new Error("unexpected response");
+  if (!response.success) {
+    const event: ChangedEvent = {
+      eventDate: new Date(),
+      error: {
+        title: "Uh oh, something went wrong",
+        message: "Sorry! There was a problem with your request!",
+      },
+    };
+    commit("loginChangedEvent", event);
+    return;
   }
 
   const currentAccount = await queryCurrentAccount();

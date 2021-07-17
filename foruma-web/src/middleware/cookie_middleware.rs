@@ -1,5 +1,5 @@
+use crate::http_session_cookie::HttpSessionCookie;
 use actix_web::{
-    cookie::{Cookie, CookieBuilder, CookieJar, Key, SameSite},
     dev::{forward_ready, MessageBody, Service, ServiceRequest, ServiceResponse, Transform},
     http::{
         header::{COOKIE, SET_COOKIE},
@@ -18,12 +18,14 @@ use std::{
 pub struct SessionId(Rc<Inner>);
 
 struct Inner {
-    key: Key,
+    http_session_cookie: HttpSessionCookie,
 }
 
 impl SessionId {
-    pub fn new(key: Key) -> Self {
-        Self(Rc::new(Inner { key }))
+    pub fn new(http_session_cookie: HttpSessionCookie) -> Self {
+        Self(Rc::new(Inner {
+            http_session_cookie,
+        }))
     }
 }
 
@@ -68,14 +70,14 @@ where
     fn call(&self, req: ServiceRequest) -> Self::Future {
         let cookie_header: Option<&HeaderValue> = req.headers().get(COOKIE);
 
-        let cookie = cookie_header
-            .and_then(|cookie| cookie.to_str().ok())
-            .and_then(|cookie_value| Cookie::parse(cookie_value.to_string()).ok())
-            .and_then(|cookie| CookieJar::new().private(&self.inner.key).decrypt(cookie));
+        let session_id = cookie_header.and_then(|header_value| {
+            self.inner
+                .http_session_cookie
+                .decrypt_session_id(header_value)
+        });
 
-        if let Some(cookie) = cookie {
-            req.extensions_mut()
-                .insert(crate::domain::SessionId::new(cookie.value()));
+        if let Some(session_id) = session_id {
+            req.extensions_mut().insert(session_id);
         }
 
         let inner = self.inner.clone();
@@ -112,23 +114,11 @@ where
         };
 
         if let Some(session_id) = get_session_id(res.response()) {
-            let key = "session";
+            let http_session_cookie: &HttpSessionCookie = &this.inner.http_session_cookie;
 
-            let cookie = CookieBuilder::new(key, session_id.value().to_string())
-                .http_only(true)
-                .path("/")
-                .same_site(SameSite::None)
-                .secure(true)
-                .finish();
+            let header_value = http_session_cookie.encrypt_session_id(&session_id);
 
-            let mut jar = CookieJar::new();
-            jar.private_mut(&this.inner.key).add(cookie);
-            let cookie = jar.get(key).cloned().unwrap();
-
-            let mut value = HeaderValue::from_str(&cookie.to_string()).unwrap();
-            value.set_sensitive(true);
-
-            res.headers_mut().insert(SET_COOKIE, value);
+            res.headers_mut().insert(SET_COOKIE, header_value);
         }
 
         Poll::Ready(Ok(res))

@@ -1,3 +1,4 @@
+use crate::http_session_cookie::HttpSessionCookie;
 use crate::{
     configuration,
     configuration::Configuration,
@@ -41,6 +42,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
         .and_then(configuration::Cookie::get_key)
         .unwrap_or_else(actix_web::cookie::Key::generate);
     let data_key = web::Data::new(key.clone());
+    let http_session_cookie = HttpSessionCookie::new(key.clone());
 
     // configure cors
     let origins = configuration
@@ -56,6 +58,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
     let schema = graphql::schema()
         .data(data_geoip.clone())
         .data(data_context.clone())
+        .data(http_session_cookie)
         .finish();
     let data_schema = web::Data::new(schema);
 
@@ -71,7 +74,7 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
                     .supports_credentials(),
             )
             .wrap(TracingLogger::<DomainRootSpanBuilder>::new())
-            .wrap(SessionId::new(key.clone()))
+            .wrap(SessionId::new(HttpSessionCookie::new(key.clone())))
             .service(web::scope("/health").configure(health::config))
             .service(
                 web::scope("/api/v1")

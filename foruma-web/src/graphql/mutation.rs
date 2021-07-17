@@ -1,9 +1,10 @@
 use async_graphql::{Context, InputObject, Object};
 
 use crate::domain::{
-    AccountSession, ChangePassword, ChangePasswordError, GetAccount, GetAccountSessions, Logout,
-    LogoutError, Password, SessionId,
+    AccountSession, ChangePassword, ChangePasswordError, GetAccount, GetAccountSessions, IpAddress,
+    Login, LoginError, Logout, LogoutError, Password, SessionId, UserAgent, Username,
 };
+use actix_web::http::header::SET_COOKIE;
 
 #[allow(clippy::module_name_repetitions)]
 pub struct MutationRoot;
@@ -88,6 +89,40 @@ impl MutationRoot {
         Some(account_session)
     }
 
+    async fn login<'a>(&self, ctx: &'a Context<'a>, input: LoginInput) -> Result<bool, String> {
+        let context = ctx
+            .data::<actix_web::web::Data<crate::context::Context>>()
+            .expect("Database not in context");
+
+        let http_session_cookie = ctx
+            .data::<crate::http_session_cookie::HttpSessionCookie>()
+            .expect("HttpSessionCookie not in context");
+
+        let ip_address = ctx.data::<IpAddress>().ok().cloned();
+
+        let user_agent = ctx.data::<UserAgent>().ok().cloned();
+
+        let username = Username::new(&input.username);
+        let password = Password::new(&input.password);
+
+        let session_id = match context
+            .login(&username, &password, &ip_address, &user_agent)
+            .await
+        {
+            Ok(session_id) => session_id,
+            Err(
+                LoginError::AccountDoesNotExist
+                | LoginError::AccountHasNoPassword
+                | LoginError::IncorrectPassword,
+            ) => return Err(GraphQLError::BadRequest.to_string()),
+        };
+
+        let cookie = http_session_cookie.encrypt_session_id(&session_id);
+        ctx.append_http_header(SET_COOKIE, cookie.to_str().unwrap());
+
+        Ok(true)
+    }
+
     async fn logout_current_account<'a>(&self, ctx: &'a Context<'a>) -> Result<bool, String> {
         let context = ctx
             .data::<actix_web::web::Data<crate::context::Context>>()
@@ -113,4 +148,10 @@ pub struct ChangeAccountAuthenticationPassword {
 #[derive(InputObject)]
 pub struct DeleteAccountAuthenticationSessionInput {
     session_id: String,
+}
+
+#[derive(InputObject)]
+pub struct LoginInput {
+    username: String,
+    password: String,
 }
