@@ -8,6 +8,7 @@ mod domain;
 mod geoip;
 mod graphql;
 mod http_request_ext;
+mod http_session_cookie;
 mod middleware;
 mod routes;
 mod startup;

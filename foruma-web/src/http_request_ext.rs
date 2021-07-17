@@ -1,9 +1,10 @@
-use crate::domain::{IpAddress, SessionId};
+use crate::domain::{IpAddress, SessionId, UserAgent};
 use actix_web::HttpRequest;
 
 pub trait HttpRequestExt {
     fn client_ip(&self) -> Option<IpAddress>;
     fn session_id(&self) -> Option<SessionId>;
+    fn user_agent(&self) -> Option<UserAgent>;
 }
 
 impl HttpRequestExt for HttpRequest {
@@ -15,5 +16,12 @@ impl HttpRequestExt for HttpRequest {
         let extensions = self.extensions();
         let session_id = extensions.get::<SessionId>()?;
         Some(session_id.clone())
+    }
+
+    fn user_agent(&self) -> Option<UserAgent> {
+        self.headers()
+            .get("User-Agent")
+            .and_then(|value| value.to_str().ok())
+            .map(|value| UserAgent::new(value))
     }
 }
