@@ -12,6 +12,7 @@ import type {
 import {
   mutationChangeAccountAuthenticationPassword,
   mutationDeleteAccountAuthenticationSession,
+  mutationLogoutCurrentAccount,
   queryCurrentAccount,
   queryCurrentAccountAuthenticationSessions,
 } from "@/graphql";
@@ -170,17 +171,13 @@ export const login = async (
 };
 
 export const logout = async ({ commit }: { commit: Commit }): Promise<void> => {
-  const logoutResponse = await api.post("/api/v1/authentication/logout");
+  const response = await mutationLogoutCurrentAccount();
 
-  switch (logoutResponse.status) {
-    case 200:
-      {
-        commit("logout");
-        router.push("/");
-      }
-      break;
-    default:
-      throw new Error("unexpected response");
+  if (response.success) {
+    commit("logout");
+    router.push("/");
+  } else {
+    throw new Error("unexpected response");
   }
 };
 
