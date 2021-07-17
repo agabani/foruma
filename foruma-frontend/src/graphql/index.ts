@@ -84,6 +84,33 @@ mutation {
     : null;
 }
 
+export async function mutationLogoutCurrentAccount(): Promise<{
+  success: boolean;
+  errorCode?: "unauthenticated";
+}> {
+  const response = await api.post(GraphQL, {
+    query: `
+mutation {
+  logoutCurrentAccount
+}`,
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Unexpected status code");
+  }
+
+  if (response.data.errors?.[0]) {
+    return {
+      success: false,
+      errorCode: response.data.errors[0].message,
+    };
+  }
+
+  return {
+    success: response.data.data.logoutCurrentAccount,
+  };
+}
+
 export async function queryCurrentAccount(): Promise<{
   id: string;
   username: string;

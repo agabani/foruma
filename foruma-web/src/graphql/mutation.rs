@@ -2,7 +2,7 @@ use async_graphql::{Context, InputObject, Object};
 
 use crate::domain::{
     AccountSession, ChangePassword, ChangePasswordError, GetAccount, GetAccountSessions, Logout,
-    Password, SessionId,
+    LogoutError, Password, SessionId,
 };
 
 #[allow(clippy::module_name_repetitions)]
@@ -86,6 +86,21 @@ impl MutationRoot {
             .ok()?;
 
         Some(account_session)
+    }
+
+    async fn logout_current_account<'a>(&self, ctx: &'a Context<'a>) -> Result<bool, String> {
+        let context = ctx
+            .data::<actix_web::web::Data<crate::context::Context>>()
+            .expect("Database not in context");
+
+        let session_id = ctx
+            .data_opt::<SessionId>()
+            .ok_or_else(|| GraphQLError::Unauthenticated.to_string())?;
+
+        match context.logout(&session_id).await {
+            Ok(()) => Ok(true),
+            Err(LogoutError::SessionDoesNotExist) => Err(GraphQLError::Unauthenticated.to_string()),
+        }
     }
 }
 

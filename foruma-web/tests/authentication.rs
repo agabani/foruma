@@ -1,6 +1,7 @@
 use reqwest::{Method, Response};
 use std::collections::HashMap;
 
+mod graphql;
 mod test_server;
 
 fn assert_preflight_access_control_allow_headers(methods: &[Method], response: &Response) {
@@ -121,33 +122,39 @@ async fn should_be_able_to_authenticate() {
     );
 
     // logout
-    let response = client
-        .request(
-            Method::OPTIONS,
-            &format!("{}/api/v1/authentication/logout", test_server.address),
-        )
-        .header("Access-Control-Request-Headers", "content-type")
-        .header("Access-Control-Request-Method", "POST")
-        .header("Origin", "http://localhost:8080")
-        .send()
-        .await
-        .expect("Failed to send request.");
-    assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
-    assert_access_control_allow_headers(&response);
-
+    let mut map = HashMap::new();
+    map.insert(
+        "query",
+        r#"
+mutation {
+  logoutCurrentAccount
+}
+"#,
+    );
     let response = client
         .request(
             Method::POST,
-            &format!("{}/api/v1/authentication/logout", test_server.address),
+            &format!("{}/api/graphql/", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
+        .json(&map)
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
+    let result = response
+        .json::<graphql::Response<HashMap<String, bool>>>()
+        .await
+        .expect("Failed to parse body.");
+    assert!(result
+        .data
+        .as_ref()
+        .unwrap()
+        .get("logoutCurrentAccount")
+        .unwrap());
+    assert!(result.errors.is_none());
 
     // log in
     let response = client
@@ -226,33 +233,39 @@ async fn should_be_able_to_authenticate() {
     );
 
     // logout
-    let response = client
-        .request(
-            Method::OPTIONS,
-            &format!("{}/api/v1/authentication/logout", test_server.address),
-        )
-        .header("Access-Control-Request-Headers", "content-type")
-        .header("Access-Control-Request-Method", "GET")
-        .header("Origin", "http://localhost:8080")
-        .send()
-        .await
-        .expect("Failed to send request.");
-    assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
-    assert_access_control_allow_headers(&response);
-
+    let mut map = HashMap::new();
+    map.insert(
+        "query",
+        r#"
+mutation {
+  logoutCurrentAccount
+}
+"#,
+    );
     let response = client
         .request(
             Method::POST,
-            &format!("{}/api/v1/authentication/logout", test_server.address),
+            &format!("{}/api/graphql/", test_server.address),
         )
         .header("Origin", "http://localhost:8080")
         .header("Cookie", format!("{}={}", cookie.name(), cookie.value()))
+        .json(&map)
         .send()
         .await
         .expect("Failed to send request.");
     assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
+    let result = response
+        .json::<graphql::Response<HashMap<String, bool>>>()
+        .await
+        .expect("Failed to parse body.");
+    assert!(result
+        .data
+        .as_ref()
+        .unwrap()
+        .get("logoutCurrentAccount")
+        .unwrap());
+    assert!(result.errors.is_none());
 }
 
 #[actix_rt::test]
@@ -278,17 +291,43 @@ async fn should_make_unauthenticated_requests() {
     assert_access_control_allow_headers(&response);
 
     // logout
+    let mut map = HashMap::new();
+    map.insert(
+        "query",
+        r#"
+mutation {
+  logoutCurrentAccount
+}
+"#,
+    );
     let response = client
-        .post(&format!(
-            "{}/api/v1/authentication/logout",
-            test_server.address
-        ))
+        .request(
+            Method::POST,
+            &format!("{}/api/graphql/", test_server.address),
+        )
         .header("Origin", "http://localhost:8080")
+        .json(&map)
         .send()
         .await
         .expect("Failed to send request.");
-    assert_eq!(response.status().as_u16(), 401);
+    assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
+    let result = response
+        .json::<graphql::Response<HashMap<String, bool>>>()
+        .await
+        .expect("Failed to parse body.");
+    assert!(result.data.is_none());
+    assert_eq!(
+        result
+            .errors
+            .as_ref()
+            .unwrap()
+            .first()
+            .as_ref()
+            .unwrap()
+            .message,
+        "unauthenticated"
+    );
 
     // whoami
     let mut map = HashMap::new();
