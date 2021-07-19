@@ -11,7 +11,7 @@ impl CreateAccount for Context {
         )
     )]
     async fn create_account(&self, username: &Username) -> Result<Account, CreateAccountError> {
-        let account_id = AccountId::new(&uuid::Uuid::new_v4().to_string());
+        let account_id = AccountId::new(uuid::Uuid::new_v4().to_string());
         let created = time::OffsetDateTime::now_utc();
 
         sqlx::query!(
@@ -34,6 +34,6 @@ RETURNING id;
             CreateAccountError::AccountAlreadyExists
         })?;
 
-        Ok(Account::new(&account_id, username))
+        Ok(Account::new(account_id, username.clone()))
     }
 }

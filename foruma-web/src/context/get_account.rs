@@ -27,8 +27,8 @@ WHERE AAS.public_id = $1;
         .expect("TODO: handle database error")?;
 
         Some(Account::new(
-            &AccountId::new(&record.account_public_id),
-            &Username::new(&record.account_username),
+            AccountId::new(record.account_public_id),
+            Username::new(record.account_username),
         ))
     }
 }

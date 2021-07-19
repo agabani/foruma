@@ -13,7 +13,7 @@ impl CreatePassword for Context {
     )]
     async fn create_password(&self, account: &Account, password: &Password) {
         let created = time::OffsetDateTime::now_utc();
-        let password_id = PasswordId::new(&uuid::Uuid::new_v4().to_string());
+        let password_id = PasswordId::new(uuid::Uuid::new_v4().to_string());
 
         let password_hash = argon2::hash_encoded(
             password.value().as_bytes(),

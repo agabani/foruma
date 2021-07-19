@@ -17,7 +17,7 @@ impl HttpSessionCookie {
             .ok()
             .and_then(|value| Cookie::parse(value.to_string()).ok())
             .and_then(|cookie| CookieJar::new().private(&self.key).decrypt(cookie))
-            .map(|cookie| SessionId::new(cookie.value()))
+            .map(|cookie| SessionId::new(cookie.value().to_string()))
     }
 
     pub fn encrypt_session_id(&self, session_id: &SessionId) -> HeaderValue {
