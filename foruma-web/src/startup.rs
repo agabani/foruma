@@ -6,7 +6,7 @@ use crate::{
     geoip::GeoIp,
     graphql,
     middleware::{DomainRootSpanBuilder, SessionId},
-    routes::{account, health},
+    routes::health,
 };
 use actix_cors::Cors;
 use actix_web::{
@@ -76,9 +76,6 @@ pub fn run(overrides: &[(&str, &str)]) -> (Server, u16, Configuration) {
             .wrap(TracingLogger::<DomainRootSpanBuilder>::new())
             .wrap(SessionId::new(HttpSessionCookie::new(key.clone())))
             .service(web::scope("/health").configure(health::config))
-            .service(
-                web::scope("/api/v1").service(web::scope("/account").configure(account::config)),
-            )
             .service(web::scope("/api/graphql").configure(graphql::config))
             .app_data(data_schema.clone())
             .app_data(data_context.clone())

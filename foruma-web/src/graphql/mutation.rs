@@ -3,7 +3,7 @@ use async_graphql::{Context, InputObject, Object};
 use crate::domain::{
     AccountSession, ChangePassword, ChangePasswordError, CreateAccount, CreateAccountError,
     CreatePassword, GetAccount, GetAccountSessions, IpAddress, Login, LoginError, Logout,
-    LogoutError, Password, SessionId, UserAgent, Username,
+    LogoutError, Password, SessionId, TerminateAccount, TerminateAccountError, UserAgent, Username,
 };
 use actix_web::http::header::SET_COOKIE;
 
@@ -180,6 +180,28 @@ impl MutationRoot {
         ctx.append_http_header(SET_COOKIE, cookie.to_str().unwrap());
 
         Ok(true)
+    }
+
+    async fn terminate_current_account<'a>(&self, ctx: &'a Context<'a>) -> Result<bool, String> {
+        let context = ctx
+            .data::<actix_web::web::Data<crate::context::Context>>()
+            .expect("Database not in context");
+
+        let session_id = ctx
+            .data_opt::<SessionId>()
+            .ok_or_else(|| GraphQLError::Unauthenticated.to_string())?;
+
+        let account = match context.get_account(&session_id).await {
+            Some(account) => account,
+            None => return Err(GraphQLError::Unauthenticated.to_string()),
+        };
+
+        match context.terminate_account(&account).await {
+            Ok(()) => Ok(true),
+            Err(TerminateAccountError::AccountDoesNotExist) => {
+                Err(GraphQLError::BadRequest.to_string())
+            }
+        }
     }
 }
 

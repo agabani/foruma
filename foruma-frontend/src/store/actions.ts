@@ -1,5 +1,4 @@
 import router from "@/router";
-import axios from "axios";
 import type { ChangedEvent } from "@vue/runtime-core";
 import { Commit } from "vuex";
 import { SessionChangedEventPayload } from "./mutations";
@@ -15,15 +14,10 @@ import {
   mutationLogin,
   mutationLogoutCurrentAccount,
   mutationSignup,
+  mutationTerminateCurrentAccount,
   queryCurrentAccount,
   queryCurrentAccountAuthenticationSessions,
 } from "@/graphql";
-
-const api = axios.create({
-  baseURL: process.env.VUE_APP_API_BASE_URL,
-  validateStatus: null,
-  withCredentials: true,
-});
 
 export const initialize = async ({
   commit,
@@ -79,17 +73,13 @@ export const deleteOwnAccount = async ({
 }: {
   commit: Commit;
 }): Promise<void> => {
-  const terminateResponse = await api.post("/api/v1/account/terminate");
+  const response = await mutationTerminateCurrentAccount();
 
-  switch (terminateResponse.status) {
-    case 200:
-      {
-        commit("logout", terminateResponse.data.username);
-        router.push("/");
-      }
-      break;
-    default:
-      throw new Error("unexpected response");
+  if (response.success) {
+    commit("logout");
+    router.push("/");
+  } else {
+    throw new Error("unexpected response");
   }
 };
 
