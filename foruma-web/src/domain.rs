@@ -130,10 +130,10 @@ pub enum UpdateLastActiveError {
 
 // Implementations
 impl Account {
-    pub fn new(account_id: &AccountId, username: &Username) -> Self {
+    pub fn new(account_id: AccountId, username: Username) -> Self {
         Self {
-            account_id: account_id.clone(),
-            username: username.clone(),
+            account_id,
+            username,
         }
     }
 
@@ -147,8 +147,8 @@ impl Account {
 }
 
 impl AccountId {
-    pub fn new(value: &str) -> Self {
-        Self(value.to_string())
+    pub fn new(value: String) -> Self {
+        Self(value)
     }
 
     pub fn value(&self) -> &str {
@@ -158,16 +158,16 @@ impl AccountId {
 
 impl AccountSession {
     pub fn new(
-        session_id: &SessionId,
-        ip_address: &Option<IpAddress>,
-        user_agent: &Option<UserAgent>,
-        last_active: &LastActive,
+        session_id: SessionId,
+        ip_address: Option<IpAddress>,
+        user_agent: Option<UserAgent>,
+        last_active: LastActive,
     ) -> Self {
         Self {
-            session_id: session_id.clone(),
-            ip_address: ip_address.clone(),
-            user_agent: user_agent.clone(),
-            last_active: last_active.clone(),
+            session_id,
+            ip_address,
+            user_agent,
+            last_active,
         }
     }
 
@@ -190,8 +190,8 @@ impl AccountSession {
 
 impl IpAddress {
     #[allow(dead_code)]
-    pub fn new(ip_address: &ipnetwork::IpNetwork) -> Self {
-        Self(*ip_address)
+    pub fn new(ip_address: ipnetwork::IpNetwork) -> Self {
+        Self(ip_address)
     }
 
     pub fn parse(value: &str) -> Result<Self, ()> {
@@ -212,8 +212,8 @@ impl IpAddress {
 }
 
 impl LastActive {
-    pub fn new(value: &time::OffsetDateTime) -> Self {
-        Self(*value)
+    pub fn new(value: time::OffsetDateTime) -> Self {
+        Self(value)
     }
 
     pub fn value(&self) -> &time::OffsetDateTime {
@@ -226,8 +226,8 @@ impl LastActive {
 }
 
 impl Password {
-    pub fn new(value: &str) -> Self {
-        Self(value.to_string())
+    pub fn new(value: String) -> Self {
+        Self(value)
     }
 
     pub fn value(&self) -> &str {
@@ -236,8 +236,8 @@ impl Password {
 }
 
 impl PasswordId {
-    pub fn new(value: &str) -> Self {
-        Self(value.to_string())
+    pub fn new(value: String) -> Self {
+        Self(value)
     }
 
     pub fn value(&self) -> &str {
@@ -246,8 +246,8 @@ impl PasswordId {
 }
 
 impl SessionId {
-    pub fn new(value: &str) -> Self {
-        Self(value.to_string())
+    pub fn new(value: String) -> Self {
+        Self(value)
     }
 
     pub fn value(&self) -> &str {
@@ -256,8 +256,8 @@ impl SessionId {
 }
 
 impl UserAgent {
-    pub fn new(value: &str) -> Self {
-        Self(value.to_string())
+    pub fn new(value: String) -> Self {
+        Self(value)
     }
 
     pub fn value(&self) -> &str {
@@ -266,8 +266,8 @@ impl UserAgent {
 }
 
 impl Username {
-    pub fn new(value: &str) -> Self {
-        Self(value.to_string())
+    pub fn new(value: String) -> Self {
+        Self(value)
     }
 
     pub fn value(&self) -> &str {

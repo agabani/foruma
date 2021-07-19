@@ -22,6 +22,6 @@ impl HttpRequestExt for HttpRequest {
         self.headers()
             .get("User-Agent")
             .and_then(|value| value.to_str().ok())
-            .map(|value| UserAgent::new(value))
+            .map(|value| UserAgent::new(value.to_string()))
     }
 }

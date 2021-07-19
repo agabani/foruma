@@ -39,8 +39,8 @@ impl MutationRoot {
             .data_opt::<SessionId>()
             .ok_or_else(|| GraphQLError::Unauthenticated.to_string())?;
 
-        let current_password = Password::new(&input.current_password);
-        let new_password = Password::new(&input.new_password);
+        let current_password = Password::new(input.current_password);
+        let new_password = Password::new(input.new_password);
 
         let account = context
             .get_account(&session_id)
@@ -83,7 +83,7 @@ impl MutationRoot {
             .find(|x| x.get_session_id().value() == input.session_id)?;
 
         context
-            .logout(&SessionId::new(&input.session_id))
+            .logout(&SessionId::new(input.session_id))
             .await
             .ok()?;
 
@@ -103,8 +103,8 @@ impl MutationRoot {
 
         let user_agent = ctx.data::<UserAgent>().ok().cloned();
 
-        let username = Username::new(&input.username);
-        let password = Password::new(&input.password);
+        let username = Username::new(input.username);
+        let password = Password::new(input.password);
 
         let session_id = match context
             .login(&username, &password, &ip_address, &user_agent)
@@ -152,8 +152,8 @@ impl MutationRoot {
 
         let user_agent = ctx.data::<UserAgent>().ok().cloned();
 
-        let username = Username::new(&input.username);
-        let password = Password::new(&input.password);
+        let username = Username::new(input.username);
+        let password = Password::new(input.password);
 
         let account = match context.create_account(&username).await {
             Ok(account) => account,

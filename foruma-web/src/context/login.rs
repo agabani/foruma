@@ -67,7 +67,7 @@ WHERE A.username = $1;
         }
 
         let now = time::OffsetDateTime::now_utc();
-        let session_id = SessionId::new(&uuid::Uuid::new_v4().to_string());
+        let session_id = SessionId::new(uuid::Uuid::new_v4().to_string());
 
         tracing::Span::current().record("context.session_id", &session_id.value());
 
