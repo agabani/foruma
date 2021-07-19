@@ -14,6 +14,7 @@ import {
   mutationDeleteAccountAuthenticationSession,
   mutationLogin,
   mutationLogoutCurrentAccount,
+  mutationSignup,
   queryCurrentAccount,
   queryCurrentAccountAuthenticationSessions,
 } from "@/graphql";
@@ -192,31 +193,18 @@ export const signup = async (
   { commit }: { commit: Commit },
   payload: SignupPayload
 ): Promise<void> => {
-  const signupResponse = await api.post("/api/v1/authentication/signup", {
-    username: payload.username,
-    password: payload.password,
-  });
+  const response = await mutationSignup(payload);
 
-  switch (signupResponse.status) {
-    case 200:
-      {
-        commit("login", signupResponse.data.username);
-      }
-      break;
-    case 401:
-      {
-        const event: ChangedEvent = {
-          eventDate: new Date(),
-          error: {
-            title: "Uh oh, something went wrong",
-            message: "Sorry! There was a problem with your request!",
-          },
-        };
-        commit("signupChangedEvent", event);
-      }
-      return;
-    default:
-      throw new Error("unexpected response");
+  if (!response.success) {
+    const event: ChangedEvent = {
+      eventDate: new Date(),
+      error: {
+        title: "Uh oh, something went wrong",
+        message: "Sorry! There was a problem with your request!",
+      },
+    };
+    commit("signupChangedEvent", event);
+    return;
   }
 
   const currentAccount = await queryCurrentAccount();
