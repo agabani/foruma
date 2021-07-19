@@ -4,6 +4,7 @@ use std::collections::HashMap;
 mod graphql;
 mod test_server;
 
+#[allow(dead_code)]
 fn assert_preflight_access_control_allow_headers(methods: &[Method], response: &Response) {
     assert_eq!(
         response
@@ -47,29 +48,23 @@ async fn should_be_able_to_authenticate() {
     let client = reqwest::ClientBuilder::new().build().unwrap();
 
     // sign up
+    let mut map = HashMap::new();
+    map.insert(
+        "query",
+        format!(
+            r#"
+mutation {{
+  signup(input: {{ username: "{}", password: "{}" }})
+}}
+"#,
+            "test-username", "test-password"
+        ),
+    );
     let response = client
         .request(
-            Method::OPTIONS,
-            &format!("{}/api/v1/authentication/signup", test_server.address),
+            Method::POST,
+            &format!("{}/api/graphql/", test_server.address),
         )
-        .header("Access-Control-Request-Headers", "content-type")
-        .header("Access-Control-Request-Method", "POST")
-        .header("Origin", "http://localhost:8080")
-        .send()
-        .await
-        .expect("Failed to send request.");
-    assert_eq!(response.status().as_u16(), 200);
-    assert_preflight_access_control_allow_headers(&[Method::GET, Method::POST], &response);
-    assert_access_control_allow_headers(&response);
-
-    let mut map = HashMap::new();
-    map.insert("username", "test-username");
-    map.insert("password", "test-password");
-    let response = client
-        .post(&format!(
-            "{}/api/v1/authentication/signup",
-            test_server.address
-        ))
         .header("Origin", "http://localhost:8080")
         .json(&map)
         .send()
@@ -405,13 +400,22 @@ async fn should_not_be_able_to_sign_up_using_existing_account() {
 
     // sign up
     let mut map = HashMap::new();
-    map.insert("username", "test-username");
-    map.insert("password", "test-password");
+    map.insert(
+        "query",
+        format!(
+            r#"
+mutation {{
+  signup(input: {{ username: "{}", password: "{}" }})
+}}
+"#,
+            "test-username", "test-password"
+        ),
+    );
     let response = client
-        .post(&format!(
-            "{}/api/v1/authentication/signup",
-            test_server.address
-        ))
+        .request(
+            Method::POST,
+            &format!("{}/api/graphql/", test_server.address),
+        )
         .header("Origin", "http://localhost:8080")
         .json(&map)
         .send()
@@ -423,19 +427,28 @@ async fn should_not_be_able_to_sign_up_using_existing_account() {
 
     // sign up - fails
     let mut map = HashMap::new();
-    map.insert("username", "test-username");
-    map.insert("password", "test-password");
+    map.insert(
+        "query",
+        format!(
+            r#"
+mutation {{
+  signup(input: {{ username: "{}", password: "{}" }})
+}}
+"#,
+            "test-username", "test-password"
+        ),
+    );
     let response = client
-        .post(&format!(
-            "{}/api/v1/authentication/signup",
-            test_server.address
-        ))
+        .request(
+            Method::POST,
+            &format!("{}/api/graphql/", test_server.address),
+        )
         .header("Origin", "http://localhost:8080")
         .json(&map)
         .send()
         .await
         .expect("Failed to send request.");
-    assert_eq!(response.status().as_u16(), 401);
+    assert_eq!(response.status().as_u16(), 200);
     assert_access_control_allow_headers(&response);
     assert!(response.headers().get("Set-Cookie").is_none());
 }

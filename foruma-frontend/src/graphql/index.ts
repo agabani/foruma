@@ -141,6 +141,36 @@ mutation {
   };
 }
 
+export async function mutationSignup(input: {
+  username: string;
+  password: string;
+}): Promise<{
+  success: boolean;
+  errorCode?: "bad_request";
+}> {
+  const response = await api.post(GraphQL, {
+    query: `
+mutation {
+  signup(input: { username: "${input.username}", password: "${input.password}" })
+}`,
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Unexpected status code");
+  }
+
+  if (response.data.errors?.[0]) {
+    return {
+      success: false,
+      errorCode: response.data.errors[0].message,
+    };
+  }
+
+  return {
+    success: response.data.data.signup,
+  };
+}
+
 export async function queryCurrentAccount(): Promise<{
   id: string;
   username: string;
