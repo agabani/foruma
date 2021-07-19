@@ -171,6 +171,33 @@ mutation {
   };
 }
 
+export async function mutationTerminateCurrentAccount(): Promise<{
+  success: boolean;
+  errorCode?: "unauthenticated";
+}> {
+  const response = await api.post(GraphQL, {
+    query: `
+mutation {
+  terminateCurrentAccount
+}`,
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Unexpected status code");
+  }
+
+  if (response.data.errors?.[0]) {
+    return {
+      success: false,
+      errorCode: response.data.errors[0].message,
+    };
+  }
+
+  return {
+    success: response.data.data.terminateCurrentAccount,
+  };
+}
+
 export async function queryCurrentAccount(): Promise<{
   id: string;
   username: string;
