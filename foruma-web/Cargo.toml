@@ -9,12 +9,12 @@ edition = "2018"
 [dependencies]
 actix-cors = { path = "../actix-cors" }
 actix-web = { version = "4.0.0-beta.8", features = ["secure-cookies"] }
-async-graphql = "2.9.8"
+async-graphql = "2.9.9"
 async-trait = "0.1.50"
 config = "0.11.0"
 ipnetwork = "0.17.0"
-maxminddb = "0.20.0"
-pin-project = "1.0.7"
+maxminddb = "0.21.0"
+pin-project = "1.0.8"
 rust-argon2 = "0.8.3"
 serde = "1.0.126"
 sqlx = { version = "0.5.5", features = ["ipnetwork", "macros", "migrate", "offline", "postgres", "runtime-tokio-rustls", "time"] }
@@ -29,4 +29,4 @@ uuid = { version = "0.8.2", features = ["v4"] }
 [dev-dependencies]
 actix-rt = "2.2.0"
 reqwest = { version = "0.11.4", features = ["json"] }
-tokio = "1.8.1"
+tokio = "1.9.0"
