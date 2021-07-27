@@ -1,6 +1,9 @@
 import { Story } from "@storybook/vue3";
 import metaEvents from "../../helpers/meta-events";
-import { pureSubForumCardEvents } from "./PureSubForumCard.types";
+import {
+  pureSubForumCardEvents,
+  PureSubForumCardProps,
+} from "./PureSubForumCard.types";
 import PureSubForumCard from "./PureSubForumCard.vue";
 
 export default {
@@ -11,7 +14,7 @@ export default {
   },
 };
 
-const Template: Story = (args) => ({
+const Template: Story<PureSubForumCardProps> = (args) => ({
   components: { PureSubForumCard },
   setup() {
     return { args };
