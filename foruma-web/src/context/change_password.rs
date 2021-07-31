@@ -45,7 +45,7 @@ WHERE A.public_id = $1;
             }
         };
 
-        let matches = argon2::verify_encoded(&password_hash, current_password.value().as_bytes())
+        let matches = argon2::verify_encoded(password_hash, current_password.value().as_bytes())
             .trace_err()
             .expect("TODO: handle password hashing error");
 

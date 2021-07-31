@@ -57,7 +57,7 @@ WHERE A.username = $1;
             }
         };
 
-        let matches = argon2::verify_encoded(&password_hash, password.value().as_bytes())
+        let matches = argon2::verify_encoded(password_hash, password.value().as_bytes())
             .trace_err()
             .expect("TODO: handle password hashing error");
 

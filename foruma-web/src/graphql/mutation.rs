@@ -43,7 +43,7 @@ impl MutationRoot {
         let new_password = Password::new(input.new_password);
 
         let account = context
-            .get_account(&session_id)
+            .get_account(session_id)
             .await
             .ok_or_else(|| GraphQLError::Unauthenticated.to_string())?;
 
@@ -71,7 +71,7 @@ impl MutationRoot {
 
         let session_id = ctx.data_opt::<SessionId>()?;
 
-        let account = context.get_account(&session_id).await?;
+        let account = context.get_account(session_id).await?;
 
         let vec = context
             .get_account_sessions(account.get_account_id())
@@ -133,7 +133,7 @@ impl MutationRoot {
             .data_opt::<SessionId>()
             .ok_or_else(|| GraphQLError::Unauthenticated.to_string())?;
 
-        match context.logout(&session_id).await {
+        match context.logout(session_id).await {
             Ok(()) => Ok(true),
             Err(LogoutError::SessionDoesNotExist) => Err(GraphQLError::Unauthenticated.to_string()),
         }
@@ -191,7 +191,7 @@ impl MutationRoot {
             .data_opt::<SessionId>()
             .ok_or_else(|| GraphQLError::Unauthenticated.to_string())?;
 
-        let account = match context.get_account(&session_id).await {
+        let account = match context.get_account(session_id).await {
             Some(account) => account,
             None => return Err(GraphQLError::Unauthenticated.to_string()),
         };
