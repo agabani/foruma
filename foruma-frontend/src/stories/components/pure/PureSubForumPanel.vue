@@ -32,7 +32,7 @@ export default defineComponent({
   },
   props: {
     subForums: {
-      type: Array as PropType<PureSubForumPanelPropsSubForum>,
+      type: Array as PropType<PureSubForumPanelPropsSubForum[]>,
       required: true,
     },
   },

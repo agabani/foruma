@@ -89,6 +89,12 @@ export function appUseStore(configure?: (store: Store<State>) => void): void {
         context.commit("sessionDeleted", payload);
         action("deleteSession")(payload);
       },
+      getSessions(context, payload) {
+        action("getSessions")(payload);
+      },
+      getSubForums(context, payload) {
+        action("getSubForums")(payload);
+      },
       login(context, payload) {
         const event: ChangedEvent = {
           eventDate: new Date(),

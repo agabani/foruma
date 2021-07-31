@@ -15,7 +15,8 @@ export default defineComponent({
   setup() {
     const store = useStore();
     return {
-      subForums: computed(() => store.getters.subForums),
+      // TODO: create user experience for when sub forums have not been populated yet.
+      subForums: computed(() => store.getters.subForums || []),
       getSubForums: () => {
         store.dispatch("getSubForums");
       },
