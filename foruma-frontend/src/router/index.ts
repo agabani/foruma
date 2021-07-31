@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import PureHomeScreen from "../stories/screens/pure/PureHomeScreen.vue";
+import PureForumScreen from "../stories/screens/pure/PureForumScreen.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: PureHomeScreen,
+    component: PureForumScreen,
   },
   {
     path: "/about",

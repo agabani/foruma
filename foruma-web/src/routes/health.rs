@@ -7,7 +7,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .route("readiness", web::get().to(readiness_get));
 }
 
-async fn liveness_get() -> HttpResponse {
+fn liveness_get() -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 

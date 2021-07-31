@@ -30,6 +30,7 @@ pub enum LookupErrors {
 }
 
 impl GeoIp {
+    #[allow(clippy::unnecessary_wraps)]
     pub fn new(path: &str) -> Result<Self, ()> {
         let reader = match Reader::open_readfile(path) {
             Ok(reader) => reader,

@@ -9,6 +9,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(web::resource("/").guard(guard::Post()).to(index));
 }
 
+#[allow(clippy::unused_async)]
 pub async fn index_playground() -> Result<actix_web::HttpResponse, actix_web::Error> {
     Ok(actix_web::HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")

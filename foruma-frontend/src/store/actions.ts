@@ -96,6 +96,10 @@ export const deleteSession = async (
   }
 };
 
+export const getSubForums = async (): Promise<void> => {
+  // TODO: retrieve sub forums from graphql api.
+};
+
 export const getSessions = async ({
   commit,
 }: {
