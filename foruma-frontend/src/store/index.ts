@@ -8,6 +8,7 @@ const store = createStore<State>({
   state: {
     data: {
       authentication: undefined,
+      forum: undefined,
     },
     events: {
       passwordChanged: undefined,

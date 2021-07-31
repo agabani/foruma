@@ -37,6 +37,34 @@ export function appUseStore(configure?: (store: Store<State>) => void): void {
             },
           ],
         },
+        forum: {
+          subForums: [
+            {
+              id: "1",
+              name: "News & Announcements",
+            },
+            {
+              id: "2",
+              name: "General Discussion",
+            },
+            {
+              id: "3",
+              name: "Home Cinema & Hi-Fi",
+            },
+            {
+              id: "4",
+              name: "TV, Film & Radio",
+            },
+            {
+              id: "5",
+              name: "Computer & Gadgets",
+            },
+            {
+              id: "6",
+              name: "Off Topic",
+            },
+          ],
+        },
       },
       events: {
         passwordChanged: undefined,
@@ -104,6 +132,7 @@ export function appUseStore(configure?: (store: Store<State>) => void): void {
     getters: {
       username: (state: State) => state.data.authentication?.username,
       sessions: (state: State) => state.data.authentication?.sessions,
+      subForums: (state: State) => state.data.forum?.subForums,
       loginChangedEvent: (state: State) => state.events.loginChanged,
       passwordChangedEvent: (state: State) => state.events.passwordChanged,
       signupChangedEvent: (state: State) => state.events.signupChanged,

@@ -11,6 +11,15 @@ declare module "@vue/runtime-core" {
     sessions: AuthenticationSession[];
   }
 
+  interface Forum {
+    subForums: SubForum[];
+  }
+
+  interface SubForum {
+    id: string;
+    name: string;
+  }
+
   interface AuthenticationSession {
     id: string;
     isCurrentSession: boolean;
@@ -34,6 +43,7 @@ declare module "@vue/runtime-core" {
   interface State {
     data: {
       authentication: Authentication | undefined;
+      forum: Forum | undefined;
     };
     events: {
       passwordChanged: ChangedEvent | undefined;
